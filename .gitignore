@@ -1,0 +1,6 @@
+.env
+__pycache__/
+*.pyc
+.venv/
+venv/
+tech35格式.txt

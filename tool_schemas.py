@@ -1,7 +1,23 @@
+"""
+工具 Schema 定义。
+
+这里的 TOOLS 会传给大模型，作用是告诉模型：
+1. 有哪些工具可以调用。
+2. 每个工具适合什么场景。
+3. 调用工具时需要传哪些参数。
+
+注意：
+这里不会真正执行工具。
+真正执行工具的是 agent.py 里的 ToolRegistry。
+所以每个 schema 里的 "name" 必须和 ToolRegistry 注册的工具名保持一致。
+"""
+
 # =========================
 # 2. 写工具说明，告诉模型有哪些工具可用
 # =========================
 
+# OpenAI/DeepSeek function calling 要求工具说明使用这种 JSON-like 字典结构。
+# 模型会根据 description 和 parameters 自动决定是否生成 tool_calls。
 TOOLS = [
     {
         # type=function 表示这是一个函数工具

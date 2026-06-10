@@ -1,3 +1,14 @@
+"""
+真实工具函数模块。
+
+这个文件里的函数才是真正会被执行的“工具”：
+时间查询、计算、列文件、读文件、搜索关键词、提取章节。
+
+大模型不会直接读取本地文件，也不会直接执行 Python。
+它只会通过 tool_calls 告诉 agent.py：“我想调用某个工具，并传入这些参数”。
+agent.py 再通过 ToolRegistry 找到这里的函数并执行。
+"""
+
 import re
 
 from datetime import datetime
@@ -340,6 +351,10 @@ def extract_text_section(filename, section_name):
     """
     提取 txt 文件中的某个章节内容。
     例如：filename="tech35格式.txt", section_name="Drc"
+
+    与 search_text_file 不同：
+    search_text_file 是找关键词附近的片段；
+    extract_text_section 是找章节标题，并提取到下一个同级/更高级标题之前。
     """
 
     try:
@@ -378,17 +393,28 @@ def extract_text_section(filename, section_name):
 
         lines = content.splitlines(keepends=True)
 
+        # 1. 把用户给出的章节名整理成多个可能写法。
+        # 例如用户可能说：
+        #   DRC章节、Drc section、section Drc、绪论部分
+        # 程序会尽量提取出核心名，并补充常见英文标题写法。
         title = section_name.lower()
         title_aliases = {title}
 
+        # 去掉常见的描述性后缀，得到更核心的章节名。
+        # 例如 "drc章节" -> "drc"，"绪论部分" -> "绪论"。
         for suffix in ["章节部分", "章节", "小节", "部分", "section", "chapter", "章", "节"]:
             if title.endswith(suffix):
                 title_aliases.add(title[:-len(suffix)].strip())
 
+        # 处理英文前缀写法。
+        # 例如 "section drc" -> "drc"。
         for prefix in ["section ", "chapter "]:
             if title.startswith(prefix):
                 title_aliases.add(title[len(prefix):].strip())
 
+        # 把核心名扩展成常见标题形式。
+        # 例如核心名 drc 会得到：
+        # drc、drc section、section drc、drc chapter、chapter drc。
         target_titles = set()
         for alias in title_aliases:
             if not alias:
@@ -399,6 +425,14 @@ def extract_text_section(filename, section_name):
             target_titles.add(alias + " chapter")
             target_titles.add("chapter " + alias)
 
+        # 2. 定义“什么样的行算章节标题”。
+        # 每个元素是 (正则表达式, 标题层级规则)。
+        #
+        # 标题层级用于判断章节在哪里结束：
+        # - 一级标题遇到下一个一级标题才结束
+        # - 二级标题遇到下一个二级或一级标题结束
+        #
+        # 这些规则不是针对某个具体文件的章节名，而是识别通用标题格式。
         heading_patterns = [
             (r"^(#{1,6})\s+\S+", "markdown"),
             (r"^第[一二三四五六七八九十百千万两0-9]+([章节篇]|部分)\s*[：:、.\-]?\s*\S+", "chinese_chapter"),
@@ -414,11 +448,13 @@ def extract_text_section(filename, section_name):
         start_line = None
         start_level = 1
 
+        # 3. 扫描全文，寻找目标章节的开始行。
         for line_no, line in enumerate(lines):
             line_title = line.strip()
             lower_line_title = line_title.lower()
             heading_level = None
 
+            # 先判断当前行是不是标题；如果是，算出它的标题层级。
             for pattern, level_rule in heading_patterns:
                 match = re.match(pattern, line_title, re.IGNORECASE)
                 if not match:
@@ -434,8 +470,12 @@ def extract_text_section(filename, section_name):
                     heading_level = level_rule
                 break
 
+            # 第一种匹配：标题行完全等于某个候选标题。
+            # 例如 "drc section" 完全匹配 target_titles 里的 "drc section"。
             is_target_line = lower_line_title in target_titles
 
+            # 第二种匹配：如果这一行是标题，再做包含匹配。
+            # 例如用户要 "绪论"，文档标题是 "第一章 绪论"，也应该认为匹配。
             if not is_target_line and heading_level is not None:
                 compact_line_title = re.sub(r"\s+", "", lower_line_title)
                 for target_title in target_titles:
@@ -445,6 +485,9 @@ def extract_text_section(filename, section_name):
                         break
 
             if is_target_line:
+                # 不 break 是有意的：
+                # 如果目录里出现一次标题，正文里又出现一次标题，
+                # 这里会保留最后一次匹配，更容易跳过目录定位到正文。
                 start_line = line_no
                 start_level = heading_level or 1
 
@@ -453,11 +496,15 @@ def extract_text_section(filename, section_name):
 
         end_line = len(lines)
 
+        # 4. 从章节开始行往后找结束行。
+        # 遇到同级或更高级标题，说明当前章节结束。
         for line_no in range(start_line + 1, len(lines)):
             line_title = lines[line_no].strip()
             lower_line_title = line_title.lower()
             heading_level = None
 
+            # 结束判断和开始判断使用同一套标题格式规则，
+            # 这样英文 section、中文章节、Markdown、数字标题都按同一逻辑处理。
             for pattern, level_rule in heading_patterns:
                 match = re.match(pattern, line_title, re.IGNORECASE)
                 if not match:
@@ -480,8 +527,10 @@ def extract_text_section(filename, section_name):
         start_char = sum(len(line) for line in lines[:start_line])
         end_char = sum(len(line) for line in lines[:end_line])
 
+        # 5. 根据字符位置截取章节正文。
         section_text = content[start_char:end_char].strip()
 
+        # 6. 如果章节太长，只返回前 MAX_SECTION_CHARS 个字符。
         is_truncated = len(section_text) > MAX_SECTION_CHARS
         if is_truncated:
             section_text = section_text[:MAX_SECTION_CHARS]

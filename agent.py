@@ -1,8 +1,22 @@
+"""
+Agent 主流程模块。
+
+这个文件负责三件事：
+1. 把用户输入、会话历史、会话记忆组装成 messages。
+2. 调用大模型，让模型决定是否需要使用工具。
+3. 如果模型请求工具调用，就通过 ToolRegistry 执行真实 Python 函数。
+
+注意：
+tool_schemas.py 只负责告诉模型“有哪些工具可以用”；
+ToolRegistry 负责告诉程序“这些工具名分别对应哪个 Python 函数”。
+"""
+
 import json
 
 from config import MODEL_NAME
 from llm_client import client
 from tool_schemas import TOOLS
+from tool_registry import ToolRegistry
 from memory import build_memory_message, update_memory_from_tool_call
 from document_tools import (
     get_current_time,
@@ -14,53 +28,39 @@ from document_tools import (
     extract_text_section,
 )
 
+
+# 注册表只创建一次。
+# 后续模型每次发来 tool_call，都通过这个 registry 找到对应函数。
+tool_registry = ToolRegistry()
+tool_registry.register("get_current_time", get_current_time)
+tool_registry.register("calculate", calculate, ["expression"])
+tool_registry.register("get_today_date", get_today_date)
+tool_registry.register("read_text_file", read_text_file, ["filename"])
+tool_registry.register("list_txt_files", list_txt_files)
+tool_registry.register("search_text_file", search_text_file, ["filename", "keyword"])
+tool_registry.register("extract_text_section", extract_text_section, ["filename", "section_name"])
+
+
 # =========================
-# 3. 根据模型的决定，真正执行对应工具
+# 根据模型的决定，真正执行对应工具
 # =========================
 
 def run_tool(tool_name, arguments):
     """
-    根据工具名和参数，执行对应的 Python 函数。
+    根据工具名和参数执行对应工具。
 
-    tool_name:
-        模型想调用的工具名，例如 "get_current_time"
-
-    arguments:
-        模型传给工具的参数，是一个字典
-        例如 {"expression": "25*17"}
+    这里保留 run_tool 这一层，是为了让 run_agent 的主流程更好读：
+    run_agent 不需要关心每个工具怎么分发，只要把工具名和参数交给注册表。
     """
 
-    if tool_name == "get_current_time":
-        return get_current_time()
-
-    elif tool_name == "calculate":
-        # 从 arguments 中取出 expression
-        expression = arguments.get("expression", "")
-        return calculate(expression)
-    elif tool_name == "get_today_date":
-        return get_today_date()
-    elif tool_name=="read_text_file":
-        filename=arguments.get("filename","")
-        return read_text_file(filename)
-    elif tool_name == "list_txt_files":
-        return list_txt_files()
-    elif tool_name == "search_text_file":
-        filename = arguments.get("filename", "")
-        keyword = arguments.get("keyword", "")
-        return search_text_file(filename, keyword)
-    elif tool_name == "extract_text_section":
-        filename = arguments.get("filename", "")
-        section_name = arguments.get("section_name", "")
-        return extract_text_section(filename, section_name)
-    else:
-        return f"未知工具：{tool_name}"
+    return tool_registry.run(tool_name, arguments)
 
 
 # =========================
 # 4. agent 主流程
 # =========================
 
-def run_agent(user_input,chat_history,memory_state):
+def run_agent(user_input, chat_history, memory_state):
     """
     多轮工具调用版 agent。
 
@@ -70,6 +70,8 @@ def run_agent(user_input,chat_history,memory_state):
     再让模型继续判断下一步。
     """
 
+    # messages 是本次用户输入的临时上下文。
+    # 不把完整 messages 长期保存，是为了避免历史 tool_calls 越积越多。
     messages = [
         {
             "role": "system",
@@ -97,12 +99,17 @@ def run_agent(user_input,chat_history,memory_state):
         }
 
     ]
+
+    # 会话记忆是“关键事实”，例如当前文件、当前章节。
+    # 它和普通聊天历史分开保存，方便模型理解“这个文件”“继续”等省略表达。
     memory_message = build_memory_message(memory_state)
     if memory_message:
         messages.append(memory_message)
 
+    # chat_history 只保存最近 N 轮用户/助手自然语言对话。
     messages.extend(chat_history)
 
+    # 最后追加当前用户输入，让模型知道这一次具体要解决什么问题。
     messages.append({
         "role": "user",
         "content": user_input
@@ -138,6 +145,8 @@ def run_agent(user_input,chat_history,memory_state):
             except json.JSONDecodeError:
                 arguments = {}
 
+            # 根据工具参数更新轻量记忆。
+            # 例如工具参数里有 filename，就把它记成“当前文件”。
             update_memory_from_tool_call(tool_name, arguments, memory_state)
 
             print(f"[调试] 第 {step + 1} 轮，第 {tool_index} 个工具调用")

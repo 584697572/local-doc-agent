@@ -91,3 +91,16 @@ def test_load_document_unsupported_file_type(tmp_path):
 
     with pytest.raises(ValueError):
         load_document(file_path)
+        
+from retrieval.loader import (
+    load_txt_file,
+    load_markdown_file,
+    load_pdf_file,
+    load_document,
+)
+
+def test_load_missing_pdf_file(tmp_path):
+    file_path = tmp_path / "missing.pdf"
+
+    with pytest.raises(FileNotFoundError):
+        load_pdf_file(file_path)

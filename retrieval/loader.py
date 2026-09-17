@@ -2,6 +2,8 @@ from pathlib import Path
 
 from retrieval.document import Document
 
+from pypdf import PdfReader
+
 
 def _read_text_file(path: Path) -> str:
     """
@@ -66,6 +68,64 @@ def load_markdown_file(file_path: str | Path) -> Document:
     )
 
 
+def load_pdf_file(file_path: str | Path) -> Document:
+    """
+    把 PDF 文件加载为 Document。
+
+    同时记录每一页在完整文本中的字符范围，
+    方便后续 Chunker 恢复页码信息。
+    """
+    path = Path(file_path)
+
+    if not path.exists():
+        raise FileNotFoundError(f"文件不存在: {path}")
+
+    if path.suffix.lower() != ".pdf":
+        raise ValueError(f"不是 PDF 文件: {path}")
+
+    reader = PdfReader(path)
+
+    page_texts = []
+    page_boundaries = []
+
+    current_pos = 0
+
+    for page_number, page in enumerate(reader.pages, start=1):
+        text = page.extract_text() or ""
+
+        start_char = current_pos
+        end_char = start_char + len(text)
+
+        page_boundaries.append(
+            {
+                "page": page_number,
+                "start_char": start_char,
+                "end_char": end_char,
+            }
+        )
+
+        page_texts.append(text)
+
+        current_pos = end_char
+
+        # 页面之间加入两个换行符
+        current_pos += 2
+
+    content = "\n\n".join(page_texts)
+
+    return Document(
+        document_id=path.stem,
+        content=content,
+        filename=path.name,
+        file_type="pdf",
+        metadata={
+            "source_path": str(path),
+            "page_count": len(reader.pages),
+            "page_boundaries": page_boundaries,
+        },
+    )
+
+
 def load_document(file_path: str | Path) -> Document:
     """
     文档加载统一入口。
@@ -84,5 +144,8 @@ def load_document(file_path: str | Path) -> Document:
 
     if suffix == ".md":
         return load_markdown_file(path)
+
+    if suffix == ".pdf":
+        return load_pdf_file(path)
 
     raise ValueError(f"暂不支持的文件类型: {suffix}")

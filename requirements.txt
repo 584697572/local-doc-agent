@@ -1,3 +1,5 @@
 openai
 python-dotenv
 pypdf
+rank-bm25
+jieba

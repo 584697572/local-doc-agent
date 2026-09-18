@@ -1,16 +1,12 @@
 import re
-from dataclasses import dataclass
+
 
 import jieba
 from rank_bm25 import BM25Okapi
 
 from retrieval.document import DocumentChunk
 
-@dataclass
-class RetrievalResult:
-    chunk: DocumentChunk
-    score: float
-    rank: int
+from retrieval.result import RetrievalResult
 
 def tokenize(text: str) -> list[str]:
     """

@@ -3,3 +3,6 @@ python-dotenv
 pypdf
 rank-bm25
 jieba
+sentence-transformers
+faiss-cpu
+numpy

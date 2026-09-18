@@ -13,6 +13,9 @@ from pathlib import Path
 # 这里的 __file__ 指 config.py 自己，parent 就是 D:\agent_demo。
 PROJECT_DIR = Path(__file__).parent
 
+# 本地知识库目录
+DATA_DIR = PROJECT_DIR / "data"
+
 
 MEMORY_FILE = PROJECT_DIR / "memory.json"
 

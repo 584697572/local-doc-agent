@@ -22,6 +22,7 @@ from config import (
     MAX_SECTION_CHARS,
 )
 
+
 # =========================
 # 1. 定义真正会被执行的工具函数
 # =========================
@@ -547,4 +548,5 @@ def extract_text_section(filename, section_name):
 
     except Exception as e:
         return f"章节提取失败：{e}"
-    
+
+  

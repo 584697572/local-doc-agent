@@ -28,6 +28,9 @@ from document_tools import (
     extract_text_section,
 )
 
+# Hybrid RAG 检索工具
+from retrieval_tools import search_documents
+
 
 # 注册表只创建一次。
 # 后续模型每次发来 tool_call，都通过这个 registry 找到对应函数。
@@ -39,6 +42,13 @@ tool_registry.register("read_text_file", read_text_file, ["filename"])
 tool_registry.register("list_txt_files", list_txt_files)
 tool_registry.register("search_text_file", search_text_file, ["filename", "keyword"])
 tool_registry.register("extract_text_section", extract_text_section, ["filename", "section_name"])
+
+# 注册知识库检索工具
+tool_registry.register(
+    "search_documents",
+    search_documents,
+    ["query"],
+)
 
 
 # =========================
@@ -95,6 +105,32 @@ def run_agent(user_input, chat_history, memory_state):
                 "不要输出 DSML。"
                 "不要输出伪造的 tool_calls 文本。"
                 "工具名必须使用已提供的工具名，不要自造 read_file、read_local 之类的工具名。"
+
+                "如果用户询问本地知识库中的事实、概念或技术内容，"
+                "或者问题需要查阅一个或多个本地文档，"
+                "优先调用 search_documents。"
+
+                "如果用户没有提供精确文件名，"
+                "但明显是在询问知识库内容，"
+                "也优先调用 search_documents。"
+
+                "只有当用户明确要求列出 txt 文件时，才调用 list_txt_files。"
+
+                "如果用户明确要求读取某一个完整的小 txt 文件，"
+                "可以调用 read_text_file。"
+
+                "如果用户明确指定某个 txt 文件并要求搜索精确关键词，"
+                "可以调用 search_text_file。"
+
+                "如果用户明确指定某个 txt 文件并要求查看具体章节，"
+                "可以调用 extract_text_section。"
+
+                "使用 search_documents 得到证据后，"
+                "回答必须依据工具返回的文档内容。"
+
+                "如果没有找到相关证据，不要编造知识库中不存在的信息。"
+
+                "回答时尽量注明来源文件；如果有页码，也尽量注明页码。"
             )
         }
 

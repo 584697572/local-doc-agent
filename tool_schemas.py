@@ -176,6 +176,37 @@ TOOLS = [
                 "required": ["filename", "section_name"]
             }
         }
+    },
+
+    {
+    "type": "function",
+
+    "function": {
+        "name": "search_documents",
+
+        "description": (
+            "当用户询问本地知识库中的事实、概念、技术内容，"
+            "需要跨文档查找信息，或者没有提供精确文件名时，"
+            "优先调用这个工具。"
+            "该工具支持关键词和语义混合检索，并返回相关文档证据。"
+        ),
+
+        "parameters": {
+            "type": "object",
+
+            "properties": {
+                "query": {
+                    "type": "string",
+                    "description": (
+                        "用于知识库检索的问题或查询语句，"
+                        "应保留关键实体和术语。"
+                    )
+                }
+            },
+
+            "required": ["query"]
+            }
+        }
     }
     
 

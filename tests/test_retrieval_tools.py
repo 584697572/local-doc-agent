@@ -31,7 +31,6 @@ class EmptyFakeEngine:
 
 def test_search_documents_formats_evidence(monkeypatch):
     monkeypatch.setattr(retrieval_tool, "_engine", FakeEngine())
-    monkeypatch.setattr(retrieval_tool, "_engine_built", True)
 
     result = retrieval_tool.search_documents("生成器为什么省内存？")
 
@@ -48,7 +47,6 @@ def test_search_documents_empty_query():
 
 def test_search_documents_no_results(monkeypatch):
     monkeypatch.setattr(retrieval_tool, "_engine", EmptyFakeEngine())
-    monkeypatch.setattr(retrieval_tool, "_engine_built", True)
 
     result = retrieval_tool.search_documents("不存在的问题")
     assert "没有找到" in result

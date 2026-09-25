@@ -1,4 +1,4 @@
-"""把 RetrievalEngine 包装成 Agent 可调用的工具。"""
+"""把 RetrievalEngine 包装成 Agent 可调用的检索工具。"""
 
 from config import (
     CHUNK_OVERLAP,
@@ -10,24 +10,24 @@ from config import (
 from retrieval.engine import RetrievalEngine
 
 
-# 同一进程内只 build 一次，后续搜索复用索引。
+# 同一进程内复用一个已构建的 Engine。
 _engine = None
-_engine_built = False
 
 
 def _get_retrieval_engine() -> RetrievalEngine:
-    global _engine, _engine_built
+    """第一次调用时 build，后续直接复用。"""
+    global _engine
 
     if _engine is None:
-        _engine = RetrievalEngine(
+        engine = RetrievalEngine(
             data_dir=DATA_DIR,
             chunk_size=CHUNK_SIZE,
             overlap=CHUNK_OVERLAP,
         )
+        engine.build()
 
-    if not _engine_built:
-        _engine.build()
-        _engine_built = True
+        # build 成功后再赋值，避免缓存半构建状态。
+        _engine = engine
 
     return _engine
 

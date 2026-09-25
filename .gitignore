@@ -4,7 +4,6 @@ __pycache__/
 .pytest_cache/
 .venv/
 venv/
-memory.json
 
 # 本地知识库默认不提交，避免误上传私人文档。
 data/*

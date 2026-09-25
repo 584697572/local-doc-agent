@@ -1,7 +1,11 @@
 .env
 __pycache__/
 *.pyc
+.pytest_cache/
 .venv/
 venv/
-tech35格式.txt
 memory.json
+
+# 本地知识库默认不提交，避免误上传私人文档。
+data/*
+!data/.gitkeep

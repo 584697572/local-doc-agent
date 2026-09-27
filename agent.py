@@ -2,7 +2,12 @@
 
 import json
 
-from config import MAX_AGENT_STEPS, MODEL_NAME
+from config import (
+    MAX_AGENT_STEPS,
+    MAX_SEARCH_CALLS,
+    MODEL_NAME,
+)
+from harness.state import AgentState
 from llm_client import client
 from tools.registry import ToolRegistry
 from tools.retrieval import search_documents
@@ -32,6 +37,13 @@ def run_tool(tool_name, arguments):
 
 
 def run_agent(user_input, chat_history):
+
+    # 每个用户问题都创建一个新的运行状态
+    state = AgentState(
+        original_query=user_input,
+        max_search_calls=MAX_SEARCH_CALLS,
+    )
+
     """执行多轮 Tool-Calling Agent Loop。"""
     messages = [
         {
@@ -72,7 +84,54 @@ def run_agent(user_input, chat_history):
             print(f"[Agent] step={step + 1} tool={tool_index} name={tool_name}")
             print(f"[Agent] arguments={arguments}")
 
-            tool_result = run_tool(tool_name, arguments)
+            # search_documents 需要受到搜索预算和去重控制
+            if tool_name == "search_documents":
+                query = arguments.get("query", "")
+
+                allowed, reason = state.reserve_search(
+                    query=query,
+                    step=step + 1,
+                )
+
+                if not allowed:
+                    if reason == "duplicate_query":
+                        tool_result = (
+                            "该 Query 已经搜索过，请不要重复检索。"
+                        )
+
+                    elif reason == "budget_exhausted":
+                        tool_result = (
+                            "搜索预算已用完，请基于已有证据回答。"
+                        )
+
+                    else:
+                        tool_result = "当前检索请求无效。"
+
+                    state.add_trace(
+                        "search_rejected",
+                        step=step + 1,
+                        query=query,
+                        reason=reason,
+                    )
+
+                else:
+                    tool_result = run_tool(
+                        tool_name,
+                        arguments,
+                    )
+
+                    state.record_evidence(tool_result)
+
+            else:
+                tool_result = run_tool(
+                    tool_name,
+                    arguments,
+                )
+
+            print(
+                f"[Agent] search_count="
+                f"{state.search_count}/{state.max_search_calls}"
+            )
 
             messages.append(
                 {

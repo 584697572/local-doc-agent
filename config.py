@@ -10,6 +10,9 @@ DATA_DIR = PROJECT_DIR / "data"
 MAX_HISTORY_PAIRS = 4
 MAX_AGENT_STEPS = 5
 
+# 单个用户问题最多执行几次知识库搜索
+MAX_SEARCH_CALLS = 3
+
 # Document Pipeline
 CHUNK_SIZE = 500
 CHUNK_OVERLAP = 100

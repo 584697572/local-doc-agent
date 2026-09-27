@@ -30,6 +30,15 @@ class AgentState:
     # 保存 Agent 的运行轨迹
     trace: list[dict] = field(default_factory=list)
 
+    # 最近一次 Evidence Judge 的判断
+    evidence_sufficient: bool | None = None
+
+    # Judge 认为还缺少什么
+    missing_aspects: list[str] = field(default_factory=list)
+
+    # Judge 给出的解释
+    evidence_reason: str | None = None
+
     @staticmethod
     def normalize_query(query: str) -> str:
         """
@@ -92,4 +101,23 @@ class AgentState:
                 "event": event,
                 **details,
             }
+        )
+
+    def record_evidence_decision(
+        self,
+        sufficient: bool,
+        reason: str,
+        missing_aspects: list[str],
+    ) -> None:
+        """保存 Evidence Judge 的判断。"""
+
+        self.evidence_sufficient = sufficient
+        self.evidence_reason = reason
+        self.missing_aspects = list(missing_aspects)
+
+        self.add_trace(
+            "evidence_judged",
+            sufficient=sufficient,
+            reason=reason,
+            missing_aspects=missing_aspects,
         )

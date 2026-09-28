@@ -7,6 +7,7 @@ from config import (
     RETRIEVAL_CANDIDATE_K,
     RETRIEVAL_TOP_K,
 )
+from tools.result import ToolResult
 from retrieval.engine import RetrievalEngine
 
 
@@ -32,11 +33,13 @@ def _get_retrieval_engine() -> RetrievalEngine:
     return _engine
 
 
-def search_documents(query: str) -> str:
+def search_documents(query: str) -> ToolResult:
     """检索本地知识库，并返回 LLM 可直接阅读的证据文本。"""
     query = query.strip()
     if not query:
-        return "检索失败：query 不能为空。"
+        return ToolResult.failure(
+            error="query 不能为空。",
+        )
 
     try:
         results = _get_retrieval_engine().search(
@@ -45,10 +48,21 @@ def search_documents(query: str) -> str:
             candidate_k=RETRIEVAL_CANDIDATE_K,
         )
     except Exception as exc:
-        return f"检索失败：{exc}"
+        return ToolResult.failure(
+            error=str(exc),
+            metadata={
+                "query": query,
+            },
+        )
 
     if not results:
-        return "知识库中没有找到与该问题相关的证据。"
+        return ToolResult.empty(
+            content="知识库中没有找到与该问题相关的证据。",
+            metadata={
+                "query": query,
+                "result_count": 0,
+            },
+        )
 
     output_parts = []
 
@@ -70,4 +84,12 @@ def search_documents(query: str) -> str:
             f"内容：\n{chunk.content}"
         )
 
-    return "\n\n".join(output_parts)
+    content = "\n\n".join(output_parts)
+
+    return ToolResult.success(
+        content=content,
+        metadata={
+            "query": query,
+            "result_count": len(results),
+        },
+    )

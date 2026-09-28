@@ -34,19 +34,22 @@ def test_search_documents_formats_evidence(monkeypatch):
 
     result = retrieval_tool.search_documents("生成器为什么省内存？")
 
-    assert "python.pdf" in result
-    assert "第 12 页" in result
-    assert "doc_001_chunk_0001" in result
-    assert "生成器采用惰性求值" in result
+    assert result.status == "success"
+    assert "python.pdf" in result.content
+    assert "第 12 页" in result.content
+    assert "doc_001_chunk_0001" in result.content
+    assert "生成器采用惰性求值" in result.content
 
 
 def test_search_documents_empty_query():
     result = retrieval_tool.search_documents("   ")
-    assert "query 不能为空" in result
+    assert result.status == "error"
+    assert "query 不能为空" in result.error
 
 
 def test_search_documents_no_results(monkeypatch):
     monkeypatch.setattr(retrieval_tool, "_engine", EmptyFakeEngine())
 
     result = retrieval_tool.search_documents("不存在的问题")
-    assert "没有找到" in result
+    assert result.status == "empty"
+    assert "没有找到" in result.content

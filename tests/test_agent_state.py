@@ -124,3 +124,25 @@ def test_evidence_and_trace_are_recorded():
 
     assert state.trace[0]["event"] == "search_accepted"
     assert state.trace[0]["query"] == "RAG"
+
+def test_evidence_decision_is_recorded():
+    state = AgentState(
+        original_query="什么是 RAG？",
+        max_search_calls=3,
+    )
+
+    state.record_evidence_decision(
+        sufficient=False,
+        reason="缺少实现细节",
+        missing_aspects=[
+            "具体实现步骤",
+        ],
+    )
+
+    assert state.evidence_sufficient is False
+    assert state.evidence_reason == "缺少实现细节"
+    assert state.missing_aspects == [
+        "具体实现步骤"
+    ]
+
+    assert state.trace[-1]["event"] == "evidence_judged"

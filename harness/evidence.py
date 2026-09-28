@@ -103,11 +103,10 @@ def evaluate_evidence(
 
         data = json.loads(raw_result)
 
-    except (json.JSONDecodeError, TypeError, KeyError) as exc:
-        # Judge 输出异常时，保守地认为证据不足
+    except Exception as exc:
         return EvidenceDecision(
             sufficient=False,
-            reason=f"Evidence Judge 输出解析失败：{exc}",
+            reason=f"Evidence Judge 执行失败：{exc}",
             missing_aspects=[],
         )
 

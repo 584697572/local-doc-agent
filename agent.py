@@ -9,6 +9,8 @@ from config import (
 )
 from harness.state import AgentState
 from harness.evidence import evaluate_evidence
+from harness.rewrite import rewrite_query
+
 from llm_client import client
 from tools.registry import ToolRegistry
 from tools.retrieval import search_documents
@@ -37,8 +39,53 @@ def run_tool(tool_name, arguments):
     """根据模型返回的工具名执行对应 Python 函数。"""
     return tool_registry.run(tool_name, arguments)
 
+def generate_final_answer(messages, state):
+    """
+    根据最终 Evidence 状态生成回答。
+    此时不再提供 tools，防止模型继续搜索。
+    """
+
+    if state.evidence_sufficient:
+        instruction = (
+            "Evidence Judge 已确认当前证据足够。"
+            "请直接根据已有证据回答用户问题。"
+            "不要使用证据之外的信息补全答案。"
+            "回答时尽量注明来源文件和页码。"
+        )
+
+    else:
+        missing_text = "；".join(
+            state.missing_aspects
+        )
+
+        if not missing_text:
+            missing_text = "无法明确确定具体缺失信息"
+
+        instruction = (
+            "当前搜索已经结束，但 Evidence Judge 认为证据仍不充分。"
+            "请只根据已经获得的证据回答能够确认的部分，"
+            "不要猜测缺失内容。"
+            f"当前缺失信息：{missing_text}。"
+            "回答中应明确说明哪些部分缺少知识库证据。"
+        )
+
+    final_messages = messages + [
+        {
+            "role": "system",
+            "content": instruction,
+        }
+    ]
+
+    response = client.chat.completions.create(
+        model=MODEL_NAME,
+        messages=final_messages,
+    )
+
+    return response.choices[0].message.content
+
 
 def run_agent(user_input, chat_history):
+    """执行多轮 Tool-Calling Agent Loop。"""
 
     # 每个用户问题都创建一个新的运行状态
     state = AgentState(
@@ -46,7 +93,6 @@ def run_agent(user_input, chat_history):
         max_search_calls=MAX_SEARCH_CALLS,
     )
 
-    """执行多轮 Tool-Calling Agent Loop。"""
     messages = [
         {
             "role": "system",
@@ -148,7 +194,7 @@ def run_agent(user_input, chat_history):
                 }
             )
 
-        # 这一轮获得了新证据后，再判断证据是否足够
+        # 这一轮获得新证据后，进入 Evidence → Rewrite 循环
         if search_executed:
             decision = evaluate_evidence(
                 user_query=state.original_query,
@@ -165,7 +211,6 @@ def run_agent(user_input, chat_history):
                 f"[Agent] evidence_sufficient="
                 f"{decision.sufficient}"
             )
-
             print(
                 f"[Agent] evidence_reason="
                 f"{decision.reason}"
@@ -175,46 +220,122 @@ def run_agent(user_input, chat_history):
                 print(
                     f"[Agent] missing_aspects="
                     f"{decision.missing_aspects}"
-                )   
-
-            #证据不足
-            if not decision.sufficient:
-                missing_text = "；".join(
-                    decision.missing_aspects
                 )
 
+            # 证据不足并且还有搜索预算时，自动 Rewrite + Search
+            while (
+                not decision.sufficient
+                and state.search_count < state.max_search_calls
+            ):
+                rewrite_result = rewrite_query(
+                    original_query=state.original_query,
+                    missing_aspects=decision.missing_aspects,
+                    used_queries=state.used_queries,
+                )
+
+                print(
+                    f"[Agent] rewritten_query="
+                    f"{rewrite_result.query}"
+                )
+                print(
+                    f"[Agent] rewrite_reason="
+                    f"{rewrite_result.reason}"
+                )
+
+                state.add_trace(
+                    "query_rewritten",
+                    query=rewrite_result.query,
+                    reason=rewrite_result.reason,
+                )
+
+                # Rewriter 没有生成有效 Query，就无法继续搜索
+                if not rewrite_result.query:
+                    break
+
+                # 新 Query 仍然要经过 Harness 的去重和预算检查
+                allowed, reason = state.reserve_search(
+                    query=rewrite_result.query,
+                    step=step + 1,
+                )
+
+                if not allowed:
+                    state.add_trace(
+                        "rewrite_search_rejected",
+                        query=rewrite_result.query,
+                        reason=reason,
+                    )
+
+                    print(
+                        f"[Agent] rewrite_search_rejected="
+                        f"{reason}"
+                    )
+
+                    break
+
+                # Harness 直接执行 Rewrite 后的新 Query
+                rewritten_evidence = run_tool(
+                    "search_documents",
+                    {
+                        "query": rewrite_result.query,
+                    },
+                )
+
+                state.record_evidence(
+                    rewritten_evidence
+                )
+
+                print(
+                    f"[Agent] search_count="
+                    f"{state.search_count}/"
+                    f"{state.max_search_calls}"
+                )
+
+                # 把自动补充搜索得到的 Evidence 也加入上下文
                 messages.append(
                     {
                         "role": "system",
                         "content": (
-                            "Evidence Judge 判断当前证据仍不足。"
-                            f"原因：{decision.reason}。"
-                            f"缺失信息：{missing_text}。"
-                            "如果还有搜索预算，可以围绕这些缺失信息继续检索。"
-                            "不要重复已经执行过的 Query。"
+                            "Harness 根据 Evidence 缺口进行了补充检索。\n"
+                            f"检索 Query：{rewrite_result.query}\n\n"
+                            f"检索结果：\n{rewritten_evidence}"
                         ),
                     }
-                )   
-                
-            #证据充足
-            if decision.sufficient:
-                final_messages = messages + [
-                    {
-                        "role": "system",
-                        "content": (
-                            "Evidence Judge 已确认当前证据足够。"
-                            "现在直接根据已有证据回答用户问题，"
-                            "不要再调用任何工具。"
-                            "回答时注明来源文件和已有页码信息。"
-                        ),
-                    }
-                ]
-
-                final_response = client.chat.completions.create(
-                    model=MODEL_NAME,
-                    messages=final_messages,
                 )
 
-                return final_response.choices[0].message.content             
+                # 有了新 Evidence，再重新判断一次
+                decision = evaluate_evidence(
+                    user_query=state.original_query,
+                    evidence=state.evidence,
+                )
+
+                state.record_evidence_decision(
+                    sufficient=decision.sufficient,
+                    reason=decision.reason,
+                    missing_aspects=decision.missing_aspects,
+                )
+
+                print(
+                    f"[Agent] evidence_sufficient="
+                    f"{decision.sufficient}"
+                )
+                print(
+                    f"[Agent] evidence_reason="
+                    f"{decision.reason}"
+                )
+
+                if not decision.sufficient:
+                    print(
+                        f"[Agent] missing_aspects="
+                        f"{decision.missing_aspects}"
+                    )
+
+            # 到这里：
+            # 1. 要么证据已经足够
+            # 2. 要么搜索预算耗尽
+            # 3. 要么 Rewriter 无法产生有效 Query
+            return generate_final_answer(
+                messages,
+                state,
+            )             
 
     return "达到最大工具调用轮数，已停止执行。"

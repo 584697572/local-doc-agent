@@ -10,6 +10,7 @@ from config import (
 from harness.state import AgentState
 from harness.evidence import evaluate_evidence
 from harness.rewrite import rewrite_query
+from harness.router import route_query
 
 from llm_client import client
 from tools.registry import ToolRegistry
@@ -39,7 +40,37 @@ def run_tool(tool_name, arguments):
     """根据模型返回的工具名执行对应 Python 函数。"""
     return tool_registry.run(tool_name, arguments)
 
-def generate_final_answer(messages, state):
+def generate_direct_answer(user_input, chat_history):
+    """
+    回答不需要访问本地知识库的问题。
+    例如简单寒暄。
+    """
+
+    messages = [
+        {
+            "role": "system",
+            "content": (
+                "你是 LocalDoc-Agent。"
+                "当前问题不需要访问本地知识库，"
+                "请直接自然回答。"
+                "不要声称自己查询了本地文档。"
+            ),
+        },
+        *chat_history,
+        {
+            "role": "user",
+            "content": user_input,
+        },
+    ]
+
+    response = client.chat.completions.create(
+        model=MODEL_NAME,
+        messages=messages,
+    )
+
+    return response.choices[0].message.content
+
+def generate_final_answer(chat_history, state):
     """
     根据最终 Evidence 状态生成回答。
     此时不再提供 tools，防止模型继续搜索。
@@ -81,11 +112,24 @@ def generate_final_answer(messages, state):
     if not evidence_text:
         evidence_text = "当前没有有效的知识库证据。"        
 
-    final_messages = messages + [
+    # Final Answer 使用干净上下文，
+    # 不再重复携带前面的 Tool Call / Tool Result。
+    final_messages = [
         {
             "role": "system",
             "content": instruction,
         },
+
+        # 保留之前几轮正常聊天历史
+        *chat_history,
+
+        # 当前用户问题
+        {
+            "role": "user",
+            "content": state.original_query,
+        },
+
+        # 最终统一整理后的 Evidence
         {
             "role": "user",
             "content": (
@@ -115,6 +159,34 @@ def run_agent(user_input, chat_history):
         max_search_calls=MAX_SEARCH_CALLS,
     )
 
+    # 先判断这个问题是否需要查询本地知识库
+    route_decision = route_query(
+        user_input
+    )
+
+    state.add_trace(
+        "query_routed",
+        needs_retrieval=route_decision.needs_retrieval,
+        reason=route_decision.reason,
+    )
+
+    print(
+        f"[Agent] needs_retrieval="
+        f"{route_decision.needs_retrieval}"
+    )
+
+    print(
+        f"[Agent] route_reason="
+        f"{route_decision.reason}"
+    )
+
+    # 不需要知识库的问题直接回答
+    if not route_decision.needs_retrieval:
+        return generate_direct_answer(
+            user_input,
+            chat_history,
+        )   
+
     messages = [
         {
             "role": "system",
@@ -132,16 +204,39 @@ def run_agent(user_input, chat_history):
             model=MODEL_NAME,
             messages=messages,
             tools=TOOLS,
-            tool_choice="auto",
+
+            # Router 已经确认需要知识库，
+            # 所以这里不再允许模型跳过 Retrieval。
+            tool_choice={
+                "type": "function",
+                "function": {
+                    "name": "search_documents"
+                },
+            },            
         )
 
         message = response.choices[0].message
 
-        # 没有 tool call，说明模型已经生成最终答案。
+        # Router 已经判定必须 Retrieval，
+        # 如果模型仍然没有产生 Tool Call，就不能直接回答。
         if not message.tool_calls:
-            return message.content
+            state.add_trace(
+                "missing_required_tool_call",
+                step=step + 1,
+            )
 
-        messages.append(message)
+            messages.append(
+                {
+                    "role": "system",
+                    "content": (
+                        "当前问题必须查询本地知识库。"
+                        "请调用 search_documents，"
+                        "不要直接回答用户问题。"
+                    ),
+                }
+            )
+
+            continue
 
         search_executed = False
 
@@ -388,7 +483,7 @@ def run_agent(user_input, chat_history):
             # 2. 要么搜索预算耗尽
             # 3. 要么 Rewriter 无法产生有效 Query
             return generate_final_answer(
-                messages,
+                chat_history,
                 state,
 
             )             

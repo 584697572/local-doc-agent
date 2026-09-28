@@ -5,6 +5,7 @@ from types import SimpleNamespace
 import agent
 from harness.evidence import EvidenceDecision
 from harness.rewrite import RewriteResult
+from harness.router import RouteDecision
 from tools.result import ToolResult
 
 
@@ -13,7 +14,7 @@ def make_tool_call(
     call_id: str = "call_1",
 ):
     """
-    构造一个假的 search_documents Tool Call。
+    构造假的 search_documents Tool Call。
     """
 
     return SimpleNamespace(
@@ -30,7 +31,7 @@ def make_response(
     tool_calls=None,
 ):
     """
-    构造一个假的 LLM Response。
+    构造假的 LLM Response。
     """
 
     message = SimpleNamespace(
@@ -47,19 +48,38 @@ def make_response(
     )
 
 
+def force_retrieval(monkeypatch):
+    """
+    测试 Agentic Retrieval 时，
+    固定让 Router 判定必须查询知识库。
+    """
+
+    monkeypatch.setattr(
+        agent,
+        "route_query",
+        lambda user_query: RouteDecision(
+            needs_retrieval=True,
+            reason="测试中强制进入 Retrieval。",
+        ),
+    )
+
+
 def test_agent_rewrite_search_then_answer(
     monkeypatch,
 ):
     """
     验证：
 
-    Search
+    Router=True
+    → Search
     → Evidence 不足
     → Rewrite
     → Search Again
     → Evidence 足够
     → Final Answer
     """
+
+    force_retrieval(monkeypatch)
 
     searched_queries = []
 
@@ -69,11 +89,16 @@ def test_agent_rewrite_search_then_answer(
 
         if len(searched_queries) == 1:
             return ToolResult.success(
-                content="初始证据：只有 Cluster-State Graph 的定义。"
+                content=(
+                    "初始证据：只有 "
+                    "Cluster-State Graph 的定义。"
+                )
             )
 
         return ToolResult.success(
-            content="补充证据：包含节点、边和构造方法。"
+            content=(
+                "补充证据：包含节点、边和构造方法。"
+            )
         )
 
     monkeypatch.setattr(
@@ -110,20 +135,23 @@ def test_agent_rewrite_search_then_answer(
         fake_evaluate_evidence,
     )
 
-    # Evidence 不够时，生成定向 Rewrite Query
+    # Evidence 不足后生成定向 Rewrite Query
     monkeypatch.setattr(
         agent,
         "rewrite_query",
         lambda original_query, missing_aspects, used_queries: (
             RewriteResult(
-                query="Cluster-State Graph 节点 边 构造方式",
+                query=(
+                    "Cluster-State Graph "
+                    "节点 边 构造方式"
+                ),
                 reason="补充当前缺失的图结构和构造信息。",
             )
         ),
     )
 
-    # 第一次：主 Agent 要求搜索
-    # 第二次：generate_final_answer() 返回最终答案
+    # 第一次调用：主 Agent 产生 Tool Call
+    # 第二次调用：生成最终答案
     responses = [
         make_response(
             tool_calls=[
@@ -148,13 +176,16 @@ def test_agent_rewrite_search_then_answer(
     )
 
     reply = agent.run_agent(
-        user_input="Cluster-State Graph 是什么，怎么构造？",
+        user_input=(
+            "Cluster-State Graph 是什么，"
+            "怎么构造？"
+        ),
         chat_history=[],
     )
 
     assert reply == "这是最终回答。"
 
-    # 应该先搜索初始 Query，再搜索 Rewrite Query
+    # 应该先搜初始 Query，再搜 Rewrite Query
     assert searched_queries == [
         "Cluster-State Graph",
         "Cluster-State Graph 节点 边 构造方式",
@@ -167,11 +198,14 @@ def test_agent_answers_without_rewrite_when_evidence_is_sufficient(
     """
     验证：
 
-    Search
+    Router=True
+    → Search
     → 第一次 Evidence 就足够
-    → 不执行 Rewrite
-    → 直接 Final Answer
+    → 不 Rewrite
+    → Final Answer
     """
+
+    force_retrieval(monkeypatch)
 
     searched_queries = []
 
@@ -180,7 +214,10 @@ def test_agent_answers_without_rewrite_when_evidence_is_sufficient(
         searched_queries.append(query)
 
         return ToolResult.success(
-            content="完整证据：包含定义、节点、边和构造方式。"
+            content=(
+                "完整证据：包含定义、节点、"
+                "边和构造方式。"
+            )
         )
 
     monkeypatch.setattr(
@@ -189,7 +226,6 @@ def test_agent_answers_without_rewrite_when_evidence_is_sufficient(
         fake_run_tool,
     )
 
-    # 第一次 Judge 就认为证据足够
     monkeypatch.setattr(
         agent,
         "evaluate_evidence",
@@ -200,7 +236,8 @@ def test_agent_answers_without_rewrite_when_evidence_is_sufficient(
         ),
     )
 
-    # 如果真的进入 Rewrite，测试直接失败
+    # 如果 Evidence 已经足够，却仍然 Rewrite，
+    # 测试直接失败。
     def should_not_rewrite(*args, **kwargs):
         raise AssertionError(
             "Evidence 已经足够，不应该执行 Query Rewrite"
@@ -240,9 +277,11 @@ def test_agent_answers_without_rewrite_when_evidence_is_sufficient(
         chat_history=[],
     )
 
-    assert reply == "这是基于完整证据的最终回答。"
+    assert reply == (
+        "这是基于完整证据的最终回答。"
+    )
 
-    # 只应该搜索一次
+    # Evidence 第一次就够，只应该搜索一次
     assert searched_queries == [
         "Cluster-State Graph"
     ]
@@ -254,12 +293,15 @@ def test_agent_stops_when_search_budget_is_exhausted(
     """
     验证：
 
-    Evidence 一直不足
+    Router=True
+    → Evidence 一直不足
     → Rewrite + Search
-    → 达到搜索预算
-    → 停止继续搜索
-    → 根据已有证据生成保守回答
+    → 达到 MAX_SEARCH_CALLS
+    → 强制停止
+    → 生成保守回答
     """
+
+    force_retrieval(monkeypatch)
 
     searched_queries = []
     judge_call_count = 0
@@ -278,7 +320,7 @@ def test_agent_stops_when_search_budget_is_exhausted(
         fake_run_tool,
     )
 
-    # 无论搜索多少次，都认为证据不够
+    # 无论获得多少 Evidence，都判定不足
     def fake_evaluate_evidence(
         user_query,
         evidence,
@@ -301,8 +343,7 @@ def test_agent_stops_when_search_budget_is_exhausted(
         fake_evaluate_evidence,
     )
 
-    # 每次根据 used_queries 数量生成新的 Query，
-    # 保证不会因为重复 Query 被 Harness 拒绝。
+    # 每次产生不同 Query，避免被去重
     def fake_rewrite_query(
         original_query,
         missing_aspects,
@@ -330,7 +371,10 @@ def test_agent_stops_when_search_budget_is_exhausted(
             ]
         ),
         make_response(
-            content="现有证据不足，以下只回答能够确认的部分。",
+            content=(
+                "现有证据不足，"
+                "以下只回答能够确认的部分。"
+            ),
             tool_calls=None,
         ),
     ]
@@ -350,18 +394,174 @@ def test_agent_stops_when_search_budget_is_exhausted(
     )
 
     assert reply == (
-        "现有证据不足，以下只回答能够确认的部分。"
+        "现有证据不足，"
+        "以下只回答能够确认的部分。"
     )
 
-    # 真正执行的搜索次数不能超过预算
-    assert len(searched_queries) == agent.MAX_SEARCH_CALLS
+    # 真正搜索次数不能超过预算
+    assert len(searched_queries) == (
+        agent.MAX_SEARCH_CALLS
+    )
 
-    # 当前 MAX_SEARCH_CALLS = 3
     assert searched_queries == [
         "初始 Query",
         "补充检索 Query 2",
         "补充检索 Query 3",
     ]
 
-    # 每得到一次新 Evidence，都应重新 Judge
-    assert judge_call_count == agent.MAX_SEARCH_CALLS
+    # 每获得一次新 Evidence，
+    # 都应该重新执行 Evidence Judge
+    assert judge_call_count == (
+        agent.MAX_SEARCH_CALLS
+    )
+
+
+def test_agent_answers_directly_when_retrieval_is_not_needed(
+    monkeypatch,
+):
+    """
+    验证：
+
+    Router=False
+    → 不执行 Retrieval
+    → 直接回答。
+    """
+
+    monkeypatch.setattr(
+        agent,
+        "route_query",
+        lambda user_query: RouteDecision(
+            needs_retrieval=False,
+            reason="简单寒暄。",
+        ),
+    )
+
+    # Router=False 时如果执行 Tool，
+    # 说明控制流错误。
+    def should_not_run_tool(*args, **kwargs):
+        raise AssertionError(
+            "Router=False 时不应该执行 Retrieval"
+        )
+
+    monkeypatch.setattr(
+        agent,
+        "run_tool",
+        should_not_run_tool,
+    )
+
+    response = make_response(
+        content="你好！有什么可以帮你的？",
+        tool_calls=None,
+    )
+
+    monkeypatch.setattr(
+        agent.client.chat.completions,
+        "create",
+        lambda **kwargs: response,
+    )
+
+    reply = agent.run_agent(
+        user_input="你好",
+        chat_history=[],
+    )
+
+    assert reply == (
+        "你好！有什么可以帮你的？"
+    )
+
+
+def test_agent_does_not_accept_direct_answer_when_retrieval_is_required(
+    monkeypatch,
+):
+    """
+    验证：
+
+    Router=True
+    → 主模型第一次试图直接回答
+    → Harness 不接受
+    → 下一 Step 必须 Retrieval
+    → 最终基于 Evidence 回答。
+    """
+
+    monkeypatch.setattr(
+        agent,
+        "route_query",
+        lambda user_query: RouteDecision(
+            needs_retrieval=True,
+            reason="该问题依赖本地知识库。",
+        ),
+    )
+
+    responses = [
+        # Step 1：
+        # 主模型错误地直接回答，没有 Tool Call
+        make_response(
+            content="这是一个没有证据的直接回答。",
+            tool_calls=None,
+        ),
+
+        # Step 2：
+        # 主模型正确调用 Retrieval
+        make_response(
+            tool_calls=[
+                make_tool_call(
+                    "Cluster-State Graph"
+                )
+            ]
+        ),
+
+        # Final Answer
+        make_response(
+            content="这是基于知识库证据的回答。",
+            tool_calls=None,
+        ),
+    ]
+
+    monkeypatch.setattr(
+        agent.client.chat.completions,
+        "create",
+        lambda **kwargs: responses.pop(0),
+    )
+
+    monkeypatch.setattr(
+        agent,
+        "run_tool",
+        lambda tool_name, arguments: ToolResult.success(
+            content=(
+                "Cluster-State Graph 的知识库证据。"
+            )
+        ),
+    )
+
+    monkeypatch.setattr(
+        agent,
+        "evaluate_evidence",
+        lambda user_query, evidence: EvidenceDecision(
+            sufficient=True,
+            reason="证据足够。",
+            missing_aspects=[],
+        ),
+    )
+
+    # Evidence 已经足够，因此不应该 Rewrite
+    def should_not_rewrite(*args, **kwargs):
+        raise AssertionError(
+            "Evidence 已经足够，不应该执行 Rewrite"
+        )
+
+    monkeypatch.setattr(
+        agent,
+        "rewrite_query",
+        should_not_rewrite,
+    )
+
+    reply = agent.run_agent(
+        user_input="Cluster-State Graph 是什么？",
+        chat_history=[],
+    )
+
+    # 第一次没有证据的回答不能被接受，
+    # 最终必须返回 Retrieval 后的答案。
+    assert reply == (
+        "这是基于知识库证据的回答。"
+    )

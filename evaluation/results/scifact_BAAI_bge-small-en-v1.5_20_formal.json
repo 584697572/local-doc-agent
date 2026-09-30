@@ -1,0 +1,1767 @@
+{
+  "dataset": "scifact",
+  "split": "test",
+  "models": {
+    "embedding": "BAAI/bge-small-en-v1.5",
+    "reranker": "BAAI/bge-reranker-base"
+  },
+  "retrieval": {
+    "rrf_k": 60
+  },
+  "configuration": {
+    "project_top_k": 5,
+    "retrieval_depth": 100,
+    "rerank_candidate_k": 20,
+    "limit": 20,
+    "seed": 42,
+    "beir_final_k_values": [
+      1,
+      3,
+      5,
+      10
+    ],
+    "beir_recall_k_values": [
+      5,
+      10,
+      20,
+      100
+    ]
+  },
+  "evaluated_queries": 20,
+  "build_time_seconds": {
+    "bm25": 1.2025025999973877,
+    "dense": 903.0829441000024
+  },
+  "warmup_time_seconds": {
+    "bm25_seconds": 0.18367649999709101,
+    "dense_seconds": 0.027486300001328345,
+    "reranker_seconds": 302.1301511999991
+  },
+  "timing": {
+    "avg_rerank_only_ms": 8160.955495000599
+  },
+  "project_summary": {
+    "bm25": {
+      "hit@5": 0.8,
+      "recall@5": 0.775,
+      "mrr@5": 0.595,
+      "avg_latency_ms": 50.26560999940557
+    },
+    "dense": {
+      "hit@5": 0.65,
+      "recall@5": 0.65,
+      "mrr@5": 0.625,
+      "avg_latency_ms": 32.24972499883734
+    },
+    "rrf": {
+      "hit@5": 0.7,
+      "recall@5": 0.7,
+      "mrr@5": 0.6225,
+      "avg_latency_ms": 82.81902999842714
+    },
+    "rerank": {
+      "hit@5": 0.75,
+      "recall@5": 0.75,
+      "mrr@5": 0.6075,
+      "avg_latency_ms": 8243.774524999026
+    }
+  },
+  "candidate_pool_summary": {
+    "rrf_recall@5": 0.7,
+    "rrf_recall@10": 0.825,
+    "rrf_recall@20": 0.875,
+    "rrf_recall@100": 0.925,
+    "rrf_hit@20": 0.9,
+    "queries_with_gold_in_top20": 18,
+    "queries_without_gold_in_top20": 2
+  },
+  "beir_final_metrics": {
+    "bm25": {
+      "ndcg": {
+        "NDCG@1": 0.5,
+        "NDCG@3": 0.60655,
+        "NDCG@5": 0.63775,
+        "NDCG@10": 0.65556
+      },
+      "map": {
+        "MAP@1": 0.5,
+        "MAP@3": 0.575,
+        "MAP@5": 0.59,
+        "MAP@10": 0.59833
+      },
+      "recall": {
+        "Recall@1": 0.5,
+        "Recall@3": 0.7,
+        "Recall@5": 0.775,
+        "Recall@10": 0.825
+      },
+      "precision": {
+        "P@1": 0.5,
+        "P@3": 0.23333,
+        "P@5": 0.16,
+        "P@10": 0.085
+      },
+      "mrr": {
+        "MRR@1": 0.5,
+        "MRR@3": 0.575,
+        "MRR@5": 0.595,
+        "MRR@10": 0.60333
+      }
+    },
+    "dense": {
+      "ndcg": {
+        "NDCG@1": 0.6,
+        "NDCG@3": 0.63155,
+        "NDCG@5": 0.63155,
+        "NDCG@10": 0.66399
+      },
+      "map": {
+        "MAP@1": 0.6,
+        "MAP@3": 0.625,
+        "MAP@5": 0.625,
+        "MAP@10": 0.63839
+      },
+      "recall": {
+        "Recall@1": 0.6,
+        "Recall@3": 0.65,
+        "Recall@5": 0.65,
+        "Recall@10": 0.75
+      },
+      "precision": {
+        "P@1": 0.6,
+        "P@3": 0.21667,
+        "P@5": 0.13,
+        "P@10": 0.075
+      },
+      "mrr": {
+        "MRR@1": 0.6,
+        "MRR@3": 0.625,
+        "MRR@5": 0.625,
+        "MRR@10": 0.63839
+      }
+    },
+    "rrf": {
+      "ndcg": {
+        "NDCG@1": 0.6,
+        "NDCG@3": 0.6,
+        "NDCG@5": 0.64088,
+        "NDCG@10": 0.68336
+      },
+      "map": {
+        "MAP@1": 0.6,
+        "MAP@3": 0.6,
+        "MAP@5": 0.6225,
+        "MAP@10": 0.6394
+      },
+      "recall": {
+        "Recall@1": 0.6,
+        "Recall@3": 0.6,
+        "Recall@5": 0.7,
+        "Recall@10": 0.825
+      },
+      "precision": {
+        "P@1": 0.6,
+        "P@3": 0.2,
+        "P@5": 0.14,
+        "P@10": 0.085
+      },
+      "mrr": {
+        "MRR@1": 0.6,
+        "MRR@3": 0.6,
+        "MRR@5": 0.6225,
+        "MRR@10": 0.64298
+      }
+    },
+    "rerank": {
+      "ndcg": {
+        "NDCG@1": 0.55,
+        "NDCG@3": 0.58155,
+        "NDCG@5": 0.64177,
+        "NDCG@10": 0.68555
+      },
+      "map": {
+        "MAP@1": 0.55,
+        "MAP@3": 0.575,
+        "MAP@5": 0.6075,
+        "MAP@10": 0.62556
+      },
+      "recall": {
+        "Recall@1": 0.55,
+        "Recall@3": 0.6,
+        "Recall@5": 0.75,
+        "Recall@10": 0.875
+      },
+      "precision": {
+        "P@1": 0.55,
+        "P@3": 0.2,
+        "P@5": 0.15,
+        "P@10": 0.09
+      },
+      "mrr": {
+        "MRR@1": 0.55,
+        "MRR@3": 0.575,
+        "MRR@5": 0.6075,
+        "MRR@10": 0.62972
+      }
+    }
+  },
+  "beir_recall_metrics": {
+    "bm25": {
+      "ndcg": {
+        "NDCG@5": 0.63775,
+        "NDCG@10": 0.65556,
+        "NDCG@20": 0.65556,
+        "NDCG@100": 0.65556
+      },
+      "map": {
+        "MAP@5": 0.59,
+        "MAP@10": 0.59833,
+        "MAP@20": 0.59833,
+        "MAP@100": 0.59833
+      },
+      "recall": {
+        "Recall@5": 0.775,
+        "Recall@10": 0.825,
+        "Recall@20": 0.825,
+        "Recall@100": 0.825
+      },
+      "precision": {
+        "P@5": 0.16,
+        "P@10": 0.085,
+        "P@20": 0.0425,
+        "P@100": 0.0085
+      },
+      "mrr": {
+        "MRR@5": 0.595,
+        "MRR@10": 0.60333,
+        "MRR@20": 0.60333,
+        "MRR@100": 0.60333
+      }
+    },
+    "dense": {
+      "ndcg": {
+        "NDCG@5": 0.63155,
+        "NDCG@10": 0.66399,
+        "NDCG@20": 0.67649,
+        "NDCG@100": 0.70574
+      },
+      "map": {
+        "MAP@5": 0.625,
+        "MAP@10": 0.63839,
+        "MAP@20": 0.64173,
+        "MAP@100": 0.64563
+      },
+      "recall": {
+        "Recall@5": 0.65,
+        "Recall@10": 0.75,
+        "Recall@20": 0.8,
+        "Recall@100": 0.95
+      },
+      "precision": {
+        "P@5": 0.13,
+        "P@10": 0.075,
+        "P@20": 0.04,
+        "P@100": 0.01
+      },
+      "mrr": {
+        "MRR@5": 0.625,
+        "MRR@10": 0.63839,
+        "MRR@20": 0.64173,
+        "MRR@100": 0.64548
+      }
+    },
+    "rrf": {
+      "ndcg": {
+        "NDCG@5": 0.64088,
+        "NDCG@10": 0.68336,
+        "NDCG@20": 0.69649,
+        "NDCG@100": 0.70602
+      },
+      "map": {
+        "MAP@5": 0.6225,
+        "MAP@10": 0.6394,
+        "MAP@20": 0.64325,
+        "MAP@100": 0.6446
+      },
+      "recall": {
+        "Recall@5": 0.7,
+        "Recall@10": 0.825,
+        "Recall@20": 0.875,
+        "Recall@100": 0.925
+      },
+      "precision": {
+        "P@5": 0.14,
+        "P@10": 0.085,
+        "P@20": 0.045,
+        "P@100": 0.0095
+      },
+      "mrr": {
+        "MRR@5": 0.6225,
+        "MRR@10": 0.64298,
+        "MRR@20": 0.64682,
+        "MRR@100": 0.64817
+      }
+    }
+  },
+  "records": [
+    {
+      "query_id": "1266",
+      "query": "The risk of breast cancer among parous women increases with placental weight of pregnancies, and this association is strongest for premenopausal breast cancer.",
+      "relevant_chunk_ids": [
+        "37480103"
+      ],
+      "candidate_analysis": {
+        "rrf_recall@5": 1.0,
+        "rrf_recall@10": 1.0,
+        "rrf_recall@20": 1.0,
+        "rrf_recall@100": 1.0,
+        "rrf_relevant_ranks": [
+          1
+        ],
+        "rrf_first_relevant_rank": 1,
+        "gold_in_rerank_pool": true
+      },
+      "methods": {
+        "bm25": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 0.3333333333333333,
+          "latency_ms": 338.9711999989231,
+          "retrieved_chunk_ids": [
+            "13831842",
+            "13765757",
+            "37480103",
+            "32534305",
+            "25973484"
+          ]
+        },
+        "dense": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 120.3042999986792,
+          "retrieved_chunk_ids": [
+            "37480103",
+            "27123743",
+            "17450673",
+            "23557241",
+            "16322674"
+          ]
+        },
+        "rrf": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 460.385899998073,
+          "retrieved_chunk_ids": [
+            "37480103",
+            "13831842",
+            "27123743",
+            "25973484",
+            "13765757"
+          ]
+        },
+        "rerank": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 0.5,
+          "latency_ms": 8234.64409999724,
+          "retrieved_chunk_ids": [
+            "13831842",
+            "37480103",
+            "13765757",
+            "38551172",
+            "22007333"
+          ],
+          "rerank_only_ms": 7774.258199999167
+        }
+      }
+    },
+    {
+      "query_id": "1086",
+      "query": "Sildenafil improves erectile function in men who experience sexual dysfunction as a result of the use of SSRI antidepressants.",
+      "relevant_chunk_ids": [
+        "39281140"
+      ],
+      "candidate_analysis": {
+        "rrf_recall@5": 1.0,
+        "rrf_recall@10": 1.0,
+        "rrf_recall@20": 1.0,
+        "rrf_recall@100": 1.0,
+        "rrf_relevant_ranks": [
+          1
+        ],
+        "rrf_first_relevant_rank": 1,
+        "gold_in_rerank_pool": true
+      },
+      "methods": {
+        "bm25": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 86.88200000324287,
+          "retrieved_chunk_ids": [
+            "39281140",
+            "3981244",
+            "308862",
+            "2496002",
+            "5850219"
+          ]
+        },
+        "dense": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 57.70679999841377,
+          "retrieved_chunk_ids": [
+            "39281140",
+            "3981244",
+            "26199970",
+            "25440070",
+            "32463364"
+          ]
+        },
+        "rrf": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 144.92569999856642,
+          "retrieved_chunk_ids": [
+            "39281140",
+            "3981244",
+            "5691302",
+            "13883546",
+            "6112053"
+          ]
+        },
+        "rerank": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 7664.21149999951,
+          "retrieved_chunk_ids": [
+            "39281140",
+            "3981244",
+            "6112053",
+            "5691302",
+            "13883546"
+          ],
+          "rerank_only_ms": 7519.285800000944
+        }
+      }
+    },
+    {
+      "query_id": "312",
+      "query": "De novo assembly of sequence data has more specific contigs than unassembled sequence data.",
+      "relevant_chunk_ids": [
+        "6173523"
+      ],
+      "candidate_analysis": {
+        "rrf_recall@5": 0.0,
+        "rrf_recall@10": 1.0,
+        "rrf_recall@20": 1.0,
+        "rrf_recall@100": 1.0,
+        "rrf_relevant_ranks": [
+          10
+        ],
+        "rrf_first_relevant_rank": 10,
+        "gold_in_rerank_pool": true
+      },
+      "methods": {
+        "bm25": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 0.2,
+          "latency_ms": 44.052899997041095,
+          "retrieved_chunk_ids": [
+            "14464451",
+            "14185503",
+            "32770503",
+            "25041967",
+            "6173523"
+          ]
+        },
+        "dense": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr@5": 0.0,
+          "latency_ms": 29.05359999567736,
+          "retrieved_chunk_ids": [
+            "14464451",
+            "11728637",
+            "32770503",
+            "20375264",
+            "18027063"
+          ]
+        },
+        "rrf": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr@5": 0.0,
+          "latency_ms": 73.31449999037432,
+          "retrieved_chunk_ids": [
+            "14464451",
+            "32770503",
+            "17447653",
+            "15966318",
+            "13618987"
+          ]
+        },
+        "rerank": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr@5": 0.0,
+          "latency_ms": 7382.784999994328,
+          "retrieved_chunk_ids": [
+            "14185503",
+            "14464451",
+            "13123189",
+            "32770503",
+            "15478227"
+          ],
+          "rerank_only_ms": 7309.470500003954
+        }
+      }
+    },
+    {
+      "query_id": "239",
+      "query": "Cellular aging closely links to an older appearance.",
+      "relevant_chunk_ids": [
+        "14079881"
+      ],
+      "candidate_analysis": {
+        "rrf_recall@5": 0.0,
+        "rrf_recall@10": 0.0,
+        "rrf_recall@20": 0.0,
+        "rrf_recall@100": 1.0,
+        "rrf_relevant_ranks": [
+          37
+        ],
+        "rrf_first_relevant_rank": 37,
+        "gold_in_rerank_pool": false
+      },
+      "methods": {
+        "bm25": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr@5": 0.0,
+          "latency_ms": 20.69439999468159,
+          "retrieved_chunk_ids": [
+            "615047",
+            "7042304",
+            "3952288",
+            "40349336",
+            "516867"
+          ]
+        },
+        "dense": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 0.5,
+          "latency_ms": 22.86729999468662,
+          "retrieved_chunk_ids": [
+            "3230557",
+            "14079881",
+            "9291668",
+            "22264117",
+            "2466614"
+          ]
+        },
+        "rrf": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr@5": 0.0,
+          "latency_ms": 43.87659998610616,
+          "retrieved_chunk_ids": [
+            "3230557",
+            "22264117",
+            "7042304",
+            "516867",
+            "9291668"
+          ]
+        },
+        "rerank": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr@5": 0.0,
+          "latency_ms": 6201.502199983224,
+          "retrieved_chunk_ids": [
+            "516867",
+            "3230557",
+            "9291668",
+            "22264117",
+            "1848452"
+          ],
+          "rerank_only_ms": 6157.625599997118
+        }
+      }
+    },
+    {
+      "query_id": "213",
+      "query": "CRP is not predictive of postoperative mortality following Coronary Artery Bypass Graft (CABG) surgery.",
+      "relevant_chunk_ids": [
+        "13625993"
+      ],
+      "candidate_analysis": {
+        "rrf_recall@5": 0.0,
+        "rrf_recall@10": 1.0,
+        "rrf_recall@20": 1.0,
+        "rrf_recall@100": 1.0,
+        "rrf_relevant_ranks": [
+          6
+        ],
+        "rrf_first_relevant_rank": 6,
+        "gold_in_rerank_pool": true
+      },
+      "methods": {
+        "bm25": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr@5": 0.0,
+          "latency_ms": 43.259199999738485,
+          "retrieved_chunk_ids": [
+            "27054878",
+            "40156901",
+            "750781",
+            "9846940",
+            "20887554"
+          ]
+        },
+        "dense": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr@5": 0.0,
+          "latency_ms": 26.828800000657793,
+          "retrieved_chunk_ids": [
+            "27054878",
+            "20887554",
+            "750781",
+            "21048969",
+            "9846940"
+          ]
+        },
+        "rrf": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr@5": 0.0,
+          "latency_ms": 70.31690000439994,
+          "retrieved_chunk_ids": [
+            "27054878",
+            "750781",
+            "20887554",
+            "9846940",
+            "40156901"
+          ]
+        },
+        "rerank": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr@5": 0.0,
+          "latency_ms": 7311.265000003914,
+          "retrieved_chunk_ids": [
+            "27054878",
+            "20887554",
+            "750781",
+            "21048969",
+            "9846940"
+          ],
+          "rerank_only_ms": 7240.948099999514
+        }
+      }
+    },
+    {
+      "query_id": "1290",
+      "query": "There is an inverse relationship between hip fractures and statin use.",
+      "relevant_chunk_ids": [
+        "4687948"
+      ],
+      "candidate_analysis": {
+        "rrf_recall@5": 1.0,
+        "rrf_recall@10": 1.0,
+        "rrf_recall@20": 1.0,
+        "rrf_recall@100": 1.0,
+        "rrf_relevant_ranks": [
+          1
+        ],
+        "rrf_first_relevant_rank": 1,
+        "gold_in_rerank_pool": true
+      },
+      "methods": {
+        "bm25": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 42.33889999886742,
+          "retrieved_chunk_ids": [
+            "4687948",
+            "16812091",
+            "2391552",
+            "7965928",
+            "9555784"
+          ]
+        },
+        "dense": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 34.83050000068033,
+          "retrieved_chunk_ids": [
+            "4687948",
+            "40156901",
+            "22420524",
+            "5698494",
+            "1711571"
+          ]
+        },
+        "rrf": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 77.43530000152532,
+          "retrieved_chunk_ids": [
+            "4687948",
+            "22420524",
+            "40156901",
+            "2391552",
+            "11246427"
+          ]
+        },
+        "rerank": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 7336.092999998073,
+          "retrieved_chunk_ids": [
+            "4687948",
+            "46182525",
+            "3613041",
+            "16812091",
+            "22420524"
+          ],
+          "rerank_only_ms": 7258.657699996547
+        }
+      }
+    },
+    {
+      "query_id": "124",
+      "query": "Antiretroviral therapy reduces rates of tuberculosis across a broad range of CD4 strata.",
+      "relevant_chunk_ids": [
+        "4883040"
+      ],
+      "candidate_analysis": {
+        "rrf_recall@5": 1.0,
+        "rrf_recall@10": 1.0,
+        "rrf_recall@20": 1.0,
+        "rrf_recall@100": 1.0,
+        "rrf_relevant_ranks": [
+          1
+        ],
+        "rrf_first_relevant_rank": 1,
+        "gold_in_rerank_pool": true
+      },
+      "methods": {
+        "bm25": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 33.89859999879263,
+          "retrieved_chunk_ids": [
+            "4883040",
+            "7111021",
+            "31363207",
+            "13899137",
+            "17077004"
+          ]
+        },
+        "dense": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 22.45050000055926,
+          "retrieved_chunk_ids": [
+            "4883040",
+            "7111021",
+            "13899137",
+            "39984099",
+            "31363207"
+          ]
+        },
+        "rrf": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 56.583300000056624,
+          "retrieved_chunk_ids": [
+            "4883040",
+            "7111021",
+            "13899137",
+            "31363207",
+            "21479231"
+          ]
+        },
+        "rerank": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 8053.6805000010645,
+          "retrieved_chunk_ids": [
+            "4883040",
+            "7111021",
+            "21479231",
+            "14319754",
+            "13899137"
+          ],
+          "rerank_only_ms": 7997.097200001008
+        }
+      }
+    },
+    {
+      "query_id": "887",
+      "query": "Only a minority of cells survive development after differentiation into stress-resistant spores.",
+      "relevant_chunk_ids": [
+        "18855191"
+      ],
+      "candidate_analysis": {
+        "rrf_recall@5": 0.0,
+        "rrf_recall@10": 0.0,
+        "rrf_recall@20": 0.0,
+        "rrf_recall@100": 0.0,
+        "rrf_relevant_ranks": [],
+        "rrf_first_relevant_rank": null,
+        "gold_in_rerank_pool": false
+      },
+      "methods": {
+        "bm25": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr@5": 0.0,
+          "latency_ms": 33.634699997492135,
+          "retrieved_chunk_ids": [
+            "2140513",
+            "33872649",
+            "14893428",
+            "22517564",
+            "10273147"
+          ]
+        },
+        "dense": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr@5": 0.0,
+          "latency_ms": 22.047999998903833,
+          "retrieved_chunk_ids": [
+            "5567223",
+            "25413327",
+            "27995781",
+            "4311206",
+            "34103335"
+          ]
+        },
+        "rrf": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr@5": 0.0,
+          "latency_ms": 55.94139999448089,
+          "retrieved_chunk_ids": [
+            "2140513",
+            "3840043",
+            "34103335",
+            "9641846",
+            "16630060"
+          ]
+        },
+        "rerank": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr@5": 0.0,
+          "latency_ms": 8241.217499991762,
+          "retrieved_chunk_ids": [
+            "7506409",
+            "2140513",
+            "16630060",
+            "3840043",
+            "9641846"
+          ],
+          "rerank_only_ms": 8185.276099997282
+        }
+      }
+    },
+    {
+      "query_id": "1204",
+      "query": "The combination of H3K4me3 and H3K79me2 is found in quiescent hair follicle stem cells.",
+      "relevant_chunk_ids": [
+        "31141365"
+      ],
+      "candidate_analysis": {
+        "rrf_recall@5": 1.0,
+        "rrf_recall@10": 1.0,
+        "rrf_recall@20": 1.0,
+        "rrf_recall@100": 1.0,
+        "rrf_relevant_ranks": [
+          1
+        ],
+        "rrf_first_relevant_rank": 1,
+        "gold_in_rerank_pool": true
+      },
+      "methods": {
+        "bm25": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 44.05399999814108,
+          "retrieved_chunk_ids": [
+            "31141365",
+            "15907458",
+            "17271462",
+            "4388082",
+            "25597580"
+          ]
+        },
+        "dense": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 31.464799998502713,
+          "retrieved_chunk_ids": [
+            "31141365",
+            "16630060",
+            "3849194",
+            "12100854",
+            "27279525"
+          ]
+        },
+        "rrf": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 75.82379999803379,
+          "retrieved_chunk_ids": [
+            "31141365",
+            "16630060",
+            "15907458",
+            "2701077",
+            "16660256"
+          ]
+        },
+        "rerank": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 8225.119499998982,
+          "retrieved_chunk_ids": [
+            "31141365",
+            "2701077",
+            "10165258",
+            "8548635",
+            "25597580"
+          ],
+          "rerank_only_ms": 8149.295700000948
+        }
+      }
+    },
+    {
+      "query_id": "628",
+      "query": "Infection of human T-cell lymphotropic virus type 1 is most frequent in individuals of African origin.",
+      "relevant_chunk_ids": [
+        "24512064"
+      ],
+      "candidate_analysis": {
+        "rrf_recall@5": 1.0,
+        "rrf_recall@10": 1.0,
+        "rrf_recall@20": 1.0,
+        "rrf_recall@100": 1.0,
+        "rrf_relevant_ranks": [
+          1
+        ],
+        "rrf_first_relevant_rank": 1,
+        "gold_in_rerank_pool": true
+      },
+      "methods": {
+        "bm25": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 49.69310000160476,
+          "retrieved_chunk_ids": [
+            "24512064",
+            "29134911",
+            "22705234",
+            "5476778",
+            "5735492"
+          ]
+        },
+        "dense": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 28.459799999836832,
+          "retrieved_chunk_ids": [
+            "24512064",
+            "29134911",
+            "5735492",
+            "19327364",
+            "44737533"
+          ]
+        },
+        "rrf": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 78.42260000325041,
+          "retrieved_chunk_ids": [
+            "24512064",
+            "29134911",
+            "5735492",
+            "21274496",
+            "44737533"
+          ]
+        },
+        "rerank": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 7975.178200009395,
+          "retrieved_chunk_ids": [
+            "24512064",
+            "5476778",
+            "5735492",
+            "29134911",
+            "8593263"
+          ],
+          "rerank_only_ms": 7896.755600006145
+        }
+      }
+    },
+    {
+      "query_id": "1100",
+      "query": "Statins increase blood cholesterol.",
+      "relevant_chunk_ids": [
+        "7662206"
+      ],
+      "candidate_analysis": {
+        "rrf_recall@5": 1.0,
+        "rrf_recall@10": 1.0,
+        "rrf_recall@20": 1.0,
+        "rrf_recall@100": 1.0,
+        "rrf_relevant_ranks": [
+          5
+        ],
+        "rrf_first_relevant_rank": 5,
+        "gold_in_rerank_pool": true
+      },
+      "methods": {
+        "bm25": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 0.5,
+          "latency_ms": 10.288600002240855,
+          "retrieved_chunk_ids": [
+            "21557614",
+            "7662206",
+            "22420524",
+            "9617381",
+            "24005548"
+          ]
+        },
+        "dense": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr@5": 0.0,
+          "latency_ms": 23.036799997498747,
+          "retrieved_chunk_ids": [
+            "21557614",
+            "22420524",
+            "5698494",
+            "4687948",
+            "30981192"
+          ]
+        },
+        "rrf": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 0.2,
+          "latency_ms": 33.55849999934435,
+          "retrieved_chunk_ids": [
+            "21557614",
+            "22420524",
+            "9617381",
+            "24005548",
+            "7662206"
+          ]
+        },
+        "rerank": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 0.2,
+          "latency_ms": 14758.258599998953,
+          "retrieved_chunk_ids": [
+            "21557614",
+            "24005548",
+            "30805636",
+            "22420524",
+            "7662206"
+          ],
+          "rerank_only_ms": 14724.700099999609
+        }
+      }
+    },
+    {
+      "query_id": "1099",
+      "query": "Statins decrease blood cholesterol.",
+      "relevant_chunk_ids": [
+        "7662206"
+      ],
+      "candidate_analysis": {
+        "rrf_recall@5": 1.0,
+        "rrf_recall@10": 1.0,
+        "rrf_recall@20": 1.0,
+        "rrf_recall@100": 1.0,
+        "rrf_relevant_ranks": [
+          4
+        ],
+        "rrf_first_relevant_rank": 4,
+        "gold_in_rerank_pool": true
+      },
+      "methods": {
+        "bm25": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 0.3333333333333333,
+          "latency_ms": 12.113400000089314,
+          "retrieved_chunk_ids": [
+            "21557614",
+            "22420524",
+            "7662206",
+            "7454794",
+            "9617381"
+          ]
+        },
+        "dense": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr@5": 0.0,
+          "latency_ms": 24.00150000175927,
+          "retrieved_chunk_ids": [
+            "43629704",
+            "5698494",
+            "22420524",
+            "4687948",
+            "30981192"
+          ]
+        },
+        "rrf": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 0.25,
+          "latency_ms": 36.339100006443914,
+          "retrieved_chunk_ids": [
+            "22420524",
+            "21557614",
+            "7454794",
+            "7662206",
+            "9617381"
+          ]
+        },
+        "rerank": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 0.25,
+          "latency_ms": 7508.925800008001,
+          "retrieved_chunk_ids": [
+            "21557614",
+            "22420524",
+            "30805636",
+            "7662206",
+            "43629704"
+          ],
+          "rerank_only_ms": 7472.586700001557
+        }
+      }
+    },
+    {
+      "query_id": "1216",
+      "query": "The extracellular domain of TMEM27 is cleaved in human beta cells.",
+      "relevant_chunk_ids": [
+        "24142891"
+      ],
+      "candidate_analysis": {
+        "rrf_recall@5": 1.0,
+        "rrf_recall@10": 1.0,
+        "rrf_recall@20": 1.0,
+        "rrf_recall@100": 1.0,
+        "rrf_relevant_ranks": [
+          1
+        ],
+        "rrf_first_relevant_rank": 1,
+        "gold_in_rerank_pool": true
+      },
+      "methods": {
+        "bm25": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 27.46610000031069,
+          "retrieved_chunk_ids": [
+            "24142891",
+            "20943272",
+            "4407455",
+            "11557602",
+            "21164071"
+          ]
+        },
+        "dense": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 22.57409999583615,
+          "retrieved_chunk_ids": [
+            "24142891",
+            "19756935",
+            "21754541",
+            "13958154",
+            "33390472"
+          ]
+        },
+        "rrf": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 50.29329999524634,
+          "retrieved_chunk_ids": [
+            "24142891",
+            "19756935",
+            "37699461",
+            "16389141",
+            "17695748"
+          ]
+        },
+        "rerank": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 7315.59579999157,
+          "retrieved_chunk_ids": [
+            "24142891",
+            "31107919",
+            "20943272",
+            "4407455",
+            "17695748"
+          ],
+          "rerank_only_ms": 7265.302499996324
+        }
+      }
+    },
+    {
+      "query_id": "198",
+      "query": "CCL19 is absent within dLNs.",
+      "relevant_chunk_ids": [
+        "2177022"
+      ],
+      "candidate_analysis": {
+        "rrf_recall@5": 1.0,
+        "rrf_recall@10": 1.0,
+        "rrf_recall@20": 1.0,
+        "rrf_recall@100": 1.0,
+        "rrf_relevant_ranks": [
+          1
+        ],
+        "rrf_first_relevant_rank": 1,
+        "gold_in_rerank_pool": true
+      },
+      "methods": {
+        "bm25": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 0.3333333333333333,
+          "latency_ms": 13.554700002714526,
+          "retrieved_chunk_ids": [
+            "13778710",
+            "40590358",
+            "2177022",
+            "20148808",
+            "25942757"
+          ]
+        },
+        "dense": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr@5": 0.0,
+          "latency_ms": 23.274300001503434,
+          "retrieved_chunk_ids": [
+            "92308",
+            "2947124",
+            "1800734",
+            "5132358",
+            "17934603"
+          ]
+        },
+        "rrf": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 37.11020000628196,
+          "retrieved_chunk_ids": [
+            "2177022",
+            "601033",
+            "13778710",
+            "92308",
+            "2947124"
+          ]
+        },
+        "rerank": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 0.2,
+          "latency_ms": 7189.085900012287,
+          "retrieved_chunk_ids": [
+            "20148808",
+            "40590358",
+            "25942757",
+            "13778710",
+            "2177022"
+          ],
+          "rerank_only_ms": 7151.975700006005
+        }
+      }
+    },
+    {
+      "query_id": "230",
+      "query": "Carriers of the alcohol aldehyde dehydrogenase deficiency mutation drink less that non-carries.",
+      "relevant_chunk_ids": [
+        "3067015"
+      ],
+      "candidate_analysis": {
+        "rrf_recall@5": 1.0,
+        "rrf_recall@10": 1.0,
+        "rrf_recall@20": 1.0,
+        "rrf_recall@100": 1.0,
+        "rrf_relevant_ranks": [
+          1
+        ],
+        "rrf_first_relevant_rank": 1,
+        "gold_in_rerank_pool": true
+      },
+      "methods": {
+        "bm25": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 29.367099996306933,
+          "retrieved_chunk_ids": [
+            "3067015",
+            "11457219",
+            "8892905",
+            "38028419",
+            "45638119"
+          ]
+        },
+        "dense": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 25.42859999812208,
+          "retrieved_chunk_ids": [
+            "3067015",
+            "38028419",
+            "10883736",
+            "849771",
+            "39558597"
+          ]
+        },
+        "rrf": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 55.040299994288944,
+          "retrieved_chunk_ids": [
+            "3067015",
+            "38028419",
+            "45638119",
+            "11457219",
+            "19487477"
+          ]
+        },
+        "rerank": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 7277.754899994761,
+          "retrieved_chunk_ids": [
+            "3067015",
+            "11457219",
+            "71625969",
+            "19487477",
+            "14663842"
+          ],
+          "rerank_only_ms": 7222.714600000472
+        }
+      }
+    },
+    {
+      "query_id": "808",
+      "query": "Most termination events in Okazaki fragments are sequence specific.",
+      "relevant_chunk_ids": [
+        "36606083"
+      ],
+      "candidate_analysis": {
+        "rrf_recall@5": 1.0,
+        "rrf_recall@10": 1.0,
+        "rrf_recall@20": 1.0,
+        "rrf_recall@100": 1.0,
+        "rrf_relevant_ranks": [
+          1
+        ],
+        "rrf_first_relevant_rank": 1,
+        "gold_in_rerank_pool": true
+      },
+      "methods": {
+        "bm25": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 23.019799999019597,
+          "retrieved_chunk_ids": [
+            "36606083",
+            "36180468",
+            "4313478",
+            "36713289",
+            "25787749"
+          ]
+        },
+        "dense": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 22.040800002287142,
+          "retrieved_chunk_ids": [
+            "36606083",
+            "8250852",
+            "11728637",
+            "20375264",
+            "18188022"
+          ]
+        },
+        "rrf": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 45.303200000489596,
+          "retrieved_chunk_ids": [
+            "36606083",
+            "7260461",
+            "24307695",
+            "23664875",
+            "4313478"
+          ]
+        },
+        "rerank": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 14382.226699999592,
+          "retrieved_chunk_ids": [
+            "36606083",
+            "6535392",
+            "25787749",
+            "23664875",
+            "4313478"
+          ],
+          "rerank_only_ms": 14336.923499999102
+        }
+      }
+    },
+    {
+      "query_id": "1088",
+      "query": "Silencing of Bcl2 is important for the maintenance and progression of tumors.",
+      "relevant_chunk_ids": [
+        "37549932"
+      ],
+      "candidate_analysis": {
+        "rrf_recall@5": 0.0,
+        "rrf_recall@10": 0.0,
+        "rrf_recall@20": 1.0,
+        "rrf_recall@100": 1.0,
+        "rrf_relevant_ranks": [
+          13
+        ],
+        "rrf_first_relevant_rank": 13,
+        "gold_in_rerank_pool": true
+      },
+      "methods": {
+        "bm25": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr@5": 0.0,
+          "latency_ms": 30.795899998338427,
+          "retrieved_chunk_ids": [
+            "11915280",
+            "5765455",
+            "6807122",
+            "14863011",
+            "7621534"
+          ]
+        },
+        "dense": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 23.987599997781217,
+          "retrieved_chunk_ids": [
+            "37549932",
+            "33638477",
+            "11900630",
+            "3840043",
+            "31902335"
+          ]
+        },
+        "rrf": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr@5": 0.0,
+          "latency_ms": 55.07839999336284,
+          "retrieved_chunk_ids": [
+            "24282306",
+            "14863011",
+            "33638477",
+            "5765455",
+            "3840043"
+          ]
+        },
+        "rerank": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 7617.184399998223,
+          "retrieved_chunk_ids": [
+            "37549932",
+            "11900630",
+            "14863011",
+            "5765455",
+            "3840043"
+          ],
+          "rerank_only_ms": 7562.10600000486
+        }
+      }
+    },
+    {
+      "query_id": "922",
+      "query": "Patients in stable partnerships have a faster progression from HIV to AIDS.",
+      "relevant_chunk_ids": [
+        "17077004"
+      ],
+      "candidate_analysis": {
+        "rrf_recall@5": 1.0,
+        "rrf_recall@10": 1.0,
+        "rrf_recall@20": 1.0,
+        "rrf_recall@100": 1.0,
+        "rrf_relevant_ranks": [
+          1
+        ],
+        "rrf_first_relevant_rank": 1,
+        "gold_in_rerank_pool": true
+      },
+      "methods": {
+        "bm25": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 30.203299997083377,
+          "retrieved_chunk_ids": [
+            "17077004",
+            "11230569",
+            "23304931",
+            "11238951",
+            "24596228"
+          ]
+        },
+        "dense": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 24.515199998859316,
+          "retrieved_chunk_ids": [
+            "17077004",
+            "7111021",
+            "14319754",
+            "39984099",
+            "13899137"
+          ]
+        },
+        "rrf": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 54.94709999766201,
+          "retrieved_chunk_ids": [
+            "17077004",
+            "11230569",
+            "46353045",
+            "31562330",
+            "22227889"
+          ]
+        },
+        "rerank": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 7302.896499997587,
+          "retrieved_chunk_ids": [
+            "17077004",
+            "24596228",
+            "46353045",
+            "25134146",
+            "7111021"
+          ],
+          "rerank_only_ms": 7247.949399999925
+        }
+      }
+    },
+    {
+      "query_id": "142",
+      "query": "Autologous transplantation of mesenchymal stem cells causes a higher rate of opportunistic infections than induction therapy with anti-interleukin-2 receptor antibodies.",
+      "relevant_chunk_ids": [
+        "10582939"
+      ],
+      "candidate_analysis": {
+        "rrf_recall@5": 1.0,
+        "rrf_recall@10": 1.0,
+        "rrf_recall@20": 1.0,
+        "rrf_recall@100": 1.0,
+        "rrf_relevant_ranks": [
+          1
+        ],
+        "rrf_first_relevant_rank": 1,
+        "gold_in_rerank_pool": true
+      },
+      "methods": {
+        "bm25": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 54.89520000264747,
+          "retrieved_chunk_ids": [
+            "10582939",
+            "40164383",
+            "3935126",
+            "24795767",
+            "46353045"
+          ]
+        },
+        "dense": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 36.75980000116397,
+          "retrieved_chunk_ids": [
+            "10582939",
+            "40164383",
+            "24101431",
+            "26105746",
+            "5597586"
+          ]
+        },
+        "rrf": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 91.94940000452334,
+          "retrieved_chunk_ids": [
+            "10582939",
+            "40164383",
+            "5597586",
+            "24101431",
+            "43587663"
+          ]
+        },
+        "rerank": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr@5": 1.0,
+          "latency_ms": 7641.467100009322,
+          "retrieved_chunk_ids": [
+            "10582939",
+            "43587663",
+            "24101431",
+            "25985964",
+            "5597586"
+          ],
+          "rerank_only_ms": 7549.517700004799
+        }
+      }
+    },
+    {
+      "query_id": "619",
+      "query": "Increased vessel density along with a reduction in fibrosis decreases the efficacy of chemotherapy treatments.",
+      "relevant_chunk_ids": [
+        "20888849",
+        "2565138"
+      ],
+      "candidate_analysis": {
+        "rrf_recall@5": 0.0,
+        "rrf_recall@10": 0.5,
+        "rrf_recall@20": 0.5,
+        "rrf_recall@100": 0.5,
+        "rrf_relevant_ranks": [
+          7
+        ],
+        "rrf_first_relevant_rank": 7,
+        "gold_in_rerank_pool": true
+      },
+      "methods": {
+        "bm25": {
+          "hit@5": 1.0,
+          "recall@5": 0.5,
+          "rr@5": 0.2,
+          "latency_ms": 36.129100000835024,
+          "retrieved_chunk_ids": [
+            "6673421",
+            "21258863",
+            "49556906",
+            "25175997",
+            "20888849"
+          ]
+        },
+        "dense": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr@5": 0.0,
+          "latency_ms": 23.361399995337706,
+          "retrieved_chunk_ids": [
+            "6334188",
+            "37578311",
+            "15476777",
+            "1171121",
+            "5254741"
+          ]
+        },
+        "rrf": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr@5": 0.0,
+          "latency_ms": 59.73509999603266,
+          "retrieved_chunk_ids": [
+            "1171121",
+            "6334188",
+            "25589047",
+            "25175997",
+            "49556906"
+          ]
+        },
+        "rerank": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr@5": 0.0,
+          "latency_ms": 7256.398299992725,
+          "retrieved_chunk_ids": [
+            "195680777",
+            "1065627",
+            "1171121",
+            "15476777",
+            "20127522"
+          ],
+          "rerank_only_ms": 7196.663199996692
+        }
+      }
+    }
+  ]
+}

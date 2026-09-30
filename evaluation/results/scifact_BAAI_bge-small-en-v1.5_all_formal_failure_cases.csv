@@ -1,0 +1,82 @@
+﻿query_id,query,category,relevant_chunk_ids,rrf_first_relevant_rank,rrf_relevant_ranks,gold_in_rerank_pool,bm25_hit@5,dense_hit@5,rrf_hit@5,rerank_hit@5,rrf_recall@20,rrf_recall@100
+1,0-dimensional biomaterials show inductive properties.,reranker_failure,"[""31715818""]",19,[19],True,0.0,0.0,0.0,0.0,1.0,1.0
+1041,Replacement of histone H2A with H2A.Z slows gene activation in yeasts by stabilizing +1 nucleosomes.,reranker_harm,"[""25254425"", ""16626264""]",5,"[5, 7]",True,1.0,0.0,1.0,0.0,1.0,1.0
+1049,Ribosomopathies have a low degree of cell and tissue specific pathology.,reranker_failure,"[""12486491""]",17,[17],True,0.0,0.0,0.0,0.0,1.0,1.0
+1088,Silencing of Bcl2 is important for the maintenance and progression of tumors.,reranker_rescue,"[""37549932""]",13,[13],True,0.0,1.0,0.0,1.0,1.0,1.0
+1110,Suboptimal nutrition is not predictive of chronic disease,retrieval_miss,"[""13770184""]",,[],False,0.0,0.0,0.0,0.0,0.0,0.0
+1132,TCR/CD3 microdomains are a required to induce the immunologic synapse to activate T cells.,reranker_rescue,"[""33499189"", ""9283422""]",6,"[6, 23]",True,0.0,0.0,0.0,1.0,0.5,1.0
+1175,The PPR MDA5 has two N-terminal CARD domains.,retrieval_miss,"[""31272411""]",,[],False,0.0,0.0,0.0,0.0,0.0,0.0
+1179,The PRR MDA5 has a central DExD/H RNA helices domain.,candidate_pool_miss,"[""31272411""]",32,[32],False,0.0,0.0,0.0,0.0,0.0,1.0
+1191,The amount of publicly available DNA data doubles every 10 years.,retrieval_miss,"[""30655442""]",,[],False,0.0,0.0,0.0,0.0,0.0,0.0
+1196,The availability of safe places to study is effective at decreasing homelessness.,reranker_rescue,"[""25649714""]",13,[13],True,0.0,1.0,0.0,1.0,1.0,1.0
+1197,The availability of safe places to study is not effective at decreasing homelessness.,reranker_failure,"[""25649714""]",13,[13],True,0.0,1.0,0.0,0.0,1.0,1.0
+1199,The benefits of colchicine were achieved with effective widespread use of secondary prevention strategies such as high-dose statins.,retrieval_miss,"[""16760369""]",,[],False,0.0,0.0,0.0,0.0,0.0,0.0
+1200,The binding orientation of the ML-SA1 activator at hTRPML2 is different from the binding orientation of the ML-SA1 activator at hTRPML1.,reranker_rescue,"[""3441524""]",19,[19],True,0.0,0.0,0.0,1.0,1.0,1.0
+1213,The deregulated and prolonged activation of monocytes has deleterious effects in inflammatory diseases.,candidate_pool_miss,"[""14407673""]",75,[75],False,0.0,0.0,0.0,0.0,0.0,1.0
+1221,The genomic aberrations found in matasteses are very similar to those found in the primary tumor.,reranker_rescue,"[""19736671""]",18,[18],True,0.0,1.0,0.0,1.0,1.0,1.0
+1226,"The loss of the TET protein functions may have dire biological consequences, such as myeloid cancers.",retrieval_miss,"[""13777138""]",,[],False,0.0,0.0,0.0,0.0,0.0,0.0
+1241,The myocardial lineage develops from cardiac progenitors of mesodermal origin.,candidate_pool_miss,"[""4427392""]",45,[45],False,0.0,1.0,0.0,0.0,0.0,1.0
+1278,The treatment of cancer patients with co-IR blockade does not cause any adverse autoimmune events.,candidate_pool_miss,"[""11335781""]",24,[24],False,0.0,1.0,0.0,0.0,0.0,1.0
+1279,The treatment of cancer patients with co-IR blockade precipitates adverse autoimmune events.,reranker_rescue,"[""11335781""]",20,[20],True,0.0,1.0,0.0,1.0,1.0,1.0
+128,Arterioles have a larger lumen diameter than venules.,reranker_rescue,"[""8290953""]",17,[17],True,1.0,0.0,0.0,1.0,1.0,1.0
+1280,"The ureABIEFGH gene cluster encodes urease maturation proteins : UreD/UreH, UreE, UreF, and UreG.",reranker_failure,"[""4387784""]",7,[7],True,0.0,0.0,0.0,0.0,1.0,1.0
+1281,The ureABIEFGH gene cluster is induced by nickel (II) ion.,reranker_failure,"[""4387784""]",12,[12],True,0.0,0.0,0.0,0.0,1.0,1.0
+13,5% of perinatal mortality is due to low birth weight.,candidate_pool_miss,"[""1606628""]",26,[26],False,0.0,0.0,0.0,0.0,0.0,1.0
+1303,Tirasemtiv has no effect on fast-twitch muscle.,reranker_harm,"[""12631697""]",1,[1],True,1.0,1.0,1.0,0.0,1.0,1.0
+1316,Transferred UCB T cells acquire a memory-like phenotype in recipients.,reranker_failure,"[""27910499""]",18,[18],True,0.0,0.0,0.0,0.0,1.0,1.0
+132,Aspirin inhibits the production of PGE2.,candidate_pool_miss,"[""7975937""]",30,[30],False,0.0,0.0,0.0,0.0,0.0,1.0
+1332,Tumor necrosis factor alpha (TNF-α) and interleukin-1 (IL-1) are pro-inflammatory cytokines that inhibit IL-6 and IL-10.,retrieval_miss,"[""5304891""]",,[],False,0.0,0.0,0.0,0.0,0.0,0.0
+1362,Venules have a larger lumen diameter than arterioles.,reranker_rescue,"[""8290953""]",15,[15],True,1.0,0.0,0.0,1.0,1.0,1.0
+1363,Venules have a thinner or absent smooth layer compared to arterioles.,reranker_rescue,"[""8290953""]",11,[11],True,1.0,0.0,0.0,1.0,1.0,1.0
+1368,Vitamin D deficiency effects the term of delivery.,reranker_failure,"[""2425364""]",7,[7],True,0.0,1.0,0.0,0.0,1.0,1.0
+1395,p16INK4A accumulation is  linked to an abnormal wound response caused by the microinvasive step of advanced Oral Potentially Malignant Lesions (OPMLs).,reranker_rescue,"[""17717391""]",16,[16],True,0.0,1.0,0.0,1.0,1.0,1.0
+213,CRP is not predictive of postoperative mortality following Coronary Artery Bypass Graft (CABG) surgery.,reranker_failure,"[""13625993""]",6,[6],True,0.0,0.0,0.0,0.0,1.0,1.0
+238,Cells undergoing methionine restriction may activate miRNAs.,reranker_rescue,"[""2251426""]",6,[6],True,0.0,0.0,0.0,1.0,1.0,1.0
+239,Cellular aging closely links to an older appearance.,candidate_pool_miss,"[""14079881""]",37,[37],False,0.0,1.0,0.0,0.0,0.0,1.0
+261,"Chronic aerobic exercise alters endothelial function, improving vasodilating mechanisms mediated by NO.",reranker_harm,"[""1122279"", ""10697096""]",5,"[5, 46]",True,1.0,1.0,1.0,0.0,0.5,1.0
+294,Crossover hot spots are not found within gene promoters in Saccharomyces cerevisiae.,reranker_harm,"[""10874408""]",1,[1],True,1.0,0.0,1.0,0.0,1.0,1.0
+303,DMRT1 is a sex-determining gene that is epigenetically regulated by the MHM region.,reranker_failure,"[""4388470""]",6,[6],True,1.0,0.0,0.0,0.0,1.0,1.0
+312,De novo assembly of sequence data has more specific contigs than unassembled sequence data.,reranker_failure,"[""6173523""]",10,[10],True,1.0,0.0,0.0,0.0,1.0,1.0
+314,Deamination of cytidine to uridine on the minus strand of viral DNA results in catastrophic G-to-A mutations in the viral genome.,reranker_rescue,"[""4347374""]",8,[8],True,1.0,0.0,0.0,1.0,1.0,1.0
+324,Deleting Raptor reduces G-CSF levels.,reranker_rescue,"[""2014909""]",12,[12],True,1.0,0.0,0.0,1.0,1.0,1.0
+36,A deficiency of vitamin B12 increases blood levels of homocysteine.,reranker_failure,"[""5152028"", ""11705328""]",6,"[6, 17]",True,0.0,1.0,0.0,0.0,1.0,1.0
+384,Epidemiological disease burden from noncommunicable diseases is more prevalent in low economic settings.,reranker_failure,"[""13770184""]",6,[6],True,0.0,1.0,0.0,0.0,1.0,1.0
+388,Ethanol stress decreases the expression of IBP in bacteria.,reranker_harm,"[""1148122""]",1,[1],True,1.0,1.0,1.0,0.0,1.0,1.0
+421,Flexible molecules experience greater steric hindrance in the tumor microenviroment than rigid molecules.,candidate_pool_miss,"[""11172205""]",55,[55],False,0.0,0.0,0.0,0.0,0.0,1.0
+431,FoxO3a activation in neuronal death is mediated by reactive oxygen species (ROS).,candidate_pool_miss,"[""28937856""]",39,[39],False,0.0,0.0,0.0,0.0,0.0,1.0
+437,Functional consequences of genomic alterations due to Myelodysplastic syndrome (MDS) are poorly understood due to the lack of an animal model.,retrieval_miss,"[""18399038""]",,[],False,0.0,0.0,0.0,0.0,0.0,0.0
+452,Gene expression does not vary appreciably across genetically identical cells.,reranker_rescue,"[""12804937"", ""464511""]",6,"[6, 23]",True,1.0,1.0,0.0,1.0,0.5,1.0
+475,Glycolysis is one of the primary glycometabolic pathways in cells.,reranker_failure,"[""18678095""]",7,[7],True,0.0,0.0,0.0,0.0,1.0,1.0
+502,"Healthcare delivery efficiency in crowded delivery centers is impaired by improving structural, logistical, and interpersonal elements.",retrieval_miss,"[""13071728""]",,[],False,0.0,0.0,0.0,0.0,0.0,0.0
+508,Hematopoietic Stem Cell purification reaches purity rate of up to 50%.,candidate_pool_miss,"[""13980338""]",22,[22],False,0.0,0.0,0.0,0.0,0.0,1.0
+514,High dietary calcium intakes are unnecessary for prevention of secondary hyperparathyroidism in subjects with 25(OH)D levels above 75 nmol/liter.,reranker_harm,"[""16256507""]",3,[3],True,0.0,1.0,1.0,0.0,1.0,1.0
+517,High levels of copeptin decrease risk of diabetes.,reranker_rescue,"[""15663829""]",9,[9],True,0.0,0.0,0.0,1.0,1.0,1.0
+521,High-sensitivity cardiac troponin T (HSCT-T) dosage may not be diagnostic if the onset of symptoms occurs less than 3 hours before acute myocardial injury (AMI).,reranker_harm,"[""34873974""]",1,[1],True,1.0,1.0,1.0,0.0,1.0,1.0
+535,Hypertension is frequently observed in type 1 diabetes patients.,candidate_pool_miss,"[""39368721""]",37,[37],False,0.0,1.0,0.0,0.0,0.0,1.0
+540,Hypothalamic glutamate neurotransmission is crucial to energy balance.,reranker_harm,"[""11886686"", ""25007443""]",2,"[2, 22]",True,1.0,1.0,1.0,0.0,0.5,1.0
+544,IFIT1 restricts viral replication by sequestrating mis-capped viral RNAs.,reranker_harm,"[""24221369""]",5,[5],True,0.0,1.0,1.0,0.0,1.0,1.0
+551,ITAM phosphorylation prevents the transfer of the T cell receptor (TCR) signal from the echo-domain to the cytoplasmic tail of the T cell receptor (TCR).,reranker_harm,"[""33499189""]",3,[3],True,1.0,0.0,1.0,0.0,1.0,1.0
+554,Immune complex triggered cell death leads to extracellular release of neutrophil protein HMGB1.,reranker_failure,"[""1049501""]",7,[7],True,0.0,0.0,0.0,0.0,1.0,1.0
+560,Immune responses result in the development of inflammatory Th17 cells and anti-inflammatory iTregs.,retrieval_miss,"[""40096222""]",,[],False,0.0,0.0,0.0,0.0,0.0,0.0
+577,"In mice, P. chabaudi parasites are able to proliferate faster early in infection when inoculated at lower numbers than when inoculated at high numbers.",reranker_rescue,"[""5289038""]",20,[20],True,0.0,1.0,0.0,1.0,1.0,1.0
+598,Incidence rates of cervical cancer have increased due to nationwide screening programs based primarily on cytology to detect uterine cervical cancer.,reranker_harm,"[""25742130""]",2,[2],True,0.0,1.0,1.0,0.0,1.0,1.0
+619,Increased vessel density along with a reduction in fibrosis decreases the efficacy of chemotherapy treatments.,reranker_failure,"[""20888849"", ""2565138""]",7,[7],True,1.0,0.0,0.0,0.0,0.5,0.5
+623,Individuals with low serum vitamin D concentrations have increased risk of multiple sclerosis.,reranker_failure,"[""17000834""]",9,[9],True,0.0,1.0,0.0,0.0,1.0,1.0
+660,Ivermectin is used to treat onchocerciasis.,reranker_rescue,"[""1215116""]",15,[15],True,1.0,0.0,0.0,1.0,1.0,1.0
+674,LDL cholesterol has no involvement in the development of cardiovascular disease.,reranker_rescue,"[""2095573""]",7,[7],True,1.0,0.0,0.0,1.0,1.0,1.0
+690,Less than 10% of the gabonese children with Schimmelpenning-Feuerstein-Mims syndrome (SFM) had a plasma lactate of more than 5mmol/L.,reranker_rescue,"[""18750453""]",9,[9],True,0.0,0.0,0.0,1.0,1.0,1.0
+715,Low expression of miR7a does represses target genes and exerts a biological function in ovaries.,reranker_failure,"[""18421962""]",9,[9],True,0.0,0.0,0.0,0.0,1.0,1.0
+716,Low expression of miR7a exerts a biological function in testis.,retrieval_miss,"[""18421962""]",,[],False,0.0,0.0,0.0,0.0,0.0,0.0
+775,Mice defective for deoxyribonucleic acid (DNA) polymerase I (polI) reveal increased sensitivity to ionizing radiation (IR).,candidate_pool_miss,"[""32275758""]",26,[26],False,0.0,1.0,0.0,0.0,0.0,1.0
+783,Mice without IFN-γ or its receptor are resistant to EAM induced with α-MyHC/CFA.,reranker_failure,"[""40632104""]",12,[12],True,0.0,0.0,0.0,0.0,1.0,1.0
+800,Modifying the epigenome in the brain affects the normal human aging process by affecting certain genes related to neurogenesis.,candidate_pool_miss,"[""22543403""]",30,[30],False,0.0,1.0,0.0,0.0,0.0,1.0
+820,N-terminal cleavage increases success identifying transcription start sites.,reranker_harm,"[""8646760""]",2,[2],True,0.0,0.0,1.0,0.0,1.0,1.0
+830,NF2 (Merlin) causes phosphorylation and subsequent cytoplasmic sequestration of YAP in Drosophila by activating LATS1/2 kinases.,reranker_harm,"[""1897324""]",4,[4],True,0.0,0.0,1.0,0.0,1.0,1.0
+831,NF2 (Merlin) prevents phosphorylation and subsequent cytoplasmic sequestration of YAP in Drosophila.,reranker_failure,"[""1897324""]",13,[13],True,0.0,0.0,0.0,0.0,1.0,1.0
+834,NOX2-independent pathways can generate peroxynitrite by reacting with nitrogen intermediates.,candidate_pool_miss,"[""5483793""]",25,[25],False,0.0,0.0,0.0,0.0,0.0,1.0
+870,Obesity decreases life quality.,candidate_pool_miss,"[""195689316""]",27,[27],False,0.0,1.0,0.0,0.0,0.0,1.0
+873,Obesity is determined solely by environmental factors.,reranker_rescue,"[""1180972"", ""19307912"", ""27393799"", ""29025270"", ""3315558""]",15,"[15, 20, 28, 31, 46]",True,0.0,1.0,0.0,1.0,0.4,1.0
+887,Only a minority of cells survive development after differentiation into stress-resistant spores.,retrieval_miss,"[""18855191""]",,[],False,0.0,0.0,0.0,0.0,0.0,0.0
+913,PPAR-RXRs are inhibited by PPAR ligands.,candidate_pool_miss,"[""3203590""]",40,[40],False,0.0,0.0,0.0,0.0,0.0,1.0
+914,PPAR-RXRs can be activated by PPAR ligands.,candidate_pool_miss,"[""3203590""]",21,[21],False,0.0,0.0,0.0,0.0,0.0,1.0
+975,Primary pro-inflammatory cytokines induce secondary pro- and anti-inflammatory mediators.,retrieval_miss,"[""5304891""]",,[],False,0.0,0.0,0.0,0.0,0.0,0.0

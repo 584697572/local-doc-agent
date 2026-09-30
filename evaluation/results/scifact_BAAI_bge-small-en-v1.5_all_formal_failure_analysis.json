@@ -1,0 +1,41 @@
+{
+  "source_report": "evaluation/results/scifact_BAAI_bge-small-en-v1.5_all_formal.json",
+  "dataset": "scifact",
+  "split": "test",
+  "project_top_k": 5,
+  "retrieval_depth": 100,
+  "rerank_candidate_k": 20,
+  "summary": {
+    "total_queries": 300,
+    "counts": {
+      "stable_success": 219,
+      "reranker_rescue": 20,
+      "reranker_harm": 13,
+      "reranker_failure": 19,
+      "candidate_pool_miss": 17,
+      "retrieval_miss": 12
+    },
+    "rates": {
+      "stable_success": 0.73,
+      "reranker_rescue": 0.06666666666666667,
+      "reranker_harm": 0.043333333333333335,
+      "reranker_failure": 0.06333333333333334,
+      "candidate_pool_miss": 0.056666666666666664,
+      "retrieval_miss": 0.04
+    },
+    "derived": {
+      "rrf_hit@5_queries": 232,
+      "rrf_hit@5_rate": 0.7733333333333333,
+      "rerank_hit@5_queries": 239,
+      "rerank_hit@5_rate": 0.7966666666666666,
+      "gold_in_candidate_pool_queries": 271,
+      "gold_in_candidate_pool_rate": 0.9033333333333333,
+      "gold_in_rrf_top100_queries": 288,
+      "gold_in_rrf_top100_rate": 0.96,
+      "reranker_rescue_opportunities": 39,
+      "reranker_rescue_success_rate": 0.5128205128205128,
+      "reranker_harm_rate_given_rrf_hit": 0.05603448275862069,
+      "reranker_success_rate_given_gold_in_pool": 0.8819188191881919
+    }
+  }
+}

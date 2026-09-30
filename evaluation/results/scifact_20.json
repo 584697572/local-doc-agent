@@ -1,0 +1,1262 @@
+{
+  "dataset": "scifact",
+  "split": "test",
+  "top_k": 5,
+  "candidate_k": 20,
+  "evaluated_queries": 20,
+  "build_time_seconds": {
+    "bm25": 1.3336268999992171,
+    "dense": 337.98383230000036
+  },
+  "summary": {
+    "bm25": {
+      "hit@5": 0.8,
+      "recall@5": 0.7583333333333333,
+      "mrr": 0.6125,
+      "avg_latency_ms": 34.80156000041461
+    },
+    "dense": {
+      "hit@5": 0.4,
+      "recall@5": 0.3833333333333333,
+      "mrr": 0.29583333333333334,
+      "avg_latency_ms": 19.167455000570044
+    },
+    "rrf": {
+      "hit@5": 0.65,
+      "recall@5": 0.6333333333333333,
+      "mrr": 0.49166666666666664,
+      "avg_latency_ms": 54.06085000104213
+    },
+    "rerank": {
+      "hit@5": 0.75,
+      "recall@5": 0.7333333333333333,
+      "mrr": 0.6291666666666667,
+      "avg_latency_ms": 9478.854120001415
+    }
+  },
+  "records": [
+    {
+      "query_id": "1",
+      "query": "0-dimensional biomaterials show inductive properties.",
+      "relevant_chunk_ids": [
+        "31715818"
+      ],
+      "methods": {
+        "bm25": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr": 0.0,
+          "latency_ms": 18.40930000616936,
+          "retrieved_chunk_ids": [
+            "10608397",
+            "43385013",
+            "40212412",
+            "10931595",
+            "27049238"
+          ]
+        },
+        "dense": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr": 0.0,
+          "latency_ms": 21.348100002796855,
+          "retrieved_chunk_ids": [
+            "4321295",
+            "6176498",
+            "20454006",
+            "23763738",
+            "6477536"
+          ]
+        },
+        "rrf": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr": 0.0,
+          "latency_ms": 39.8198000038974,
+          "retrieved_chunk_ids": [
+            "10608397",
+            "4321295",
+            "43385013",
+            "6176498",
+            "20454006"
+          ]
+        },
+        "rerank": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr": 0.0,
+          "latency_ms": 18614.249400008703,
+          "retrieved_chunk_ids": [
+            "10931595",
+            "13231899",
+            "803312",
+            "40212412",
+            "10608397"
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "100",
+      "query": "All hematopoietic stem cells segregate their chromosomes randomly.",
+      "relevant_chunk_ids": [
+        "4381486"
+      ],
+      "methods": {
+        "bm25": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 1.0,
+          "latency_ms": 22.10489999561105,
+          "retrieved_chunk_ids": [
+            "4381486",
+            "4398832",
+            "22186938",
+            "34982259",
+            "2547636"
+          ]
+        },
+        "dense": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 0.3333333333333333,
+          "latency_ms": 23.12800000072457,
+          "retrieved_chunk_ids": [
+            "25516011",
+            "19510470",
+            "4381486",
+            "19511011",
+            "14965508"
+          ]
+        },
+        "rrf": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 1.0,
+          "latency_ms": 45.31009999482194,
+          "retrieved_chunk_ids": [
+            "4381486",
+            "25516011",
+            "19510470",
+            "4398832",
+            "22186938"
+          ]
+        },
+        "rerank": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 1.0,
+          "latency_ms": 7553.221399990434,
+          "retrieved_chunk_ids": [
+            "4381486",
+            "4398832",
+            "22186938",
+            "14550841",
+            "15728433"
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "1012",
+      "query": "Radioiodine treatment of non-toxic multinodular goitre reduces thyroid volume.",
+      "relevant_chunk_ids": [
+        "9745001"
+      ],
+      "methods": {
+        "bm25": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 1.0,
+          "latency_ms": 29.361000000790227,
+          "retrieved_chunk_ids": [
+            "9745001",
+            "26026009",
+            "43122426",
+            "6751418",
+            "37912677"
+          ]
+        },
+        "dense": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 1.0,
+          "latency_ms": 15.621800004737452,
+          "retrieved_chunk_ids": [
+            "9745001",
+            "140098548",
+            "23100962",
+            "696006",
+            "7986878"
+          ]
+        },
+        "rrf": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 1.0,
+          "latency_ms": 45.04280001128791,
+          "retrieved_chunk_ids": [
+            "9745001",
+            "6751418",
+            "140098548",
+            "26026009",
+            "23100962"
+          ]
+        },
+        "rerank": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 1.0,
+          "latency_ms": 8012.363400011964,
+          "retrieved_chunk_ids": [
+            "9745001",
+            "6751418",
+            "43122426",
+            "26026009",
+            "37912677"
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "1014",
+      "query": "Rapamycin decreases the concentration of triacylglycerols in fruit flies.",
+      "relevant_chunk_ids": [
+        "6277638"
+      ],
+      "methods": {
+        "bm25": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 1.0,
+          "latency_ms": 23.30449999863049,
+          "retrieved_chunk_ids": [
+            "6277638",
+            "18557974",
+            "2266471",
+            "15615957",
+            "34760396"
+          ]
+        },
+        "dense": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr": 0.0,
+          "latency_ms": 17.55340000090655,
+          "retrieved_chunk_ids": [
+            "1227277",
+            "10450725",
+            "38040186",
+            "6157837",
+            "24450344"
+          ]
+        },
+        "rrf": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 0.5,
+          "latency_ms": 40.95439999946393,
+          "retrieved_chunk_ids": [
+            "1227277",
+            "6277638",
+            "10450725",
+            "18557974",
+            "2266471"
+          ]
+        },
+        "rerank": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 1.0,
+          "latency_ms": 7689.061299999594,
+          "retrieved_chunk_ids": [
+            "6277638",
+            "116792",
+            "2266471",
+            "1227277",
+            "24632480"
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "1019",
+      "query": "Rapid phosphotransfer rates govern fidelity in two component systems",
+      "relevant_chunk_ids": [
+        "11603066"
+      ],
+      "methods": {
+        "bm25": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 0.5,
+          "latency_ms": 25.50090000295313,
+          "retrieved_chunk_ids": [
+            "1225513",
+            "11603066",
+            "44172171",
+            "196664003",
+            "40429879"
+          ]
+        },
+        "dense": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr": 0.0,
+          "latency_ms": 15.296600002329797,
+          "retrieved_chunk_ids": [
+            "36003142",
+            "35100235",
+            "79231308",
+            "1225513",
+            "15282056"
+          ]
+        },
+        "rrf": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 0.3333333333333333,
+          "latency_ms": 40.8540000062203,
+          "retrieved_chunk_ids": [
+            "1225513",
+            "36003142",
+            "11603066",
+            "35100235",
+            "44172171"
+          ]
+        },
+        "rerank": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 0.5,
+          "latency_ms": 15064.88260000333,
+          "retrieved_chunk_ids": [
+            "1225513",
+            "11603066",
+            "6847208",
+            "19851614",
+            "15282056"
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "1020",
+      "query": "Rapid up-regulation and higher basal expression of interferon-induced genes increase survival of granule cell neurons that are infected by West Nile virus.",
+      "relevant_chunk_ids": [
+        "9433958"
+      ],
+      "methods": {
+        "bm25": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 0.3333333333333333,
+          "latency_ms": 57.49099999957252,
+          "retrieved_chunk_ids": [
+            "10559501",
+            "12885341",
+            "9433958",
+            "34287602",
+            "38376189"
+          ]
+        },
+        "dense": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr": 0.0,
+          "latency_ms": 17.70810000016354,
+          "retrieved_chunk_ids": [
+            "8210189",
+            "30221601",
+            "33986507",
+            "6923795",
+            "6264468"
+          ]
+        },
+        "rrf": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr": 0.0,
+          "latency_ms": 75.27420000405982,
+          "retrieved_chunk_ids": [
+            "30437264",
+            "10559501",
+            "8210189",
+            "12885341",
+            "30221601"
+          ]
+        },
+        "rerank": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 0.5,
+          "latency_ms": 7813.888399999996,
+          "retrieved_chunk_ids": [
+            "10559501",
+            "9433958",
+            "6923795",
+            "30437264",
+            "6163801"
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "1021",
+      "query": "Rapid up-regulation and higher basal expression of interferon-induced genes reduce survival of granule cell neurons that are infected by West Nile virus.",
+      "relevant_chunk_ids": [
+        "9433958"
+      ],
+      "methods": {
+        "bm25": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 0.3333333333333333,
+          "latency_ms": 55.21790000057081,
+          "retrieved_chunk_ids": [
+            "10559501",
+            "12885341",
+            "9433958",
+            "34287602",
+            "38376189"
+          ]
+        },
+        "dense": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr": 0.0,
+          "latency_ms": 17.407200000889134,
+          "retrieved_chunk_ids": [
+            "8210189",
+            "33986507",
+            "30221601",
+            "6264468",
+            "6923795"
+          ]
+        },
+        "rrf": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr": 0.0,
+          "latency_ms": 72.70649999554735,
+          "retrieved_chunk_ids": [
+            "10559501",
+            "8210189",
+            "12885341",
+            "33986507",
+            "30221601"
+          ]
+        },
+        "rerank": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 0.3333333333333333,
+          "latency_ms": 7371.518299994932,
+          "retrieved_chunk_ids": [
+            "10559501",
+            "6923795",
+            "9433958",
+            "26731863",
+            "30437264"
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "1024",
+      "query": "Recurrent mutations occur frequently within CTCF anchor sites adjacent to oncogenes.",
+      "relevant_chunk_ids": [
+        "5373138"
+      ],
+      "methods": {
+        "bm25": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 1.0,
+          "latency_ms": 31.121200001507532,
+          "retrieved_chunk_ids": [
+            "5373138",
+            "24995939",
+            "8494570",
+            "140874",
+            "26064942"
+          ]
+        },
+        "dense": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr": 0.0,
+          "latency_ms": 21.028600000136066,
+          "retrieved_chunk_ids": [
+            "3329824",
+            "18816720",
+            "1921218",
+            "984825",
+            "31347396"
+          ]
+        },
+        "rrf": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 0.25,
+          "latency_ms": 52.21999999776017,
+          "retrieved_chunk_ids": [
+            "24995939",
+            "14663842",
+            "3329824",
+            "5373138",
+            "18816720"
+          ]
+        },
+        "rerank": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 1.0,
+          "latency_ms": 7374.580499999865,
+          "retrieved_chunk_ids": [
+            "5373138",
+            "24995939",
+            "8494570",
+            "140874",
+            "14530534"
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "1029",
+      "query": "Reduced responsiveness to interleukin-2 in regulatory T cells is associated with greater resistance to autoimmune diseases such as Type 1 Diabetes.",
+      "relevant_chunk_ids": [
+        "13923140",
+        "13940200",
+        "11899391"
+      ],
+      "methods": {
+        "bm25": {
+          "hit@5": 1.0,
+          "recall@5": 0.6666666666666666,
+          "rr": 1.0,
+          "latency_ms": 58.48559999867575,
+          "retrieved_chunk_ids": [
+            "11899391",
+            "13923140",
+            "7115651",
+            "34025053",
+            "5476778"
+          ]
+        },
+        "dense": {
+          "hit@5": 1.0,
+          "recall@5": 0.6666666666666666,
+          "rr": 1.0,
+          "latency_ms": 18.767100002150983,
+          "retrieved_chunk_ids": [
+            "13923140",
+            "11899391",
+            "8185080",
+            "19511011",
+            "25516011"
+          ]
+        },
+        "rrf": {
+          "hit@5": 1.0,
+          "recall@5": 0.6666666666666666,
+          "rr": 1.0,
+          "latency_ms": 77.32130000658799,
+          "retrieved_chunk_ids": [
+            "11899391",
+            "13923140",
+            "1855679",
+            "7115651",
+            "8185080"
+          ]
+        },
+        "rerank": {
+          "hit@5": 1.0,
+          "recall@5": 0.6666666666666666,
+          "rr": 1.0,
+          "latency_ms": 7384.084900004382,
+          "retrieved_chunk_ids": [
+            "11899391",
+            "13923140",
+            "2388819",
+            "120626",
+            "7115651"
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "1041",
+      "query": "Replacement of histone H2A with H2A.Z slows gene activation in yeasts by stabilizing +1 nucleosomes.",
+      "relevant_chunk_ids": [
+        "25254425",
+        "16626264"
+      ],
+      "methods": {
+        "bm25": {
+          "hit@5": 1.0,
+          "recall@5": 0.5,
+          "rr": 0.25,
+          "latency_ms": 40.026700000453275,
+          "retrieved_chunk_ids": [
+            "9451052",
+            "5966635",
+            "15778034",
+            "25254425",
+            "18038955"
+          ]
+        },
+        "dense": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr": 0.0,
+          "latency_ms": 16.80299999861745,
+          "retrieved_chunk_ids": [
+            "9451052",
+            "15778034",
+            "2817000",
+            "18038955",
+            "17518195"
+          ]
+        },
+        "rrf": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr": 0.0,
+          "latency_ms": 56.88059999374673,
+          "retrieved_chunk_ids": [
+            "9451052",
+            "15778034",
+            "2817000",
+            "18038955",
+            "5966635"
+          ]
+        },
+        "rerank": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr": 0.0,
+          "latency_ms": 8077.734699996654,
+          "retrieved_chunk_ids": [
+            "11844791",
+            "9451052",
+            "9881829",
+            "15778034",
+            "18694784"
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "1049",
+      "query": "Ribosomopathies have a low degree of cell and tissue specific pathology.",
+      "relevant_chunk_ids": [
+        "12486491"
+      ],
+      "methods": {
+        "bm25": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr": 0.0,
+          "latency_ms": 29.862700001103804,
+          "retrieved_chunk_ids": [
+            "24737389",
+            "8925851",
+            "7487927",
+            "24044977",
+            "30813140"
+          ]
+        },
+        "dense": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr": 0.0,
+          "latency_ms": 15.029299996967893,
+          "retrieved_chunk_ids": [
+            "24737389",
+            "3468459",
+            "2099400",
+            "502797",
+            "8185080"
+          ]
+        },
+        "rrf": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr": 0.0,
+          "latency_ms": 44.95009999664035,
+          "retrieved_chunk_ids": [
+            "24737389",
+            "3468459",
+            "8925851",
+            "2099400",
+            "7487927"
+          ]
+        },
+        "rerank": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr": 0.0,
+          "latency_ms": 15010.657200000423,
+          "retrieved_chunk_ids": [
+            "8925851",
+            "7487927",
+            "24737389",
+            "24044977",
+            "3353748"
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "1062",
+      "query": "S-nitrosylated GAPDH physiologically transnitrosylates histone deacetylases.",
+      "relevant_chunk_ids": [
+        "20381484"
+      ],
+      "methods": {
+        "bm25": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 1.0,
+          "latency_ms": 41.52829999657115,
+          "retrieved_chunk_ids": [
+            "20381484",
+            "2831620",
+            "25748308",
+            "2139357",
+            "18678095"
+          ]
+        },
+        "dense": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 1.0,
+          "latency_ms": 33.42310000152793,
+          "retrieved_chunk_ids": [
+            "20381484",
+            "32638085",
+            "22968257",
+            "32985041",
+            "665817"
+          ]
+        },
+        "rrf": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 1.0,
+          "latency_ms": 75.1178999998956,
+          "retrieved_chunk_ids": [
+            "20381484",
+            "22968257",
+            "665817",
+            "32985041",
+            "14972169"
+          ]
+        },
+        "rerank": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 1.0,
+          "latency_ms": 7783.019900001818,
+          "retrieved_chunk_ids": [
+            "20381484",
+            "25748308",
+            "32638085",
+            "2139357",
+            "1754001"
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "1086",
+      "query": "Sildenafil improves erectile function in men who experience sexual dysfunction as a result of the use of SSRI antidepressants.",
+      "relevant_chunk_ids": [
+        "39281140"
+      ],
+      "methods": {
+        "bm25": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 1.0,
+          "latency_ms": 55.42319999949541,
+          "retrieved_chunk_ids": [
+            "39281140",
+            "3981244",
+            "308862",
+            "2496002",
+            "5850219"
+          ]
+        },
+        "dense": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 1.0,
+          "latency_ms": 15.423799995915033,
+          "retrieved_chunk_ids": [
+            "39281140",
+            "24082820",
+            "29723642",
+            "5850219",
+            "18574146"
+          ]
+        },
+        "rrf": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 1.0,
+          "latency_ms": 70.9673000019393,
+          "retrieved_chunk_ids": [
+            "39281140",
+            "5850219",
+            "3981244",
+            "15669393",
+            "3413083"
+          ]
+        },
+        "rerank": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 1.0,
+          "latency_ms": 14284.993600005691,
+          "retrieved_chunk_ids": [
+            "39281140",
+            "3981244",
+            "6112053",
+            "5691302",
+            "27466734"
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "1088",
+      "query": "Silencing of Bcl2 is important for the maintenance and progression of tumors.",
+      "relevant_chunk_ids": [
+        "37549932"
+      ],
+      "methods": {
+        "bm25": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr": 0.0,
+          "latency_ms": 34.83759999653557,
+          "retrieved_chunk_ids": [
+            "11915280",
+            "5765455",
+            "6807122",
+            "14863011",
+            "7621534"
+          ]
+        },
+        "dense": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr": 0.0,
+          "latency_ms": 18.954799998027738,
+          "retrieved_chunk_ids": [
+            "33638477",
+            "14863011",
+            "8496132",
+            "11915280",
+            "2405259"
+          ]
+        },
+        "rrf": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr": 0.0,
+          "latency_ms": 53.95439999119844,
+          "retrieved_chunk_ids": [
+            "11915280",
+            "14863011",
+            "33638477",
+            "5765455",
+            "6807122"
+          ]
+        },
+        "rerank": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 1.0,
+          "latency_ms": 7146.1240999924485,
+          "retrieved_chunk_ids": [
+            "37549932",
+            "8496132",
+            "14863011",
+            "4323425",
+            "5765455"
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "1089",
+      "query": "Smc5/6 engagment drives the activation of SUMO E3 ligase Mms21 by ATP-dependent remolding.",
+      "relevant_chunk_ids": [
+        "17628888"
+      ],
+      "methods": {
+        "bm25": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 1.0,
+          "latency_ms": 40.022299996053334,
+          "retrieved_chunk_ids": [
+            "17628888",
+            "7915836",
+            "7645565",
+            "23577014",
+            "143251"
+          ]
+        },
+        "dense": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 1.0,
+          "latency_ms": 27.846000004501548,
+          "retrieved_chunk_ids": [
+            "17628888",
+            "20725212",
+            "8570690",
+            "5775033",
+            "3462075"
+          ]
+        },
+        "rrf": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 1.0,
+          "latency_ms": 68.00130000192439,
+          "retrieved_chunk_ids": [
+            "17628888",
+            "28809022",
+            "20725212",
+            "7915836",
+            "7645565"
+          ]
+        },
+        "rerank": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 1.0,
+          "latency_ms": 7238.404399999126,
+          "retrieved_chunk_ids": [
+            "17628888",
+            "7915836",
+            "143251",
+            "7645565",
+            "23577014"
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "1099",
+      "query": "Statins decrease blood cholesterol.",
+      "relevant_chunk_ids": [
+        "7662206"
+      ],
+      "methods": {
+        "bm25": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 0.3333333333333333,
+          "latency_ms": 14.549400002579205,
+          "retrieved_chunk_ids": [
+            "21557614",
+            "22420524",
+            "7662206",
+            "7454794",
+            "9617381"
+          ]
+        },
+        "dense": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 0.3333333333333333,
+          "latency_ms": 20.645800002967007,
+          "retrieved_chunk_ids": [
+            "35534019",
+            "2423940",
+            "7662206",
+            "14492339",
+            "23245050"
+          ]
+        },
+        "rrf": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 1.0,
+          "latency_ms": 35.30890000547515,
+          "retrieved_chunk_ids": [
+            "7662206",
+            "21557614",
+            "9617381",
+            "7454794",
+            "35534019"
+          ]
+        },
+        "rerank": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 0.25,
+          "latency_ms": 14135.775600007037,
+          "retrieved_chunk_ids": [
+            "21557614",
+            "22420524",
+            "30805636",
+            "7662206",
+            "27449472"
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "1100",
+      "query": "Statins increase blood cholesterol.",
+      "relevant_chunk_ids": [
+        "7662206"
+      ],
+      "methods": {
+        "bm25": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 0.5,
+          "latency_ms": 9.91490000160411,
+          "retrieved_chunk_ids": [
+            "21557614",
+            "7662206",
+            "22420524",
+            "9617381",
+            "24005548"
+          ]
+        },
+        "dense": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 0.25,
+          "latency_ms": 12.823799996112939,
+          "retrieved_chunk_ids": [
+            "35534019",
+            "2423940",
+            "23245050",
+            "7662206",
+            "14492339"
+          ]
+        },
+        "rrf": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 1.0,
+          "latency_ms": 22.807699999248143,
+          "retrieved_chunk_ids": [
+            "7662206",
+            "21557614",
+            "9617381",
+            "35534019",
+            "7454794"
+          ]
+        },
+        "rerank": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr": 0.0,
+          "latency_ms": 7132.739399996353,
+          "retrieved_chunk_ids": [
+            "21557614",
+            "27449472",
+            "24005548",
+            "30805636",
+            "22420524"
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "1104",
+      "query": "Stroke patients with prior use of direct oral anticoagulants have a lower risk of in-hospital mortality than stroke patients with prior use of warfarin.",
+      "relevant_chunk_ids": [
+        "3898784"
+      ],
+      "methods": {
+        "bm25": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 1.0,
+          "latency_ms": 55.62090000603348,
+          "retrieved_chunk_ids": [
+            "3898784",
+            "32328114",
+            "11718220",
+            "16760369",
+            "4910408"
+          ]
+        },
+        "dense": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr": 0.0,
+          "latency_ms": 18.68799999647308,
+          "retrieved_chunk_ids": [
+            "16180601",
+            "2352142",
+            "20554003",
+            "1495563",
+            "32328114"
+          ]
+        },
+        "rrf": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 0.5,
+          "latency_ms": 74.4263000015053,
+          "retrieved_chunk_ids": [
+            "32328114",
+            "3898784",
+            "16180601",
+            "20554003",
+            "37065914"
+          ]
+        },
+        "rerank": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 1.0,
+          "latency_ms": 7258.4257000053185,
+          "retrieved_chunk_ids": [
+            "3898784",
+            "32328114",
+            "16760369",
+            "4910408",
+            "11718220"
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "1107",
+      "query": "Subcutaneous fat depots undergo extensive browning processes after cold exposure.",
+      "relevant_chunk_ids": [
+        "20532591"
+      ],
+      "methods": {
+        "bm25": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 1.0,
+          "latency_ms": 21.39750000060303,
+          "retrieved_chunk_ids": [
+            "20532591",
+            "29381091",
+            "14865329",
+            "32955023",
+            "41790911"
+          ]
+        },
+        "dense": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr": 0.0,
+          "latency_ms": 14.156900004309136,
+          "retrieved_chunk_ids": [
+            "970012",
+            "29381091",
+            "14865329",
+            "641786",
+            "11862753"
+          ]
+        },
+        "rrf": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 0.25,
+          "latency_ms": 35.659000008308794,
+          "retrieved_chunk_ids": [
+            "29381091",
+            "14865329",
+            "970012",
+            "20532591",
+            "26902591"
+          ]
+        },
+        "rerank": {
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "rr": 1.0,
+          "latency_ms": 7281.64390000893,
+          "retrieved_chunk_ids": [
+            "20532591",
+            "29381091",
+            "14865329",
+            "36838958",
+            "26902591"
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "1110",
+      "query": "Suboptimal nutrition is not predictive of chronic disease",
+      "relevant_chunk_ids": [
+        "13770184"
+      ],
+      "methods": {
+        "bm25": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr": 0.0,
+          "latency_ms": 31.851400002778973,
+          "retrieved_chunk_ids": [
+            "756887",
+            "10010651",
+            "43128141",
+            "22236223",
+            "31562330"
+          ]
+        },
+        "dense": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr": 0.0,
+          "latency_ms": 21.69570000114618,
+          "retrieved_chunk_ids": [
+            "27789588",
+            "43128141",
+            "11457219",
+            "3858268",
+            "14615911"
+          ]
+        },
+        "rrf": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr": 0.0,
+          "latency_ms": 53.64040000131354,
+          "retrieved_chunk_ids": [
+            "43128141",
+            "27789588",
+            "756887",
+            "10010651",
+            "11457219"
+          ]
+        },
+        "rerank": {
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "rr": 0.0,
+          "latency_ms": 7349.713700001303,
+          "retrieved_chunk_ids": [
+            "756887",
+            "22236223",
+            "11748341",
+            "18988265",
+            "10010651"
+          ]
+        }
+      }
+    }
+  ]
+}

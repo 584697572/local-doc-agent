@@ -1,6 +1,8 @@
 """LocalDoc-Agent 的 Agent 主循环。"""
 
 import json
+from dataclasses import dataclass
+from time import perf_counter
 
 from config import (
     MAX_AGENT_STEPS,
@@ -150,16 +152,43 @@ def generate_final_answer(chat_history, state):
     return response.choices[0].message.content
 
 
+@dataclass
+class AgentRun:
+    """保留一次真实运行的答案、状态和逻辑 LLM 请求次数。"""
+
+    answer: str
+    state: AgentState
+    latency_ms: float
+
+    @property
+    def trace(self):
+        return self.state.trace
+
+    @property
+    def usage(self):
+        # 统计应用层请求；SDK 内部重试次数和 token 消耗不在此计数。
+        return {"llm_calls": self.state.llm_calls}
+
+
+def run_agent_with_trace(user_input, chat_history, *, state=None):
+    """评测入口复用原主循环；可传入状态以便异常后仍能读取轨迹。"""
+    state = state or AgentState(user_input, MAX_SEARCH_CALLS)
+    started = perf_counter()
+    answer = _run_agent(user_input, chat_history, state)
+    return AgentRun(answer, state, (perf_counter() - started) * 1000)
+
+
 def run_agent(user_input, chat_history):
+    """保留 CLI 原来的字符串返回接口。"""
+    return run_agent_with_trace(user_input, chat_history).answer
+
+
+def _run_agent(user_input, chat_history, state):
     """执行多轮 Tool-Calling Agent Loop。"""
 
-    # 每个用户问题都创建一个新的运行状态
-    state = AgentState(
-        original_query=user_input,
-        max_search_calls=MAX_SEARCH_CALLS,
-    )
-
     # 先判断这个问题是否需要查询本地知识库
+    if user_input.strip():
+        state.llm_calls += 1
     route_decision = route_query(
         user_input
     )
@@ -182,6 +211,7 @@ def run_agent(user_input, chat_history):
 
     # 不需要知识库的问题直接回答
     if not route_decision.needs_retrieval:
+        state.llm_calls += 1
         return generate_direct_answer(
             user_input,
             chat_history,
@@ -200,6 +230,7 @@ def run_agent(user_input, chat_history):
     ]
 
     for step in range(MAX_AGENT_STEPS):
+        state.llm_calls += 1
         response = client.chat.completions.create(
             model=MODEL_NAME,
             messages=messages,
@@ -291,6 +322,7 @@ def run_agent(user_input, chat_history):
                         tool_name,
                         arguments,
                     )
+                    state.record_tool_execution(query, tool_result)
 
                     # 只有真正找到内容，才加入 Evidence
                     if tool_result.status == "success":
@@ -335,6 +367,7 @@ def run_agent(user_input, chat_history):
 
         # 这一轮获得新证据后，进入 Evidence → Rewrite 循环
         if search_executed:
+            state.llm_calls += 1
             decision = evaluate_evidence(
                 user_query=state.original_query,
                 evidence=state.evidence,
@@ -366,6 +399,8 @@ def run_agent(user_input, chat_history):
                 not decision.sufficient
                 and state.search_count < state.max_search_calls
             ):
+                if decision.missing_aspects:
+                    state.llm_calls += 1
                 rewrite_result = rewrite_query(
                     original_query=state.original_query,
                     missing_aspects=decision.missing_aspects,
@@ -418,6 +453,7 @@ def run_agent(user_input, chat_history):
                         "query": rewrite_result.query,
                     },
                 )
+                state.record_tool_execution(rewrite_result.query, rewritten_result)
 
                 if rewritten_result.status == "success":
                     state.record_evidence(
@@ -452,6 +488,7 @@ def run_agent(user_input, chat_history):
 
 
                 # 有了新 Evidence，再重新判断一次
+                state.llm_calls += 1
                 decision = evaluate_evidence(
                     user_query=state.original_query,
                     evidence=state.evidence,
@@ -482,6 +519,7 @@ def run_agent(user_input, chat_history):
             # 1. 要么证据已经足够
             # 2. 要么搜索预算耗尽
             # 3. 要么 Rewriter 无法产生有效 Query
+            state.llm_calls += 1
             return generate_final_answer(
                 chat_history,
                 state,

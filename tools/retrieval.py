@@ -91,5 +91,11 @@ def search_documents(query: str) -> ToolResult:
         metadata={
             "query": query,
             "result_count": len(results),
+            # 评测使用真实命中的来源，不能把 Gold 来源当成已检索来源。
+            "sources": [
+                {"filename": result.chunk.filename, "page": result.chunk.page,
+                 "section": result.chunk.section, "chunk_id": result.chunk.chunk_id}
+                for result in results
+            ],
         },
     )

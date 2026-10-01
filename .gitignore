@@ -11,3 +11,7 @@ data/*
 
 # Public benchmark datasets
 evaluation/data/
+
+# 内部回归原始结果可重新生成，只提交精选基线。
+evaluation/results/agent/*
+!evaluation/results/agent/baseline_summary.json

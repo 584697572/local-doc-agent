@@ -18,6 +18,9 @@ class AgentState:
     # 已经搜索了几次
     search_count: int = 0
 
+    # 应用层实际发起的 LLM 请求数，包含 Router、Judge、Rewrite 和回答。
+    llm_calls: int = 0
+
     # 最近一次真正执行的 Query
     last_query: str | None = None
 
@@ -91,6 +94,13 @@ class AgentState:
         保存一次检索返回的 Evidence。
         """
         self.evidence.append(evidence)
+
+    def record_tool_execution(self, query, result) -> None:
+        """把执行与预约搜索分开记录，便于发现去重失效和错误证据。"""
+        self.add_trace(
+            "tool_executed", query=query, status=result.status,
+            content=result.content, error=result.error, metadata=result.metadata,
+        )
 
     def add_trace(self, event: str, **details) -> None:
         """

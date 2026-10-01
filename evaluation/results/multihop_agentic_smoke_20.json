@@ -1,0 +1,2240 @@
+{
+  "dataset": "MultiHop-RAG",
+  "experiment": "agentic_rag",
+  "model": "deepseek-v4-flash",
+  "max_search_calls": 3,
+  "retrieval_method": "safe_rerank",
+  "retrieval_top_k": 5,
+  "rewrite_search_index_build_seconds": 528.0444438000013,
+  "summary": {
+    "total_cases": 20,
+    "baseline_accuracy": 0.6,
+    "agentic_accuracy": 0.75,
+    "accuracy_delta": 0.15,
+    "comparison_counts": {
+      "rescued": 3,
+      "stable_success": 12,
+      "stable_failure": 5
+    },
+    "avg_search_calls": 2.3,
+    "avg_rewrite_calls": 1.3,
+    "avg_llm_calls": 4.6,
+    "rewrite_trigger_rate": 0.7,
+    "budget_exhaustion_rate": 0.5,
+    "avg_final_gold_doc_recall": 0.7291666666666666,
+    "all_gold_docs_present_rate": 0.5,
+    "avg_final_gold_fact_recall": 0.3958333333333333,
+    "all_gold_facts_present_rate": 0.2,
+    "avg_pipeline_latency_ms": 59933.32279000024
+  },
+  "records": [
+    {
+      "case_id": "multihop_0074",
+      "question_type": "inference_query",
+      "query": "Which football club, recently discussed in articles from 'The Guardian', 'The Roar | Sports Writers Blog', and 'BBC News - Entertainment & Arts', had a significant change in league position due to a points penalty after a series of wins, and is recognized for its history and community importance as emphasized by Farhad Moshiri following an introduction by its late chairman Bill Kenwright?",
+      "gold_answer": "Everton Football Club",
+      "baseline_prediction": "Everton",
+      "agentic_prediction": "Everton Football Club",
+      "baseline_correct": false,
+      "agentic_correct": true,
+      "comparison": "rescued",
+      "qa_metrics": {
+        "official_match": 1.0,
+        "exact_match": 1.0,
+        "gold_containment": 1.0,
+        "token_f1": 1.0
+      },
+      "search_calls": 3,
+      "rewrite_calls": 2,
+      "judge_calls": 3,
+      "llm_calls": 6,
+      "search_queries": [
+        "Which football club, recently discussed in articles from 'The Guardian', 'The Roar | Sports Writers Blog', and 'BBC News - Entertainment & Arts', had a significant change in league position due to a points penalty after a series of wins, and is recognized for its history and community importance as emphasized by Farhad Moshiri following an introduction by its late chairman Bill Kenwright?",
+        "Everton points penalty Premier League after series of wins significant league position change The Guardian The Roar Farhad Moshiri Bill Kenwright history community importance",
+        "The Roar Everton points penalty Premier League series of wins before deduction"
+      ],
+      "final_evidence_sufficient": false,
+      "budget_exhausted": true,
+      "final_chunk_ids": [
+        "multihop_doc_0e15ed371c7931ad_chunk_0000",
+        "multihop_doc_0e15ed371c7931ad_chunk_0009",
+        "multihop_doc_0e15ed371c7931ad_chunk_0007",
+        "multihop_doc_0e15ed371c7931ad_chunk_0006",
+        "multihop_doc_0e15ed371c7931ad_chunk_0008",
+        "multihop_doc_06db0f4ed5649bf8_chunk_0000",
+        "multihop_doc_0e15ed371c7931ad_chunk_0005",
+        "multihop_doc_06db0f4ed5649bf8_chunk_0005",
+        "multihop_doc_06db0f4ed5649bf8_chunk_0001",
+        "multihop_doc_5da05a260f58c6c4_chunk_0003",
+        "multihop_doc_5da05a260f58c6c4_chunk_0004"
+      ],
+      "final_context": {
+        "gold_doc_recall": 0.6666666666666666,
+        "all_gold_docs_present": false,
+        "unique_context_documents": 3
+      },
+      "final_fact_coverage": {
+        "matched_fact_count": 1,
+        "gold_fact_count": 3,
+        "fact_recall": 0.3333333333333333,
+        "any_gold_fact_present": true,
+        "all_gold_facts_present": false
+      },
+      "timing": {
+        "search_latency_ms": 15015.239200001815,
+        "judge_latency_ms": 22729.25469999973,
+        "rewrite_latency_ms": 5028.698900001473,
+        "final_answer_latency_ms": 1418.0710000000545
+      },
+      "pipeline_latency_ms": 568300.1455999983,
+      "token_usage": {
+        "prompt_tokens": 2469,
+        "completion_tokens": 181,
+        "total_tokens": 2650
+      },
+      "trace": [
+        {
+          "event": "evidence_judged",
+          "search_count": 1,
+          "sufficient": false,
+          "reason": "The evidence only covers part of the question: it identifies Everton and includes Farhad Moshiri’s quote about the club’s history and community importance after Bill Kenwright introduced him to the club. However, it does not contain information about a points penalty, a series of wins, or a resulting significant change in league position. It also does not include articles from 'The Guardian' or 'The Roar | Sports Writers Blog', only BBC News - Entertainment & Arts.",
+          "missing_aspects": [
+            "Evidence from 'The Guardian' articles",
+            "Evidence from 'The Roar | Sports Writers Blog' articles",
+            "Information about a points penalty",
+            "Information about a series of wins",
+            "Information about a significant change in league position due to a points penalty"
+          ]
+        },
+        {
+          "event": "query_rewritten",
+          "query": "Everton points penalty Premier League after series of wins significant league position change The Guardian The Roar Farhad Moshiri Bill Kenwright history community importance",
+          "reason": "The original query was too broad and returned no targeted evidence. This new query focuses on the missing elements—points penalty, series of wins, league position change—and adds specific source names and key entities (Everton, Farhad Moshiri, Bill Kenwright) to retrieve relevant articles from The Guardian and The Roar while preserving the club identity implied by the original question."
+        },
+        {
+          "event": "search_completed",
+          "query": "Everton points penalty Premier League after series of wins significant league position change The Guardian The Roar Farhad Moshiri Bill Kenwright history community importance",
+          "new_chunk_ids": [
+            "multihop_doc_06db0f4ed5649bf8_chunk_0000",
+            "multihop_doc_0e15ed371c7931ad_chunk_0006",
+            "multihop_doc_0e15ed371c7931ad_chunk_0009",
+            "multihop_doc_0e15ed371c7931ad_chunk_0005",
+            "multihop_doc_0e15ed371c7931ad_chunk_0008"
+          ],
+          "total_evidence_chunks": 7
+        },
+        {
+          "event": "evidence_judged",
+          "search_count": 2,
+          "sufficient": false,
+          "reason": "The evidence identifies Everton as the club through The Guardian and BBC News - Entertainment & Arts articles, covering the points penalty, Bill Kenwright, Farhad Moshiri, and the club's history and community importance. However, the question explicitly requires the club to be discussed in 'The Roar | Sports Writers Blog', for which no evidence is provided. Additionally, the evidence does not mention a series of wins before the points penalty.",
+          "missing_aspects": [
+            "Evidence from 'The Roar | Sports Writers Blog' discussing the club",
+            "Evidence of a series of wins before the points penalty"
+          ]
+        },
+        {
+          "event": "query_rewritten",
+          "query": "The Roar Everton points penalty Premier League series of wins before deduction",
+          "reason": "Focuses on the missing evidence from 'The Roar | Sports Writers Blog' and the series of wins prior to the points penalty, which were not specifically covered in previous searches."
+        },
+        {
+          "event": "search_completed",
+          "query": "The Roar Everton points penalty Premier League series of wins before deduction",
+          "new_chunk_ids": [
+            "multihop_doc_06db0f4ed5649bf8_chunk_0005",
+            "multihop_doc_06db0f4ed5649bf8_chunk_0001",
+            "multihop_doc_5da05a260f58c6c4_chunk_0003",
+            "multihop_doc_5da05a260f58c6c4_chunk_0004",
+            "multihop_doc_06db0f4ed5649bf8_chunk_0000"
+          ],
+          "total_evidence_chunks": 11
+        },
+        {
+          "event": "evidence_judged",
+          "search_count": 3,
+          "sufficient": false,
+          "reason": "当前证据能够确认俱乐部是埃弗顿，也包含《The Guardian》关于扣分和连胜的报道，以及《BBC News - Entertainment & Arts》中莫希里强调俱乐部历史与社区重要性、并提及比尔·肯赖特引荐的内容。但缺少来自《The Roar | Sports Writers Blog》的相关文章证据，无法满足问题中明确要求的三家来源均被讨论的条件。",
+          "missing_aspects": [
+            "来自 'The Roar | Sports Writers Blog' 的相关文章证据",
+            "将“连胜”与“因扣分导致联赛排名重大变化”直接关联起来的明确证据"
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "case_id": "multihop_0141",
+      "question_type": "temporal_query",
+      "query": "After the Polygon report on Valve's updates to the Steam Deck hardware published on November 9, 2023, and the Engadget review of the Steam Deck OLED version published on the same date, was the reporting on Valve's improvements to the Steam Deck hardware consistent?",
+      "gold_answer": "Yes",
+      "baseline_prediction": "Yes, the reporting was consistent. Both Polygon and Engadget described Valve's Steam Deck OLED as a mid-cycle refresh with hardware improvements beyond the screen, including better battery life, thumbsticks, haptics, charging, and antennas.",
+      "agentic_prediction": "Yes. Both reports consistently describe the Steam Deck OLED as a mid-cycle refresh with improvements beyond the screen: Engadget highlights a better screen, longer battery life, better thumbsticks, haptics, faster charging, and improved antennas, while Polygon says Valve has continually improved the hardware via updates and, without increasing horsepower, improved practically everything else, including longer battery life.",
+      "baseline_correct": true,
+      "agentic_correct": true,
+      "comparison": "stable_success",
+      "qa_metrics": {
+        "official_match": 0.0,
+        "exact_match": 0.0,
+        "gold_containment": 1.0,
+        "token_f1": 0.034482758620689655
+      },
+      "search_calls": 2,
+      "rewrite_calls": 1,
+      "judge_calls": 2,
+      "llm_calls": 4,
+      "search_queries": [
+        "After the Polygon report on Valve's updates to the Steam Deck hardware published on November 9, 2023, and the Engadget review of the Steam Deck OLED version published on the same date, was the reporting on Valve's improvements to the Steam Deck hardware consistent?",
+        "Polygon November 9 2023 Valve Steam Deck hardware improvements claims compared with Engadget Steam Deck OLED review hardware details contradictions consistency"
+      ],
+      "final_evidence_sufficient": true,
+      "budget_exhausted": false,
+      "final_chunk_ids": [
+        "multihop_doc_4ea2e967866a9566_chunk_0000",
+        "multihop_doc_5ffc912c946b7243_chunk_0000",
+        "multihop_doc_5ffc912c946b7243_chunk_0022",
+        "multihop_doc_0469bb0218ce5507_chunk_0012",
+        "multihop_doc_5ffc912c946b7243_chunk_0011",
+        "multihop_doc_0469bb0218ce5507_chunk_0004"
+      ],
+      "final_context": {
+        "gold_doc_recall": 0.6666666666666666,
+        "all_gold_docs_present": false,
+        "unique_context_documents": 3
+      },
+      "final_fact_coverage": {
+        "matched_fact_count": 1,
+        "gold_fact_count": 3,
+        "fact_recall": 0.3333333333333333,
+        "any_gold_fact_present": true,
+        "all_gold_facts_present": false
+      },
+      "timing": {
+        "search_latency_ms": 5436.861799997132,
+        "judge_latency_ms": 22882.16029999603,
+        "rewrite_latency_ms": 1597.7151000006415,
+        "final_answer_latency_ms": 4441.329400000541
+      },
+      "pipeline_latency_ms": 31251.59760000315,
+      "token_usage": {
+        "prompt_tokens": 1411,
+        "completion_tokens": 706,
+        "total_tokens": 2117
+      },
+      "trace": [
+        {
+          "event": "evidence_judged",
+          "search_count": 1,
+          "sufficient": false,
+          "reason": "The evidence contains only partial snippets from both the Polygon report and the Engadget review. While both sources broadly indicate that the Steam Deck OLED has improvements beyond the screen, the Polygon report's specific claims about Valve's hardware improvements and any direct point-by-point comparison with Engadget's review are not present, so consistency cannot be fully assessed.",
+          "missing_aspects": [
+            "Polygon report's specific claims about Valve's improvements to Steam Deck hardware",
+            "Engadget review's full details on all hardware improvements",
+            "Direct comparison or contradiction analysis between the two reports"
+          ]
+        },
+        {
+          "event": "query_rewritten",
+          "query": "Polygon November 9 2023 Valve Steam Deck hardware improvements claims compared with Engadget Steam Deck OLED review hardware details contradictions consistency",
+          "reason": "The original query has already been searched. This new query targets the missing specifics: Polygon's claims, Engadget's full hardware details, and direct comparison or contradiction analysis between the two reports."
+        },
+        {
+          "event": "search_completed",
+          "query": "Polygon November 9 2023 Valve Steam Deck hardware improvements claims compared with Engadget Steam Deck OLED review hardware details contradictions consistency",
+          "new_chunk_ids": [
+            "multihop_doc_5ffc912c946b7243_chunk_0000",
+            "multihop_doc_4ea2e967866a9566_chunk_0000",
+            "multihop_doc_5ffc912c946b7243_chunk_0011",
+            "multihop_doc_0469bb0218ce5507_chunk_0004",
+            "multihop_doc_0469bb0218ce5507_chunk_0012"
+          ],
+          "total_evidence_chunks": 6
+        },
+        {
+          "event": "evidence_judged",
+          "search_count": 2,
+          "sufficient": true,
+          "reason": "The evidence includes excerpts from both the Polygon article and the Engadget review, both published on November 9, 2023. The excerpts describe the same improvements to the Steam Deck hardware—better screen (OLED), longer battery life, improved thumbsticks, smoother haptics, faster charging, improved antennas, and internal chip/thermal updates—and both frame the device as a mid-cycle refresh rather than a Steam Deck 2. No contradictions appear in the provided evidence, so the current evidence is sufficient to judge consistency.",
+          "missing_aspects": []
+        }
+      ],
+      "error": null
+    },
+    {
+      "case_id": "multihop_0161",
+      "question_type": "temporal_query",
+      "query": "Between the TechCrunch report on Sam Bankman-Fried's trial and the subsequent report by the same source on the prosecution's allegations against him, was there consistency in the portrayal of the charges he is facing?",
+      "gold_answer": "Yes",
+      "baseline_prediction": "Insufficient information",
+      "agentic_prediction": "Insufficient information",
+      "baseline_correct": false,
+      "agentic_correct": false,
+      "comparison": "stable_failure",
+      "qa_metrics": {
+        "official_match": 0.0,
+        "exact_match": 0.0,
+        "gold_containment": 0.0,
+        "token_f1": 0.0
+      },
+      "search_calls": 3,
+      "rewrite_calls": 2,
+      "judge_calls": 3,
+      "llm_calls": 6,
+      "search_queries": [
+        "Between the TechCrunch report on Sam Bankman-Fried's trial and the subsequent report by the same source on the prosecution's allegations against him, was there consistency in the portrayal of the charges he is facing?",
+        "TechCrunch Sam Bankman-Fried prosecution allegations charges trial",
+        "TechCrunch Sam Bankman-Fried trial charges wire fraud securities fraud conspiracy detailed report"
+      ],
+      "final_evidence_sufficient": false,
+      "budget_exhausted": true,
+      "final_chunk_ids": [
+        "multihop_doc_0f89e922841f864b_chunk_0004",
+        "multihop_doc_2c785c23846b0780_chunk_0000",
+        "multihop_doc_c795f94061bd3d0c_chunk_0000",
+        "multihop_doc_c5b2a72d9024b262_chunk_0002",
+        "multihop_doc_70808d4f68bc664c_chunk_0001",
+        "multihop_doc_a546501175a8dd2b_chunk_0008",
+        "multihop_doc_22a798cdccffe158_chunk_0005",
+        "multihop_doc_a546501175a8dd2b_chunk_0003",
+        "multihop_doc_9b7ae5b569cfafc9_chunk_0004"
+      ],
+      "final_context": {
+        "gold_doc_recall": 0.3333333333333333,
+        "all_gold_docs_present": false,
+        "unique_context_documents": 8
+      },
+      "final_fact_coverage": {
+        "matched_fact_count": 1,
+        "gold_fact_count": 3,
+        "fact_recall": 0.3333333333333333,
+        "any_gold_fact_present": true,
+        "all_gold_facts_present": false
+      },
+      "timing": {
+        "search_latency_ms": 8363.7673000012,
+        "judge_latency_ms": 9470.105900003546,
+        "rewrite_latency_ms": 16932.609999996203,
+        "final_answer_latency_ms": 2890.9042999985104
+      },
+      "pipeline_latency_ms": 34586.43369999845,
+      "token_usage": {
+        "prompt_tokens": 2019,
+        "completion_tokens": 635,
+        "total_tokens": 2654
+      },
+      "trace": [
+        {
+          "event": "evidence_judged",
+          "search_count": 1,
+          "sufficient": false,
+          "reason": "The evidence only includes one TechCrunch report (Evidence 2) about the SBF trial, but the question asks for a comparison between that TechCrunch report and a subsequent TechCrunch report on the prosecution's allegations. No subsequent TechCrunch article is provided, and the available sources are from CNBC, The Verge, and Fortune instead. Therefore, the evidence does not allow comparing how the same source portrayed the charges across the two reports.",
+          "missing_aspects": [
+            "The subsequent TechCrunch report on the prosecution's allegations against Sam Bankman-Fried",
+            "Details of how the first TechCrunch report portrayed the charges",
+            "Details of how the subsequent TechCrunch report portrayed the charges",
+            "Enough content from both TechCrunch reports to assess consistency in the portrayal of the charges"
+          ]
+        },
+        {
+          "event": "query_rewritten",
+          "query": "TechCrunch Sam Bankman-Fried prosecution allegations charges trial",
+          "reason": "The original query already searched the full question, but missing information includes the subsequent TechCrunch report on prosecution's allegations and details of how both reports portrayed the charges. This new query adds keywords 'prosecution', 'allegations', and 'charges' to specifically retrieve the second report and charge details, while keeping 'trial' to also capture the first report for consistency assessment."
+        },
+        {
+          "event": "search_completed",
+          "query": "TechCrunch Sam Bankman-Fried prosecution allegations charges trial",
+          "new_chunk_ids": [
+            "multihop_doc_0f89e922841f864b_chunk_0004",
+            "multihop_doc_2c785c23846b0780_chunk_0000",
+            "multihop_doc_a546501175a8dd2b_chunk_0008",
+            "multihop_doc_c5b2a72d9024b262_chunk_0002",
+            "multihop_doc_22a798cdccffe158_chunk_0005"
+          ],
+          "total_evidence_chunks": 7
+        },
+        {
+          "event": "evidence_judged",
+          "search_count": 2,
+          "sufficient": false,
+          "reason": "当前证据仅包含一篇 TechCrunch 报道（Evidence 2），且该报道只笼统提到 'alleged fraud and money laundering'，没有详细列出指控内容；同时缺少用户问题所要求的 TechCrunch 后续关于检方指控的报道，因此无法比较两篇报道在指控描述上是否一致。",
+          "missing_aspects": [
+            "TechCrunch 后续关于检方对 Sam Bankman-Fried 指控的报道",
+            "TechCrunch 首次报道中对具体指控的详细描述",
+            "TechCrunch 后续报道中对具体指控的详细描述"
+          ]
+        },
+        {
+          "event": "query_rewritten",
+          "query": "TechCrunch Sam Bankman-Fried trial charges wire fraud securities fraud conspiracy detailed report",
+          "reason": "该 Query 聚焦于 TechCrunch 报道中 Sam Bankman-Fried 面临的具体指控细节（如电汇欺诈、证券欺诈、共谋等），以获取首次庭审报道和后续检方指控报道中对指控的具体描述，从而比较两者的连贯性。"
+        },
+        {
+          "event": "search_completed",
+          "query": "TechCrunch Sam Bankman-Fried trial charges wire fraud securities fraud conspiracy detailed report",
+          "new_chunk_ids": [
+            "multihop_doc_22a798cdccffe158_chunk_0005",
+            "multihop_doc_c5b2a72d9024b262_chunk_0002",
+            "multihop_doc_a546501175a8dd2b_chunk_0003",
+            "multihop_doc_9b7ae5b569cfafc9_chunk_0004",
+            "multihop_doc_0f89e922841f864b_chunk_0004"
+          ],
+          "total_evidence_chunks": 9
+        },
+        {
+          "event": "evidence_judged",
+          "search_count": 3,
+          "sufficient": false,
+          "reason": "The evidence only includes one TechCrunch report (Evidence 2), which briefly mentions Bankman-Fried being in court for alleged fraud and money laundering. It does not include a subsequent TechCrunch report specifically on the prosecution's allegations against him. Therefore, the evidence is insufficient to compare whether the two TechCrunch reports were consistent in portraying the charges.",
+          "missing_aspects": [
+            "A subsequent TechCrunch report on the prosecution's allegations against Sam Bankman-Fried",
+            "The specific charges described in the first TechCrunch report and in the subsequent TechCrunch report",
+            "A direct comparison or consistency assessment between the two TechCrunch reports"
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "case_id": "multihop_0261",
+      "question_type": "comparison_query",
+      "query": "Does the article from 'The Independent - Life and Style' claim that Taylor Swift is secretive about her relationship with a specific individual, in contrast to the 'CBSSports.com' article which discusses her rumored romance but focuses on her attendance and performance at a specific venue?",
+      "gold_answer": "no",
+      "baseline_prediction": "Yes, the Independent article references a 'secret start' to her relationship with Travis Kelce, while the CBS article discusses the rumored romance and her attendance at Chiefs games.",
+      "agentic_prediction": "Yes",
+      "baseline_correct": false,
+      "agentic_correct": false,
+      "comparison": "stable_failure",
+      "qa_metrics": {
+        "official_match": 0.0,
+        "exact_match": 0.0,
+        "gold_containment": 0.0,
+        "token_f1": 0.0
+      },
+      "search_calls": 3,
+      "rewrite_calls": 2,
+      "judge_calls": 3,
+      "llm_calls": 6,
+      "search_queries": [
+        "Does the article from 'The Independent - Life and Style' claim that Taylor Swift is secretive about her relationship with a specific individual, in contrast to the 'CBSSports.com' article which discusses her rumored romance but focuses on her attendance and performance at a specific venue?",
+        "Taylor Swift Travis Kelce secretive relationship The Independent Life and Style full article; CBSSports.com Taylor Swift performance specific venue",
+        "The Independent Life and Style Taylor Swift relationship 'secret start'; CBSSports.com Taylor Swift performance venue"
+      ],
+      "final_evidence_sufficient": false,
+      "budget_exhausted": true,
+      "final_chunk_ids": [
+        "multihop_doc_2a75769fa9caeed2_chunk_0000",
+        "multihop_doc_5319071afd2cf8dc_chunk_0000",
+        "multihop_doc_2a75769fa9caeed2_chunk_0001",
+        "multihop_doc_388ce2e006868f4c_chunk_0000",
+        "multihop_doc_95c1918ed4165ac4_chunk_0016",
+        "multihop_doc_e29720ca8e090a69_chunk_0002",
+        "multihop_doc_e29720ca8e090a69_chunk_0000",
+        "multihop_doc_95c1918ed4165ac4_chunk_0000"
+      ],
+      "final_context": {
+        "gold_doc_recall": 1.0,
+        "all_gold_docs_present": true,
+        "unique_context_documents": 5
+      },
+      "final_fact_coverage": {
+        "matched_fact_count": 0,
+        "gold_fact_count": 2,
+        "fact_recall": 0.0,
+        "any_gold_fact_present": false,
+        "all_gold_facts_present": false
+      },
+      "timing": {
+        "search_latency_ms": 9212.05180000834,
+        "judge_latency_ms": 30520.959800003766,
+        "rewrite_latency_ms": 16425.62800000087,
+        "final_answer_latency_ms": 4132.237099998747
+      },
+      "pipeline_latency_ms": 57135.482700003195,
+      "token_usage": {
+        "prompt_tokens": 1854,
+        "completion_tokens": 759,
+        "total_tokens": 2613
+      },
+      "trace": [
+        {
+          "event": "evidence_judged",
+          "search_count": 1,
+          "sufficient": false,
+          "reason": "The evidence includes the title and partial content of the Independent article, which mentions a 'secret start' to Swift's relationship with Travis Kelce, and the CBSSports article, which discusses a rumored romance and Swift attending Chiefs games. However, it does not clearly establish that the Independent article claims Swift is 'secretive' about the relationship, and it does not provide enough content from the CBSSports article to confirm a focus on her performance at a specific venue. The specific venue is also not identified, and performance details are absent from the retrieved chunk.",
+          "missing_aspects": [
+            "Explicit claim in the Independent article that Taylor Swift is secretive about her relationship with Travis Kelce, as opposed to only a secret start",
+            "CBSSports article content showing focus on Taylor Swift's performance at a specific venue",
+            "Identification of the specific venue referenced in the CBSSports article",
+            "Sufficient full article content to verify the claimed contrast between the two articles"
+          ]
+        },
+        {
+          "event": "query_rewritten",
+          "query": "Taylor Swift Travis Kelce secretive relationship The Independent Life and Style full article; CBSSports.com Taylor Swift performance specific venue",
+          "reason": "The original query was a single broad comparison question; this new query targets the missing details: the explicit claim in The Independent that Taylor Swift is secretive about her relationship with Travis Kelce (not just a secret start), the CBSSports.com article's focus on her performance at a specific venue, and identification of that venue. This should retrieve more precise article content to verify the claimed contrast."
+        },
+        {
+          "event": "search_completed",
+          "query": "Taylor Swift Travis Kelce secretive relationship The Independent Life and Style full article; CBSSports.com Taylor Swift performance specific venue",
+          "new_chunk_ids": [
+            "multihop_doc_2a75769fa9caeed2_chunk_0000",
+            "multihop_doc_5319071afd2cf8dc_chunk_0000",
+            "multihop_doc_e29720ca8e090a69_chunk_0002",
+            "multihop_doc_388ce2e006868f4c_chunk_0000",
+            "multihop_doc_2a75769fa9caeed2_chunk_0001"
+          ],
+          "total_evidence_chunks": 6
+        },
+        {
+          "event": "evidence_judged",
+          "search_count": 2,
+          "sufficient": false,
+          "reason": "The retrieved evidence includes titles and truncated snippets from both articles, but it does not provide enough content to confirm the specific claims in the question. The Independent article snippet only indicates that Swift 'reveals' a 'secret start' to her relationship with Travis Kelce, not explicitly that she is secretive about the relationship. The CBSSports.com snippet mentions rumored romance and attendance at Chiefs games, but it does not clearly show a focus on her performance at a specific venue. Therefore, the evidence is insufficient to answer the comparative yes/no question.",
+          "missing_aspects": [
+            "Whether The Independent - Life and Style article actually claims Taylor Swift is secretive about her relationship with a specific individual, rather than just revealing a secret start",
+            "Whether the CBSSports.com article focuses on her performance at a specific venue, as the snippet is truncated before that detail",
+            "The specific individual referenced in the secrecy claim from the Independent article",
+            "Enough content from both articles to evaluate the claimed contrast between them"
+          ]
+        },
+        {
+          "event": "query_rewritten",
+          "query": "The Independent Life and Style Taylor Swift relationship 'secret start'; CBSSports.com Taylor Swift performance venue",
+          "reason": "Previous queries were broad and didn't target the specific missing details: whether the Independent article uses 'secret start' rather than 'secretive', and the specific venue in the CBSSports article. This query uses precise terms from the missing information to retrieve the exact wording and venue name."
+        },
+        {
+          "event": "search_completed",
+          "query": "The Independent Life and Style Taylor Swift relationship 'secret start'; CBSSports.com Taylor Swift performance venue",
+          "new_chunk_ids": [
+            "multihop_doc_2a75769fa9caeed2_chunk_0000",
+            "multihop_doc_e29720ca8e090a69_chunk_0000",
+            "multihop_doc_2a75769fa9caeed2_chunk_0001",
+            "multihop_doc_388ce2e006868f4c_chunk_0000",
+            "multihop_doc_95c1918ed4165ac4_chunk_0000"
+          ],
+          "total_evidence_chunks": 8
+        },
+        {
+          "event": "evidence_judged",
+          "search_count": 3,
+          "sufficient": false,
+          "reason": "当前证据仅包含两篇文章的标题和截断开篇，能部分确认《The Independent - Life and Style》文章标题提到“secret start”以及与Travis Kelce的关系，也能确认《CBSSports.com》文章标题讨论“rumored romance”并提及她出席多场Chiefs比赛。但证据不足以确认Independent文章是否明确声称Taylor Swift对这段关系“secretive”（而非仅提及关系有一个秘密的开始），也不足以确认CBSSports文章是否重点讨论她在“specific venue”的“performance”（现有片段只提到attendance，未提及performance或具体场馆细节）。因此无法完整回答该对比性问题。",
+          "missing_aspects": [
+            "The Independent文章是否明确声称Taylor Swift对与Travis Kelce的关系“secretive”的完整表述",
+            "CBSSports文章是否聚焦于Taylor Swift在某个具体场馆的“performance”的完整内容",
+            "CBSSports文章中提到的具体场馆（specific venue）及其相关表现细节",
+            "两篇文章的完整正文，以确认二者在叙事重点上的对比是否成立"
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "case_id": "multihop_0312",
+      "question_type": "comparison_query",
+      "query": "Does the CBSSports.com article claim that Caesars Sportsbook offers a different new customer bonus bet amount than the Sporting News article claims Caesars Sportsbook is expected to offer to new sign-ups in Vermont?",
+      "gold_answer": "no",
+      "baseline_prediction": "No, the CBSSports.com article claims Caesars offers up to $1000 in bonus bets, which is the same amount the Sporting News article says Caesars is expected to offer to new sign-ups in Vermont.",
+      "agentic_prediction": "No. The CBSSports.com article says new Caesars customers can get up to $1,000 in bonus bets if they lose their first bet, matching the Sporting News article's claim that Caesars is expected to offer new Vermont sign-ups up to a $1,000 Bonus Bet.",
+      "baseline_correct": true,
+      "agentic_correct": true,
+      "comparison": "stable_success",
+      "qa_metrics": {
+        "official_match": 0.0,
+        "exact_match": 0.0,
+        "gold_containment": 1.0,
+        "token_f1": 0.04166666666666667
+      },
+      "search_calls": 1,
+      "rewrite_calls": 0,
+      "judge_calls": 1,
+      "llm_calls": 2,
+      "search_queries": [
+        "Does the CBSSports.com article claim that Caesars Sportsbook offers a different new customer bonus bet amount than the Sporting News article claims Caesars Sportsbook is expected to offer to new sign-ups in Vermont?"
+      ],
+      "final_evidence_sufficient": true,
+      "budget_exhausted": false,
+      "final_chunk_ids": [
+        "multihop_doc_15549cdb8af8fcf3_chunk_0038",
+        "multihop_doc_15549cdb8af8fcf3_chunk_0039",
+        "multihop_doc_61188af1fa20b2fa_chunk_0018",
+        "multihop_doc_0b0c8c01ecf10ae0_chunk_0009",
+        "multihop_doc_15549cdb8af8fcf3_chunk_0001"
+      ],
+      "final_context": {
+        "gold_doc_recall": 1.0,
+        "all_gold_docs_present": true,
+        "unique_context_documents": 3
+      },
+      "final_fact_coverage": {
+        "matched_fact_count": 2,
+        "gold_fact_count": 2,
+        "fact_recall": 1.0,
+        "any_gold_fact_present": true,
+        "all_gold_facts_present": true
+      },
+      "timing": {
+        "search_latency_ms": 2892.376799998601,
+        "judge_latency_ms": 2951.7684999991616,
+        "rewrite_latency_ms": 0.0,
+        "final_answer_latency_ms": 1215.546000003087
+      },
+      "pipeline_latency_ms": 4168.738399999711,
+      "token_usage": {
+        "prompt_tokens": 1224,
+        "completion_tokens": 212,
+        "total_tokens": 1436
+      },
+      "trace": [
+        {
+          "event": "evidence_judged",
+          "search_count": 1,
+          "sufficient": true,
+          "reason": "证据包含 CBSSports.com 文章中关于 Caesars 新客户奖励投注金额的说法（最高 $1000 bonus bets），也包含 Sporting News 文章中关于 Caesars 预计在佛蒙特州向新注册用户提供的奖励投注金额（最高 $1,000 Bonus Bet）。两者金额相同，因此足以判断 CBSSports.com 并未声称不同的金额。",
+          "missing_aspects": []
+        }
+      ],
+      "error": null
+    },
+    {
+      "case_id": "multihop_0382",
+      "question_type": "inference_query",
+      "query": "Who is the individual that has become a significant figure in the realm of artificial intelligence, particularly due to their association with generative AI technology and the envisioning of AI agents to assist with various tasks, and whose integrity was questioned by a prevailing theory as mentioned in articles from both Fortune and TechCrunch?",
+      "gold_answer": "Sam Altman",
+      "baseline_prediction": "Insufficient information",
+      "agentic_prediction": "Insufficient information",
+      "baseline_correct": false,
+      "agentic_correct": false,
+      "comparison": "stable_failure",
+      "qa_metrics": {
+        "official_match": 0.0,
+        "exact_match": 0.0,
+        "gold_containment": 0.0,
+        "token_f1": 0.0
+      },
+      "search_calls": 3,
+      "rewrite_calls": 2,
+      "judge_calls": 3,
+      "llm_calls": 6,
+      "search_queries": [
+        "Who is the individual that has become a significant figure in the realm of artificial intelligence, particularly due to their association with generative AI technology and the envisioning of AI agents to assist with various tasks, and whose integrity was questioned by a prevailing theory as mentioned in articles from both Fortune and TechCrunch?",
+        "Fortune TechCrunch article AI figure generative AI AI agents integrity questioned by prevailing theory",
+        "AI figure generative AI envisioned AI agents integrity questioned prevailing theory Fortune TechCrunch"
+      ],
+      "final_evidence_sufficient": false,
+      "budget_exhausted": true,
+      "final_chunk_ids": [
+        "multihop_doc_3495e16a0247b7dc_chunk_0011",
+        "multihop_doc_fa5f220766007722_chunk_0010",
+        "multihop_doc_43be67e14551b2b6_chunk_0002",
+        "multihop_doc_82b99ddb8ff72c43_chunk_0004",
+        "multihop_doc_122287e01b44bca8_chunk_0001",
+        "multihop_doc_82b99ddb8ff72c43_chunk_0030",
+        "multihop_doc_f5d0582d8679cbb4_chunk_0024",
+        "multihop_doc_7254aa5453a9186e_chunk_0021",
+        "multihop_doc_7254aa5453a9186e_chunk_0020",
+        "multihop_doc_7254aa5453a9186e_chunk_0022",
+        "multihop_doc_944702712fe5069b_chunk_0005"
+      ],
+      "final_context": {
+        "gold_doc_recall": 0.0,
+        "all_gold_docs_present": false,
+        "unique_context_documents": 8
+      },
+      "final_fact_coverage": {
+        "matched_fact_count": 0,
+        "gold_fact_count": 4,
+        "fact_recall": 0.0,
+        "any_gold_fact_present": false,
+        "all_gold_facts_present": false
+      },
+      "timing": {
+        "search_latency_ms": 7597.48650000256,
+        "judge_latency_ms": 15885.610299999826,
+        "rewrite_latency_ms": 37123.12649999876,
+        "final_answer_latency_ms": 11696.386200001143
+      },
+      "pipeline_latency_ms": 69192.56420000238,
+      "token_usage": {
+        "prompt_tokens": 2378,
+        "completion_tokens": 2367,
+        "total_tokens": 4745
+      },
+      "trace": [
+        {
+          "event": "evidence_judged",
+          "search_count": 1,
+          "sufficient": false,
+          "reason": "The provided evidence does not identify the individual described in the question, nor does it include any Fortune article or any TechCrunch article connecting a specific person to generative AI, envisioning AI agents, or having their integrity questioned by a prevailing theory. The available chunks only discuss general AI topics, companies, and policy issues without addressing the named individual or the specific claims in the question.",
+          "missing_aspects": [
+            "The identity of the individual who is a significant figure in AI",
+            "Evidence from a Fortune article about this individual and the prevailing theory questioning their integrity",
+            "Evidence from a TechCrunch article about this individual and the prevailing theory questioning their integrity",
+            "Evidence that the individual is associated with generative AI technology",
+            "Evidence that the individual envisioned AI agents to assist with various tasks",
+            "Details of the prevailing theory that questioned the individual's integrity"
+          ]
+        },
+        {
+          "event": "query_rewritten",
+          "query": "Fortune TechCrunch article AI figure generative AI AI agents integrity questioned by prevailing theory",
+          "reason": "The original query is broad and does not retrieve the specific Fortune and TechCrunch articles or the prevailing theory that questions the individual's integrity. This focused query retains the key concepts—generative AI, AI agents, integrity, and prevailing theory—while targeting the missing source-specific evidence."
+        },
+        {
+          "event": "search_completed",
+          "query": "Fortune TechCrunch article AI figure generative AI AI agents integrity questioned by prevailing theory",
+          "new_chunk_ids": [
+            "multihop_doc_82b99ddb8ff72c43_chunk_0030",
+            "multihop_doc_f5d0582d8679cbb4_chunk_0024",
+            "multihop_doc_7254aa5453a9186e_chunk_0021",
+            "multihop_doc_7254aa5453a9186e_chunk_0020",
+            "multihop_doc_82b99ddb8ff72c43_chunk_0004"
+          ],
+          "total_evidence_chunks": 9
+        },
+        {
+          "event": "evidence_judged",
+          "search_count": 2,
+          "sufficient": false,
+          "reason": "The retrieved evidence does not identify any individual matching the full description. It lacks articles from Fortune entirely, contains no clear link between a named AI figure and the specific combination of generative AI association, envisioning AI agents, and having their integrity questioned by a prevailing theory, and does not mention the relevant prevailing theory.",
+          "missing_aspects": [
+            "The name of the individual",
+            "Articles from Fortune mentioning the individual or the theory",
+            "The prevailing theory that questioned the individual's integrity",
+            "Evidence connecting a named individual to envisioning AI agents to assist with tasks",
+            "Evidence connecting a named individual to generative AI technology in the way described"
+          ]
+        },
+        {
+          "event": "query_rewritten",
+          "query": "AI figure generative AI envisioned AI agents integrity questioned prevailing theory Fortune TechCrunch",
+          "reason": "This query focuses on the missing elements: the individual's connection to generative AI and envisioning AI agents, the integrity questioned by a prevailing theory, and the sources Fortune and TechCrunch, while avoiding the exact phrasing of previous searches."
+        },
+        {
+          "event": "search_completed",
+          "query": "AI figure generative AI envisioned AI agents integrity questioned prevailing theory Fortune TechCrunch",
+          "new_chunk_ids": [
+            "multihop_doc_82b99ddb8ff72c43_chunk_0030",
+            "multihop_doc_7254aa5453a9186e_chunk_0022",
+            "multihop_doc_944702712fe5069b_chunk_0005",
+            "multihop_doc_82b99ddb8ff72c43_chunk_0004",
+            "multihop_doc_7254aa5453a9186e_chunk_0021"
+          ],
+          "total_evidence_chunks": 11
+        },
+        {
+          "event": "evidence_judged",
+          "search_count": 3,
+          "sufficient": false,
+          "reason": "当前证据未提及用户问题所问的个人，也没有同时覆盖其与生成式AI的关联、对AI代理的设想、被主流理论质疑诚信等关键信息；检索结果中没有Fortune来源的文章，TechCrunch文章也未提供相关人物及其被质疑诚信的内容。",
+          "missing_aspects": [
+            "该个人的姓名或身份",
+            "该人物与生成式AI技术的具体关联",
+            "该人物设想AI代理协助各类任务的内容",
+            "其诚信被某种主流理论质疑的具体理论及报道",
+            "Fortune和TechCrunch两家媒体中相关文章的直接证据"
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "case_id": "multihop_0406",
+      "question_type": "comparison_query",
+      "query": "Does 'The Sydney Morning Herald' suggest that the US economy is at an optimal slowing pace to avoid a recession, in contrast to 'The Age' which implies that a government shutdown could increase the risk of a recession in the US economy?",
+      "gold_answer": "Yes",
+      "baseline_prediction": "Yes. The Sydney Morning Herald reports rising hope that the US economy is slowing from its hot pace by just the right amount—too much strength would fuel inflation, while too little would mean a recession. In contrast, The Age says a government shutdown would drag on the US economy and raise the risk of a recession.",
+      "agentic_prediction": "Yes. The Sydney Morning Herald reports that hope has been rising on Wall Street that the US economy is slowing from its hot pace by just the right amount—too much strength would fuel inflation, but too little would mean a recession. The Age, by contrast, notes that a leadership vacuum in the House raises the odds of a government shutdown, which would drag on the US economy and raise the risk of a recession.",
+      "baseline_correct": true,
+      "agentic_correct": true,
+      "comparison": "stable_success",
+      "qa_metrics": {
+        "official_match": 0.0,
+        "exact_match": 0.0,
+        "gold_containment": 1.0,
+        "token_f1": 0.02631578947368421
+      },
+      "search_calls": 1,
+      "rewrite_calls": 0,
+      "judge_calls": 1,
+      "llm_calls": 2,
+      "search_queries": [
+        "Does 'The Sydney Morning Herald' suggest that the US economy is at an optimal slowing pace to avoid a recession, in contrast to 'The Age' which implies that a government shutdown could increase the risk of a recession in the US economy?"
+      ],
+      "final_evidence_sufficient": true,
+      "budget_exhausted": false,
+      "final_chunk_ids": [
+        "multihop_doc_5df45beb6c1e5327_chunk_0014",
+        "multihop_doc_404400d537ffffc5_chunk_0006",
+        "multihop_doc_f9576d2f4af7c9bd_chunk_0008",
+        "multihop_doc_404400d537ffffc5_chunk_0007",
+        "multihop_doc_a039a968f3170ade_chunk_0007"
+      ],
+      "final_context": {
+        "gold_doc_recall": 1.0,
+        "all_gold_docs_present": true,
+        "unique_context_documents": 4
+      },
+      "final_fact_coverage": {
+        "matched_fact_count": 2,
+        "gold_fact_count": 2,
+        "fact_recall": 1.0,
+        "any_gold_fact_present": true,
+        "all_gold_facts_present": true
+      },
+      "timing": {
+        "search_latency_ms": 2896.18309999787,
+        "judge_latency_ms": 3319.4885999982944,
+        "rewrite_latency_ms": 0.0,
+        "final_answer_latency_ms": 1378.2701999989513
+      },
+      "pipeline_latency_ms": 4699.233399998775,
+      "token_usage": {
+        "prompt_tokens": 1132,
+        "completion_tokens": 228,
+        "total_tokens": 1360
+      },
+      "trace": [
+        {
+          "event": "evidence_judged",
+          "search_count": 1,
+          "sufficient": true,
+          "reason": "证据2来自《悉尼先驱晨报》，明确提到华尔街希望美国经济以“恰到好处”的速度放缓，过强会加剧通胀，过弱则意味着衰退，这支持该报暗示经济处于避免衰退的最优放缓节奏。证据1来自《时代报》，明确提到政府停摆会拖累美国经济，增加衰退风险，这支持该报暗示政府停摆可能增加美国经济衰退风险。两条证据分别覆盖了问题中对比双方的核心信息需求。",
+          "missing_aspects": []
+        }
+      ],
+      "error": null
+    },
+    {
+      "case_id": "multihop_0453",
+      "question_type": "temporal_query",
+      "query": "Did TechCrunch report on Meta's moderation issues affecting Palestinian voices on a date other than October 19, 2023, and again on Meta's ad-free subscription service being potentially illegal and unfair on a date other than November 30, 2023, resulting in inconsistency in the news source's critical perspective towards Meta's policies and practices?",
+      "gold_answer": "no",
+      "baseline_prediction": "Insufficient information",
+      "agentic_prediction": "No. The evidence indicates TechCrunch's report on Meta's moderation issues affecting Palestinian voices was published on October 19, 2023, and its report on Meta's ad-free subscription being branded 'unfair' and 'illegal' was published on November 30, 2023; no other dates are indicated for those specific reports.",
+      "baseline_correct": false,
+      "agentic_correct": true,
+      "comparison": "rescued",
+      "qa_metrics": {
+        "official_match": 1.0,
+        "exact_match": 0.0,
+        "gold_containment": 1.0,
+        "token_f1": 0.039999999999999994
+      },
+      "search_calls": 3,
+      "rewrite_calls": 2,
+      "judge_calls": 3,
+      "llm_calls": 6,
+      "search_queries": [
+        "Did TechCrunch report on Meta's moderation issues affecting Palestinian voices on a date other than October 19, 2023, and again on Meta's ad-free subscription service being potentially illegal and unfair on a date other than November 30, 2023, resulting in inconsistency in the news source's critical perspective towards Meta's policies and practices?",
+        "TechCrunch Meta Palestinian voices moderation reports other than October 19 2023 Meta ad-free subscription illegal unfair other than November 30 2023 compare critical perspective inconsistency",
+        "TechCrunch Meta Palestinian content moderation report dates 2023 2024 excluding October 19, 2023; TechCrunch Meta ad-free subscription illegal unfair EU consumer law dates 2023 2024 excluding November 30, 2023; TechCrunch Meta policy criticism inconsistency comparison"
+      ],
+      "final_evidence_sufficient": false,
+      "budget_exhausted": true,
+      "final_chunk_ids": [
+        "multihop_doc_0a25e0c527a4d686_chunk_0008",
+        "multihop_doc_0a25e0c527a4d686_chunk_0000",
+        "multihop_doc_0a25e0c527a4d686_chunk_0028",
+        "multihop_doc_e402ea8cd328fa5a_chunk_0000",
+        "multihop_doc_0a25e0c527a4d686_chunk_0005",
+        "multihop_doc_c57a6047be3ae518_chunk_0000",
+        "multihop_doc_e402ea8cd328fa5a_chunk_0001",
+        "multihop_doc_e402ea8cd328fa5a_chunk_0006"
+      ],
+      "final_context": {
+        "gold_doc_recall": 1.0,
+        "all_gold_docs_present": true,
+        "unique_context_documents": 3
+      },
+      "final_fact_coverage": {
+        "matched_fact_count": 0,
+        "gold_fact_count": 2,
+        "fact_recall": 0.0,
+        "any_gold_fact_present": false,
+        "all_gold_facts_present": false
+      },
+      "timing": {
+        "search_latency_ms": 8757.062699991366,
+        "judge_latency_ms": 21196.2162000018,
+        "rewrite_latency_ms": 16252.919400001701,
+        "final_answer_latency_ms": 3805.0485999992816
+      },
+      "pipeline_latency_ms": 46475.22659999959,
+      "token_usage": {
+        "prompt_tokens": 1845,
+        "completion_tokens": 804,
+        "total_tokens": 2649
+      },
+      "trace": [
+        {
+          "event": "evidence_judged",
+          "search_count": 1,
+          "sufficient": false,
+          "reason": "当前证据仅显示 TechCrunch 于 2023-10-19 报道了 Meta 的巴勒斯坦审核问题，于 2023-11-30 报道了 Meta 的无广告订阅服务可能非法且不公平。证据中没有提供任何在 2023年10月19日以外报道巴勒斯坦审核问题，或在 2023年11月30日以外报道广告订阅服务的其他日期报道。因此无法判断是否存在“其他日期”的报道，也无法评估由此导致的批判视角不一致性。",
+          "missing_aspects": [
+            "是否有其他日期的 TechCrunch 关于 Meta 巴勒斯坦审核问题的报道",
+            "是否有其他日期的 TechCrunch 关于 Meta 无广告订阅服务的报道",
+            "两篇报道之间的完整观点比较以判断批判视角是否不一致"
+          ]
+        },
+        {
+          "event": "query_rewritten",
+          "query": "TechCrunch Meta Palestinian voices moderation reports other than October 19 2023 Meta ad-free subscription illegal unfair other than November 30 2023 compare critical perspective inconsistency",
+          "reason": "需要搜索其他日期的 TechCrunch 关于 Meta 巴勒斯坦审核问题及无广告订阅服务的报道，并比较两篇报道的批判视角以判断是否存在不一致。"
+        },
+        {
+          "event": "search_completed",
+          "query": "TechCrunch Meta Palestinian voices moderation reports other than October 19 2023 Meta ad-free subscription illegal unfair other than November 30 2023 compare critical perspective inconsistency",
+          "new_chunk_ids": [
+            "multihop_doc_0a25e0c527a4d686_chunk_0000",
+            "multihop_doc_e402ea8cd328fa5a_chunk_0000",
+            "multihop_doc_0a25e0c527a4d686_chunk_0005",
+            "multihop_doc_0a25e0c527a4d686_chunk_0028",
+            "multihop_doc_c57a6047be3ae518_chunk_0000"
+          ],
+          "total_evidence_chunks": 6
+        },
+        {
+          "event": "evidence_judged",
+          "search_count": 2,
+          "sufficient": false,
+          "reason": "现有证据只显示 TechCrunch 在 2023-10-19 报道了 Meta 审核机制压制巴勒斯坦声音，并在 2023-11-30 报道了欧洲消费者团体称 Meta 无广告订阅‘不公平’和‘非法’。没有证据显示 TechCrunch 在 2023-10-19 之外还报道过巴勒斯坦声音审核问题；2023-10-30 的报道虽涉及无广告订阅，但未显示其被定性为‘可能非法和不公平’，也不能据此建立 TechCrunch 对 Meta 政策批判立场不一致的结论。",
+          "missing_aspects": [
+            "TechCrunch 在 2023-10-19 之外报道 Meta 审核问题影响巴勒斯坦声音的证据",
+            "TechCrunch 在 2023-11-30 之外报道 Meta 无广告订阅服务‘可能非法和不公平’的证据",
+            "证明 TechCrunch 对 Meta 政策与实践的批判视角存在不一致的对比性证据"
+          ]
+        },
+        {
+          "event": "query_rewritten",
+          "query": "TechCrunch Meta Palestinian content moderation report dates 2023 2024 excluding October 19, 2023; TechCrunch Meta ad-free subscription illegal unfair EU consumer law dates 2023 2024 excluding November 30, 2023; TechCrunch Meta policy criticism inconsistency comparison",
+          "reason": "Previous queries repeated the original and combined all issues. This query targets the missing alternative-date evidence for each TechCrunch report and adds EU consumer law terms for the subscription issue, while seeking comparative inconsistency evidence."
+        },
+        {
+          "event": "search_completed",
+          "query": "TechCrunch Meta Palestinian content moderation report dates 2023 2024 excluding October 19, 2023; TechCrunch Meta ad-free subscription illegal unfair EU consumer law dates 2023 2024 excluding November 30, 2023; TechCrunch Meta policy criticism inconsistency comparison",
+          "new_chunk_ids": [
+            "multihop_doc_e402ea8cd328fa5a_chunk_0000",
+            "multihop_doc_0a25e0c527a4d686_chunk_0000",
+            "multihop_doc_e402ea8cd328fa5a_chunk_0001",
+            "multihop_doc_e402ea8cd328fa5a_chunk_0006",
+            "multihop_doc_c57a6047be3ae518_chunk_0000"
+          ],
+          "total_evidence_chunks": 8
+        },
+        {
+          "event": "evidence_judged",
+          "search_count": 3,
+          "sufficient": false,
+          "reason": "The evidence only shows TechCrunch articles on Meta's moderation issues affecting Palestinian voices dated October 19, 2023, and on Meta's ad-free subscription being called 'unfair' and 'illegal' dated November 30, 2023. There is no evidence of TechCrunch reporting on these topics on any other dates, nor any evidence of inconsistency in TechCrunch's critical perspective.",
+          "missing_aspects": [
+            "TechCrunch report on Meta's moderation issues affecting Palestinian voices on a date other than October 19, 2023",
+            "TechCrunch report on Meta's ad-free subscription service being potentially illegal and unfair on a date other than November 30, 2023",
+            "Evidence of inconsistency in TechCrunch's critical perspective towards Meta's policies and practices"
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "case_id": "multihop_0728",
+      "question_type": "inference_query",
+      "query": "Who is the individual associated with FTX, who, according to reports from 'Cnbc | World Business News Leader', 'The Verge', 'TechCrunch', and another 'TechCrunch' article, planned to establish a board with experts for his company, struggled with managing the significant growth of his company alongside Alameda Research, was implicated in directing a $14 billion customer fund misappropriation, and is alleged by the prosecution to have committed fraud for personal gain?",
+      "gold_answer": "Sam Bankman-Fried",
+      "baseline_prediction": "Sam Bankman-Fried",
+      "agentic_prediction": "Sam Bankman-Fried",
+      "baseline_correct": true,
+      "agentic_correct": true,
+      "comparison": "stable_success",
+      "qa_metrics": {
+        "official_match": 1.0,
+        "exact_match": 1.0,
+        "gold_containment": 1.0,
+        "token_f1": 1.0
+      },
+      "search_calls": 3,
+      "rewrite_calls": 2,
+      "judge_calls": 3,
+      "llm_calls": 6,
+      "search_queries": [
+        "Who is the individual associated with FTX, who, according to reports from 'Cnbc | World Business News Leader', 'The Verge', 'TechCrunch', and another 'TechCrunch' article, planned to establish a board with experts for his company, struggled with managing the significant growth of his company alongside Alameda Research, was implicated in directing a $14 billion customer fund misappropriation, and is alleged by the prosecution to have committed fraud for personal gain?",
+        "FTX founder expert board Alameda Research growth management $14 billion customer funds misappropriation fraud prosecution CNBC TechCrunch The Verge",
+        "CNBC World Business News Leader Sam Bankman-Fried planned board of experts Alameda Research growth management prosecution fraud personal gain"
+      ],
+      "final_evidence_sufficient": true,
+      "budget_exhausted": false,
+      "final_chunk_ids": [
+        "multihop_doc_b6ea5ba998e187d6_chunk_0002",
+        "multihop_doc_22a798cdccffe158_chunk_0005",
+        "multihop_doc_b503d71472f28495_chunk_0005",
+        "multihop_doc_c5b2a72d9024b262_chunk_0003",
+        "multihop_doc_a546501175a8dd2b_chunk_0003",
+        "multihop_doc_a546501175a8dd2b_chunk_0001",
+        "multihop_doc_2c785c23846b0780_chunk_0010",
+        "multihop_doc_2c785c23846b0780_chunk_0014",
+        "multihop_doc_ce8c4288257db889_chunk_0001",
+        "multihop_doc_a62d25556990772d_chunk_0010",
+        "multihop_doc_b503d71472f28495_chunk_0013",
+        "multihop_doc_0f89e922841f864b_chunk_0000",
+        "multihop_doc_b503d71472f28495_chunk_0022"
+      ],
+      "final_context": {
+        "gold_doc_recall": 0.75,
+        "all_gold_docs_present": false,
+        "unique_context_documents": 9
+      },
+      "final_fact_coverage": {
+        "matched_fact_count": 1,
+        "gold_fact_count": 4,
+        "fact_recall": 0.25,
+        "any_gold_fact_present": true,
+        "all_gold_facts_present": false
+      },
+      "timing": {
+        "search_latency_ms": 9006.724399998348,
+        "judge_latency_ms": 58761.7956000031,
+        "rewrite_latency_ms": 18005.557699998462,
+        "final_answer_latency_ms": 2292.2496999999566
+      },
+      "pipeline_latency_ms": 83925.19430000175,
+      "token_usage": {
+        "prompt_tokens": 2914,
+        "completion_tokens": 426,
+        "total_tokens": 3340
+      },
+      "trace": [
+        {
+          "event": "evidence_judged",
+          "search_count": 1,
+          "sufficient": false,
+          "reason": "当前证据主要来自 The Verge，能确认 Sam Bankman-Fried 与 FTX 相关，并提到欺诈、滥用客户资金等部分指控，但缺少问题中多个关键信息：计划成立专家董事会、与 Alameda Research 一起难以管理公司高速增长、涉及指导 140 亿美元客户资金挪用，以及检方指控其 personal gain 的欺诈。同时没有来自 CNBC、TechCrunch 及另一篇 TechCrunch 文章的证据。",
+          "missing_aspects": [
+            "计划成立由专家组成的董事会",
+            "在管理公司快速增长以及与 Alameda Research 关系方面遇到困难",
+            "涉及指导 140 亿美元客户资金挪用",
+            "检方指控其为了个人利益实施欺诈",
+            "来自 CNBC、TechCrunch 和另一篇 TechCrunch 文章的相关报道"
+          ]
+        },
+        {
+          "event": "query_rewritten",
+          "query": "FTX founder expert board Alameda Research growth management $14 billion customer funds misappropriation fraud prosecution CNBC TechCrunch The Verge",
+          "reason": "聚焦原问题中尚未验证的细节：计划成立专家董事会、与 Alameda Research 一起管理快速增长的困难、140 亿美元客户资金挪用、检方为个人利益欺诈的指控及相关媒体报道，避免重复原始整句检索。"
+        },
+        {
+          "event": "search_completed",
+          "query": "FTX founder expert board Alameda Research growth management $14 billion customer funds misappropriation fraud prosecution CNBC TechCrunch The Verge",
+          "new_chunk_ids": [
+            "multihop_doc_a546501175a8dd2b_chunk_0001",
+            "multihop_doc_2c785c23846b0780_chunk_0010",
+            "multihop_doc_b503d71472f28495_chunk_0005",
+            "multihop_doc_2c785c23846b0780_chunk_0014",
+            "multihop_doc_22a798cdccffe158_chunk_0005"
+          ],
+          "total_evidence_chunks": 8
+        },
+        {
+          "event": "evidence_judged",
+          "search_count": 2,
+          "sufficient": false,
+          "reason": "The evidence identifies Sam Bankman-Fried as the FTX and Alameda Research founder and mentions customer-fund misappropriation, including Caroline Ellison's testimony that she took $14 billion under SBF's instruction. However, the evidence does not cover several key elements required by the question: a CNBC report, a plan to establish a board with experts for his company, a struggle to manage the company's significant growth alongside Alameda Research, or a prosecution allegation that he committed fraud for personal gain.",
+          "missing_aspects": [
+            "Evidence from CNBC | World Business News Leader is not present",
+            "Evidence that the individual planned to establish a board with experts for his company",
+            "Evidence that he struggled with managing the significant growth of his company alongside Alameda Research",
+            "Explicit evidence that the prosecution alleged fraud for personal gain",
+            "Source coverage confirming all listed reports and attributes jointly"
+          ]
+        },
+        {
+          "event": "query_rewritten",
+          "query": "CNBC World Business News Leader Sam Bankman-Fried planned board of experts Alameda Research growth management prosecution fraud personal gain",
+          "reason": "This query targets the missing CNBC evidence by including the full source name, specifies the plan to establish an expert board, the struggle with managing growth alongside Alameda Research, and the prosecution's allegation of fraud for personal gain, while omitting terms already heavily searched (e.g., $14 billion, TechCrunch, The Verge) to avoid redundancy and retrieve new sources."
+        },
+        {
+          "event": "search_completed",
+          "query": "CNBC World Business News Leader Sam Bankman-Fried planned board of experts Alameda Research growth management prosecution fraud personal gain",
+          "new_chunk_ids": [
+            "multihop_doc_ce8c4288257db889_chunk_0001",
+            "multihop_doc_a62d25556990772d_chunk_0010",
+            "multihop_doc_b503d71472f28495_chunk_0013",
+            "multihop_doc_0f89e922841f864b_chunk_0000",
+            "multihop_doc_b503d71472f28495_chunk_0022"
+          ],
+          "total_evidence_chunks": 13
+        },
+        {
+          "event": "evidence_judged",
+          "search_count": 3,
+          "sufficient": true,
+          "reason": "The evidence explicitly names Sam Bankman-Fried as the FTX founder on trial for fraud and ties him to the alleged misappropriation of customer funds. It also states that Caroline Ellison took $14 billion from customers under SBF's instruction, and multiple sources connect the FTX/Alameda fraud to Bankman-Fried's personal gain. This is enough to identify the individual asked about, even if some descriptive details in the question are not directly quoted in the provided chunks.",
+          "missing_aspects": []
+        }
+      ],
+      "error": null
+    },
+    {
+      "case_id": "multihop_0796",
+      "question_type": "inference_query",
+      "query": "Which company, according to TechCrunch articles, invested billions to secure its status as the default search engine on various platforms and is also accused of harming news publishers' revenue streams through anticompetitive practices?",
+      "gold_answer": "Google",
+      "baseline_prediction": "Google",
+      "agentic_prediction": "Google",
+      "baseline_correct": true,
+      "agentic_correct": true,
+      "comparison": "stable_success",
+      "qa_metrics": {
+        "official_match": 1.0,
+        "exact_match": 1.0,
+        "gold_containment": 1.0,
+        "token_f1": 1.0
+      },
+      "search_calls": 1,
+      "rewrite_calls": 0,
+      "judge_calls": 1,
+      "llm_calls": 2,
+      "search_queries": [
+        "Which company, according to TechCrunch articles, invested billions to secure its status as the default search engine on various platforms and is also accused of harming news publishers' revenue streams through anticompetitive practices?"
+      ],
+      "final_evidence_sufficient": true,
+      "budget_exhausted": false,
+      "final_chunk_ids": [
+        "multihop_doc_d7ccaaaebb29a021_chunk_0000",
+        "multihop_doc_2a40c9ede73393eb_chunk_0001",
+        "multihop_doc_f402276183651d8b_chunk_0003",
+        "multihop_doc_d7ccaaaebb29a021_chunk_0001",
+        "multihop_doc_f402276183651d8b_chunk_0001"
+      ],
+      "final_context": {
+        "gold_doc_recall": 1.0,
+        "all_gold_docs_present": true,
+        "unique_context_documents": 3
+      },
+      "final_fact_coverage": {
+        "matched_fact_count": 2,
+        "gold_fact_count": 2,
+        "fact_recall": 1.0,
+        "any_gold_fact_present": true,
+        "all_gold_facts_present": true
+      },
+      "timing": {
+        "search_latency_ms": 2791.675300006318,
+        "judge_latency_ms": 2259.0807000015047,
+        "rewrite_latency_ms": 0.0,
+        "final_answer_latency_ms": 943.5005999985151
+      },
+      "pipeline_latency_ms": 3203.715399999055,
+      "token_usage": {
+        "prompt_tokens": 1183,
+        "completion_tokens": 61,
+        "total_tokens": 1244
+      },
+      "trace": [
+        {
+          "event": "evidence_judged",
+          "search_count": 1,
+          "sufficient": true,
+          "reason": "证据明确指向 Google：TechCrunch 文章称 Google 在2021年花费263亿美元成为各平台默认搜索引擎，并且另一起新闻出版商集体诉讼指控 Google 通过反竞争行为吸走新闻出版商的流量和广告收入。因此证据足以回答该公司是 Google。",
+          "missing_aspects": []
+        }
+      ],
+      "error": null
+    },
+    {
+      "case_id": "multihop_0913",
+      "question_type": "inference_query",
+      "query": "Who is the individual under 30, once considered the richest in that age bracket, who has pleaded not guilty to fraud and conspiracy charges and is accused by the prosecution of committing fraud to achieve wealth, power, and influence, as reported by TechCrunch?",
+      "gold_answer": "Sam Bankman-Fried",
+      "baseline_prediction": "Sam Bankman-Fried",
+      "agentic_prediction": "Sam Bankman-Fried",
+      "baseline_correct": true,
+      "agentic_correct": true,
+      "comparison": "stable_success",
+      "qa_metrics": {
+        "official_match": 1.0,
+        "exact_match": 1.0,
+        "gold_containment": 1.0,
+        "token_f1": 1.0
+      },
+      "search_calls": 3,
+      "rewrite_calls": 2,
+      "judge_calls": 3,
+      "llm_calls": 6,
+      "search_queries": [
+        "Who is the individual under 30, once considered the richest in that age bracket, who has pleaded not guilty to fraud and conspiracy charges and is accused by the prosecution of committing fraud to achieve wealth, power, and influence, as reported by TechCrunch?",
+        "TechCrunch richest under 30 fraud conspiracy not guilty plea wealth power influence",
+        "Sam Bankman-Fried TechCrunch under 30 richest in age bracket fraud conspiracy not guilty wealth power influence"
+      ],
+      "final_evidence_sufficient": false,
+      "budget_exhausted": true,
+      "final_chunk_ids": [
+        "multihop_doc_13d624f0262a76d3_chunk_0016",
+        "multihop_doc_0f89e922841f864b_chunk_0004",
+        "multihop_doc_c5b2a72d9024b262_chunk_0002",
+        "multihop_doc_a546501175a8dd2b_chunk_0001",
+        "multihop_doc_b503d71472f28495_chunk_0002",
+        "multihop_doc_a62d25556990772d_chunk_0000",
+        "multihop_doc_b503d71472f28495_chunk_0022",
+        "multihop_doc_a62d25556990772d_chunk_0012",
+        "multihop_doc_9b7ae5b569cfafc9_chunk_0004",
+        "multihop_doc_22a798cdccffe158_chunk_0005"
+      ],
+      "final_context": {
+        "gold_doc_recall": 0.5,
+        "all_gold_docs_present": false,
+        "unique_context_documents": 8
+      },
+      "final_fact_coverage": {
+        "matched_fact_count": 1,
+        "gold_fact_count": 3,
+        "fact_recall": 0.3333333333333333,
+        "any_gold_fact_present": true,
+        "all_gold_facts_present": false
+      },
+      "timing": {
+        "search_latency_ms": 7848.232200001803,
+        "judge_latency_ms": 17050.85919999692,
+        "rewrite_latency_ms": 22305.329700000584,
+        "final_answer_latency_ms": 1226.5156000030402
+      },
+      "pipeline_latency_ms": 45378.385799998796,
+      "token_usage": {
+        "prompt_tokens": 2234,
+        "completion_tokens": 153,
+        "total_tokens": 2387
+      },
+      "trace": [
+        {
+          "event": "evidence_judged",
+          "search_count": 1,
+          "sufficient": false,
+          "reason": "TechCrunch evidence identifies Bankman-Fried as the person accused by the prosecution of committing fraud to achieve wealth, power, and influence, but it does not establish the other key identifying details: being under 30, once considered the richest in that age bracket, or having pleaded not guilty to fraud and conspiracy charges. Another evidence source says Bankman-Fried was 31 at trial, which conflicts with 'under 30'.",
+          "missing_aspects": [
+            "Confirmation that the individual was under 30",
+            "Evidence that the individual was once considered the richest in that age bracket",
+            "Evidence that the individual pleaded not guilty to fraud and conspiracy charges"
+          ]
+        },
+        {
+          "event": "query_rewritten",
+          "query": "TechCrunch richest under 30 fraud conspiracy not guilty plea wealth power influence",
+          "reason": "The original query was the full question and likely returned broad results. This new query focuses on the specific missing facts: confirmation of being under 30, being the richest in that age bracket, and pleading not guilty to fraud and conspiracy, while retaining key terms like TechCrunch, fraud, conspiracy, wealth, power, and influence to find targeted articles."
+        },
+        {
+          "event": "search_completed",
+          "query": "TechCrunch richest under 30 fraud conspiracy not guilty plea wealth power influence",
+          "new_chunk_ids": [
+            "multihop_doc_13d624f0262a76d3_chunk_0016",
+            "multihop_doc_a62d25556990772d_chunk_0000",
+            "multihop_doc_b503d71472f28495_chunk_0022",
+            "multihop_doc_a62d25556990772d_chunk_0012",
+            "multihop_doc_9b7ae5b569cfafc9_chunk_0004"
+          ],
+          "total_evidence_chunks": 9
+        },
+        {
+          "event": "evidence_judged",
+          "search_count": 2,
+          "sufficient": false,
+          "reason": "证据能指向 Sam Bankman-Fried，并覆盖了部分要件：TechCrunch 报道检方指控其为实现财富、权力和影响力而欺诈，且他曾对所有欺诈和共谋指控表示不认罪。但用户问题中的关键识别特征——‘under 30’和‘once considered the richest in that age bracket’——在当前证据中没有被提及或证实，因此不足以完整回答该问题。",
+          "missing_aspects": [
+            "证据未表明该个人‘under 30’（且现有证据反而显示其在审判时31岁）",
+            "证据未表明该个人‘once considered the richest in that age bracket’",
+            "缺少 TechCrunch 报道中将‘under 30’或‘该年龄段最富有’与 Sam Bankman-Fried 明确关联的内容"
+          ]
+        },
+        {
+          "event": "query_rewritten",
+          "query": "Sam Bankman-Fried TechCrunch under 30 richest in age bracket fraud conspiracy not guilty wealth power influence",
+          "reason": "The missing information is whether TechCrunch reported Sam Bankman-Fried as under 30 and once the richest in that age bracket. This query adds the specific name 'Sam Bankman-Fried' to the previous search terms, targeting the link between him, the 'under 30 richest' claim, and the fraud/conspiracy charges as reported by TechCrunch."
+        },
+        {
+          "event": "search_completed",
+          "query": "Sam Bankman-Fried TechCrunch under 30 richest in age bracket fraud conspiracy not guilty wealth power influence",
+          "new_chunk_ids": [
+            "multihop_doc_b503d71472f28495_chunk_0022",
+            "multihop_doc_c5b2a72d9024b262_chunk_0002",
+            "multihop_doc_9b7ae5b569cfafc9_chunk_0004",
+            "multihop_doc_22a798cdccffe158_chunk_0005",
+            "multihop_doc_a62d25556990772d_chunk_0012"
+          ],
+          "total_evidence_chunks": 10
+        },
+        {
+          "event": "evidence_judged",
+          "search_count": 3,
+          "sufficient": false,
+          "reason": "The evidence identifies Sam Bankman-Fried and covers the not-guilty plea, fraud/conspiracy charges, and prosecution's claim that he committed fraud to achieve wealth, power, and influence, including in TechCrunch reporting. However, no provided evidence states that the individual was under 30 or was once considered the richest in that age bracket. In fact, one piece of evidence gives his age as 31. Because a key identifying condition in the question is not supported by the retrieved evidence, and outside knowledge cannot be used, the evidence is insufficient to fully answer the question.",
+          "missing_aspects": [
+            "Evidence that the individual was under 30 at the relevant time",
+            "Evidence that the individual was once considered the richest in that age bracket",
+            "A direct TechCrunch report linking the under-30/richest-in-age-bracket descriptor to the individual"
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "case_id": "multihop_1005",
+      "question_type": "temporal_query",
+      "query": "Between the report from The Independent - Life and Style on Travis Kelce's absence at a Taylor Swift concert published on November 25, 2023, and the Yardbarker report on Travis Kelce's potential performance against the Raiders published on December 24, 2023, was there a change in the type of events and activities involving Travis Kelce covered by the news sources?",
+      "gold_answer": "no",
+      "baseline_prediction": "Insufficient information",
+      "agentic_prediction": "Insufficient information",
+      "baseline_correct": false,
+      "agentic_correct": false,
+      "comparison": "stable_failure",
+      "qa_metrics": {
+        "official_match": 0.0,
+        "exact_match": 0.0,
+        "gold_containment": 0.0,
+        "token_f1": 0.0
+      },
+      "search_calls": 3,
+      "rewrite_calls": 2,
+      "judge_calls": 3,
+      "llm_calls": 6,
+      "search_queries": [
+        "Between the report from The Independent - Life and Style on Travis Kelce's absence at a Taylor Swift concert published on November 25, 2023, and the Yardbarker report on Travis Kelce's potential performance against the Raiders published on December 24, 2023, was there a change in the type of events and activities involving Travis Kelce covered by the news sources?",
+        "The Independent Life and Style Travis Kelce absence Taylor Swift concert November 25 2023 Yardbarker Travis Kelce Raiders December 24 2023",
+        "Taylor Swift concert absence Travis Kelce November 25 2023 The Independent article Raiders performance Travis Kelce December 24 2023 Yardbarker article"
+      ],
+      "final_evidence_sufficient": false,
+      "budget_exhausted": true,
+      "final_chunk_ids": [
+        "multihop_doc_388ce2e006868f4c_chunk_0000",
+        "multihop_doc_742ea80a6c5e94b8_chunk_0000",
+        "multihop_doc_2a75769fa9caeed2_chunk_0000",
+        "multihop_doc_e29720ca8e090a69_chunk_0000",
+        "multihop_doc_612f5e2647d35651_chunk_0024",
+        "multihop_doc_5319071afd2cf8dc_chunk_0000",
+        "multihop_doc_e29720ca8e090a69_chunk_0001",
+        "multihop_doc_dc46de734e80965e_chunk_0000"
+      ],
+      "final_context": {
+        "gold_doc_recall": 0.0,
+        "all_gold_docs_present": false,
+        "unique_context_documents": 7
+      },
+      "final_fact_coverage": {
+        "matched_fact_count": 0,
+        "gold_fact_count": 2,
+        "fact_recall": 0.0,
+        "any_gold_fact_present": false,
+        "all_gold_facts_present": false
+      },
+      "timing": {
+        "search_latency_ms": 9089.099099997838,
+        "judge_latency_ms": 8832.381099993654,
+        "rewrite_latency_ms": 14184.828799996467,
+        "final_answer_latency_ms": 1669.0086999988125
+      },
+      "pipeline_latency_ms": 30019.52269999674,
+      "token_usage": {
+        "prompt_tokens": 1943,
+        "completion_tokens": 263,
+        "total_tokens": 2206
+      },
+      "trace": [
+        {
+          "event": "evidence_judged",
+          "search_count": 1,
+          "sufficient": false,
+          "reason": "The retrieved evidence does not include the two reports named in the question: The Independent - Life and Style report published on November 25, 2023 about Travis Kelce's absence at a Taylor Swift concert, or the Yardbarker report published on December 24, 2023 about his potential performance against the Raiders. Without these reports or their contents, it is impossible to compare the types of events and activities involving Travis Kelce covered by the news sources across those dates.",
+          "missing_aspects": [
+            "The Independent - Life and Style report from November 25, 2023 on Travis Kelce's absence at a Taylor Swift concert",
+            "The Yardbarker report from December 24, 2023 on Travis Kelce's potential performance against the Raiders",
+            "Content or details from those reports needed to identify and compare the types of events and activities covered"
+          ]
+        },
+        {
+          "event": "query_rewritten",
+          "query": "The Independent Life and Style Travis Kelce absence Taylor Swift concert November 25 2023 Yardbarker Travis Kelce Raiders December 24 2023",
+          "reason": "The original query was already searched but did not retrieve the specific articles. This new query targets the exact reports mentioned (The Independent article and Yardbarker report) to obtain their content for comparison."
+        },
+        {
+          "event": "search_completed",
+          "query": "The Independent Life and Style Travis Kelce absence Taylor Swift concert November 25 2023 Yardbarker Travis Kelce Raiders December 24 2023",
+          "new_chunk_ids": [
+            "multihop_doc_612f5e2647d35651_chunk_0024",
+            "multihop_doc_388ce2e006868f4c_chunk_0000",
+            "multihop_doc_742ea80a6c5e94b8_chunk_0000",
+            "multihop_doc_2a75769fa9caeed2_chunk_0000",
+            "multihop_doc_e29720ca8e090a69_chunk_0000"
+          ],
+          "total_evidence_chunks": 5
+        },
+        {
+          "event": "evidence_judged",
+          "search_count": 2,
+          "sufficient": false,
+          "reason": "当前证据不包含用户问题所指定的两篇报道：2023年11月25日《The Independent - Life and Style》关于Travis Kelce缺席Taylor Swift演唱会的报道，以及2023年12月24日Yardbarker关于Travis Kelce可能对阵Raiders表现的报道。因此无法比较两篇报道所涵盖的Travis Kelce相关事件和活动类型是否发生变化。",
+          "missing_aspects": [
+            "2023年11月25日《The Independent - Life and Style》关于Travis Kelce缺席Taylor Swift演唱会的报道内容",
+            "2023年12月24日Yardbarker关于Travis Kelce可能对阵Raiders表现的报道内容",
+            "两篇报道中分别涉及的Travis Kelce事件/活动类型的具体信息，用于比较是否发生变化"
+          ]
+        },
+        {
+          "event": "query_rewritten",
+          "query": "Taylor Swift concert absence Travis Kelce November 25 2023 The Independent article Raiders performance Travis Kelce December 24 2023 Yardbarker article",
+          "reason": "The missing information is the content of the two specific reports and the types of events/activities they covered. Previous queries included the entities and dates but did not explicitly request article content. This query reorders the key events and adds 'article' to target the specific reports' content, making it distinct from prior queries while focusing on retrieving the actual reports for comparison."
+        },
+        {
+          "event": "search_completed",
+          "query": "Taylor Swift concert absence Travis Kelce November 25 2023 The Independent article Raiders performance Travis Kelce December 24 2023 Yardbarker article",
+          "new_chunk_ids": [
+            "multihop_doc_612f5e2647d35651_chunk_0024",
+            "multihop_doc_5319071afd2cf8dc_chunk_0000",
+            "multihop_doc_e29720ca8e090a69_chunk_0001",
+            "multihop_doc_dc46de734e80965e_chunk_0000",
+            "multihop_doc_e29720ca8e090a69_chunk_0000"
+          ],
+          "total_evidence_chunks": 8
+        },
+        {
+          "event": "evidence_judged",
+          "search_count": 3,
+          "sufficient": false,
+          "reason": "The evidence provided does not contain either of the two specific reports mentioned in the question: the Independent - Life and Style article from November 25, 2023 about Travis Kelce's absence at a Taylor Swift concert, or the Yardbarker report from December 24, 2023 about his potential performance against the Raiders. Without the content of these reports, it is impossible to determine whether there was a change in the type of events and activities involving Travis Kelce covered by the news sources.",
+          "missing_aspects": [
+            "The Independent - Life and Style report published on November 25, 2023 about Travis Kelce's absence at a Taylor Swift concert",
+            "Yardbarker report published on December 24, 2023 about Travis Kelce's potential performance against the Raiders",
+            "Information about the types of events and activities involving Travis Kelce covered in each of those two reports"
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "case_id": "multihop_1072",
+      "question_type": "temporal_query",
+      "query": "Between the TechCrunch report on Epic Games' antitrust battle with Google published on November 6, 2023, and the TechCrunch report on the class action antitrust suit against Google published on December 15, 2023, was there inconsistency in reporting Google's engagement in anticompetitive behavior?",
+      "gold_answer": "no",
+      "baseline_prediction": "No. Both reports are consistent: the November 6, 2023 report describes Epic Games' trial hoping to prove Google engages in anticompetitive behavior regarding Google Play, and the December 15, 2023 report describes a class action accusing Google/Alphabet of anticompetitive behavior in violation of antitrust law. In both, Google is reported as being accused of anticompetitive behavior, with no inconsistency.",
+      "agentic_prediction": "No, there was no inconsistency. The November 6 TechCrunch report describes Epic Games' effort to convince a jury that Google engages in anticompetitive behavior regarding Google Play, while the December 15 TechCrunch report says a class action accuses Google and Alphabet of anticompetitive behavior. Both reports present the anticompetitive behavior as allegations/claims, not conflicting findings.",
+      "baseline_correct": true,
+      "agentic_correct": true,
+      "comparison": "stable_success",
+      "qa_metrics": {
+        "official_match": 1.0,
+        "exact_match": 0.0,
+        "gold_containment": 1.0,
+        "token_f1": 0.03508771929824561
+      },
+      "search_calls": 1,
+      "rewrite_calls": 0,
+      "judge_calls": 1,
+      "llm_calls": 2,
+      "search_queries": [
+        "Between the TechCrunch report on Epic Games' antitrust battle with Google published on November 6, 2023, and the TechCrunch report on the class action antitrust suit against Google published on December 15, 2023, was there inconsistency in reporting Google's engagement in anticompetitive behavior?"
+      ],
+      "final_evidence_sufficient": true,
+      "budget_exhausted": false,
+      "final_chunk_ids": [
+        "multihop_doc_83e9552e26f5f878_chunk_0000",
+        "multihop_doc_2a40c9ede73393eb_chunk_0006",
+        "multihop_doc_d7ccaaaebb29a021_chunk_0000",
+        "multihop_doc_99bf0d7242f12a0c_chunk_0001",
+        "multihop_doc_d7ccaaaebb29a021_chunk_0013"
+      ],
+      "final_context": {
+        "gold_doc_recall": 1.0,
+        "all_gold_docs_present": true,
+        "unique_context_documents": 4
+      },
+      "final_fact_coverage": {
+        "matched_fact_count": 0,
+        "gold_fact_count": 3,
+        "fact_recall": 0.0,
+        "any_gold_fact_present": false,
+        "all_gold_facts_present": false
+      },
+      "timing": {
+        "search_latency_ms": 3205.2166999965266,
+        "judge_latency_ms": 17318.938200001867,
+        "rewrite_latency_ms": 0.0,
+        "final_answer_latency_ms": 2953.523199998017
+      },
+      "pipeline_latency_ms": 20273.453900001186,
+      "token_usage": {
+        "prompt_tokens": 1246,
+        "completion_tokens": 532,
+        "total_tokens": 1778
+      },
+      "trace": [
+        {
+          "event": "evidence_judged",
+          "search_count": 1,
+          "sufficient": true,
+          "reason": "证据包含两篇目标 TechCrunch 报道（2023-11-06 和 2023-12-15）及其关于 Google 反竞争行为的关键表述：前者报道 Epic 试图说服陪审团 Google 在 Android 应用商店/Google Play 方面从事反竞争行为；后者报道新闻出版商集体诉讼指控 Google/Alphabet 从事反竞争行为。两者均是在报道指控/诉讼主张，未出现一方断言已证实、另一方否认等矛盾，因此足以判断不存在不一致。",
+          "missing_aspects": []
+        }
+      ],
+      "error": null
+    },
+    {
+      "case_id": "multihop_1672",
+      "question_type": "comparison_query",
+      "query": "Does the TechCrunch article claim that Sam Bankman-Fried directed Caroline Ellison to use customer funds for debt repayment, while the Fortune article focuses on Sam Bankman-Fried's persuasion of Adam Yedidia to join his ventures, and does the second TechCrunch article allege that Sam Bankman-Fried's motivation for committing fraud was personal gain?",
+      "gold_answer": "Yes",
+      "baseline_prediction": "Insufficient information",
+      "agentic_prediction": "Insufficient information",
+      "baseline_correct": false,
+      "agentic_correct": false,
+      "comparison": "stable_failure",
+      "qa_metrics": {
+        "official_match": 0.0,
+        "exact_match": 0.0,
+        "gold_containment": 0.0,
+        "token_f1": 0.0
+      },
+      "search_calls": 3,
+      "rewrite_calls": 2,
+      "judge_calls": 3,
+      "llm_calls": 6,
+      "search_queries": [
+        "Does the TechCrunch article claim that Sam Bankman-Fried directed Caroline Ellison to use customer funds for debt repayment, while the Fortune article focuses on Sam Bankman-Fried's persuasion of Adam Yedidia to join his ventures, and does the second TechCrunch article allege that Sam Bankman-Fried's motivation for committing fraud was personal gain?",
+        "TechCrunch Caroline Ellison customer funds debt repayment Sam Bankman-Fried Fortune Adam Yedidia persuasion personal gain fraud motivation second TechCrunch",
+        "TechCrunch report Sam Bankman-Fried instructed Caroline Ellison to use customer funds to repay debts and Fortune piece Sam Bankman-Fried convinced Adam Yedidia to join his companies and second TechCrunch piece alleged Sam Bankman-Fried fraud motive was personal profit"
+      ],
+      "final_evidence_sufficient": false,
+      "budget_exhausted": true,
+      "final_chunk_ids": [
+        "multihop_doc_22a798cdccffe158_chunk_0005",
+        "multihop_doc_b503d71472f28495_chunk_0004",
+        "multihop_doc_9b7ae5b569cfafc9_chunk_0004",
+        "multihop_doc_2c785c23846b0780_chunk_0000",
+        "multihop_doc_b503d71472f28495_chunk_0006",
+        "multihop_doc_9b7ae5b569cfafc9_chunk_0003",
+        "multihop_doc_70808d4f68bc664c_chunk_0013"
+      ],
+      "final_context": {
+        "gold_doc_recall": 0.6666666666666666,
+        "all_gold_docs_present": false,
+        "unique_context_documents": 5
+      },
+      "final_fact_coverage": {
+        "matched_fact_count": 1,
+        "gold_fact_count": 3,
+        "fact_recall": 0.3333333333333333,
+        "any_gold_fact_present": true,
+        "all_gold_facts_present": false
+      },
+      "timing": {
+        "search_latency_ms": 9127.139600001101,
+        "judge_latency_ms": 10774.018199997954,
+        "rewrite_latency_ms": 11365.37970000063,
+        "final_answer_latency_ms": 5411.203100000421
+      },
+      "pipeline_latency_ms": 33232.03040000226,
+      "token_usage": {
+        "prompt_tokens": 1660,
+        "completion_tokens": 1094,
+        "total_tokens": 2754
+      },
+      "trace": [
+        {
+          "event": "evidence_judged",
+          "search_count": 1,
+          "sufficient": false,
+          "reason": "The evidence does not include the specific TechCrunch article claim about Sam Bankman-Fried directing Caroline Ellison to use customer funds for debt repayment, nor the Fortune article about persuading Adam Yedidia to join his ventures, nor the second TechCrunch article alleging personal gain as fraud motivation.",
+          "missing_aspects": [
+            "TechCrunch article claim that Sam Bankman-Fried directed Caroline Ellison to use customer funds for debt repayment",
+            "Fortune article focus on Sam Bankman-Fried's persuasion of Adam Yedidia to join his ventures",
+            "Second TechCrunch article allegation that Sam Bankman-Fried's motivation for fraud was personal gain"
+          ]
+        },
+        {
+          "event": "query_rewritten",
+          "query": "TechCrunch Caroline Ellison customer funds debt repayment Sam Bankman-Fried Fortune Adam Yedidia persuasion personal gain fraud motivation second TechCrunch",
+          "reason": "The original query was a compound question that may have been too specific, yielding no results. This new query breaks down the missing information into key entities and claims—Caroline Ellison, customer funds, debt repayment, Adam Yedidia, persuasion, personal gain, and fraud motivation—while specifying the sources (TechCrunch and Fortune) to improve retrieval of relevant articles."
+        },
+        {
+          "event": "search_completed",
+          "query": "TechCrunch Caroline Ellison customer funds debt repayment Sam Bankman-Fried Fortune Adam Yedidia persuasion personal gain fraud motivation second TechCrunch",
+          "new_chunk_ids": [
+            "multihop_doc_9b7ae5b569cfafc9_chunk_0003",
+            "multihop_doc_b503d71472f28495_chunk_0004",
+            "multihop_doc_b503d71472f28495_chunk_0006",
+            "multihop_doc_9b7ae5b569cfafc9_chunk_0004",
+            "multihop_doc_22a798cdccffe158_chunk_0005"
+          ],
+          "total_evidence_chunks": 6
+        },
+        {
+          "event": "evidence_judged",
+          "search_count": 2,
+          "sufficient": false,
+          "reason": "当前证据仅包含 TechCrunch 和 The Verge 的文章片段，未覆盖用户问题中涉及的多个关键信息点：没有 Fortune 文章内容，没有 TechCrunch 文章关于 SBF 指示 Caroline Ellison 使用客户资金偿还债务的指控，也没有第二篇 TechCrunch 文章关于 SBF 欺诈动机是个人利益的指控。",
+          "missing_aspects": [
+            "TechCrunch 文章是否声称 Sam Bankman-Fried 指示 Caroline Ellison 使用客户资金偿还债务",
+            "Fortune 文章是否聚焦于 Sam Bankman-Fried 说服 Adam Yedidia 加入其事业",
+            "第二篇 TechCrunch 文章是否指控 Sam Bankman-Fried 的欺诈动机是个人利益"
+          ]
+        },
+        {
+          "event": "query_rewritten",
+          "query": "TechCrunch report Sam Bankman-Fried instructed Caroline Ellison to use customer funds to repay debts and Fortune piece Sam Bankman-Fried convinced Adam Yedidia to join his companies and second TechCrunch piece alleged Sam Bankman-Fried fraud motive was personal profit",
+          "reason": "Paraphrases the three missing claims with synonyms like 'report', 'piece', 'instructed', 'convinced', and 'personal profit' to avoid duplicating the original question and the previous keyword query, while retaining key entities and terms for targeted retrieval."
+        },
+        {
+          "event": "search_completed",
+          "query": "TechCrunch report Sam Bankman-Fried instructed Caroline Ellison to use customer funds to repay debts and Fortune piece Sam Bankman-Fried convinced Adam Yedidia to join his companies and second TechCrunch piece alleged Sam Bankman-Fried fraud motive was personal profit",
+          "new_chunk_ids": [
+            "multihop_doc_22a798cdccffe158_chunk_0005",
+            "multihop_doc_70808d4f68bc664c_chunk_0013",
+            "multihop_doc_b503d71472f28495_chunk_0004",
+            "multihop_doc_b503d71472f28495_chunk_0006",
+            "multihop_doc_2c785c23846b0780_chunk_0000"
+          ],
+          "total_evidence_chunks": 7
+        },
+        {
+          "event": "evidence_judged",
+          "search_count": 3,
+          "sufficient": false,
+          "reason": "当前证据包含Fortune文章关于Sam Bankman-Fried说服Adam Yedidia加入其事业的内容，但缺少TechCrunch文章关于Sam Bankman-Fried指示Caroline Ellison使用客户资金偿还债务的声称，也缺少第二个TechCrunch文章关于Sam Bankman-Fried欺诈动机是个人利益的指控。因此无法完整回答用户问题。",
+          "missing_aspects": [
+            "TechCrunch文章是否声称Sam Bankman-Fried指示Caroline Ellison使用客户资金偿还债务",
+            "第二个TechCrunch文章是否指控Sam Bankman-Fried的欺诈动机是个人利益"
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "case_id": "multihop_1899",
+      "question_type": "temporal_query",
+      "query": "After the report by The Age on October 22, 2023, claiming that Google manipulates Search to maximize ad revenue, and the subsequent report by TechCrunch on October 31, 2023, regarding Google's expenditure to become the default search engine, was the consistency in reporting Google's competitive practices maintained in the TechCrunch article about the class action antitrust suit filed against Google published after December 15, 2023?",
+      "gold_answer": "Yes",
+      "baseline_prediction": "Yes. The TechCrunch article on the class action antitrust suit reported that Google and Alphabet were accused of anticompetitive behavior, consistent with the earlier TechCrunch coverage of Google's antitrust trial and default search deals and with The Age's report on Google's competitive practices.",
+      "agentic_prediction": "Yes—the Dec. 15 TechCrunch article continued reporting Google as facing antitrust/anticompetitive allegations, referencing DOJ suits over search/search advertising and stating Google's scheme harms competition, consistent with the earlier coverage.",
+      "baseline_correct": true,
+      "agentic_correct": true,
+      "comparison": "stable_success",
+      "qa_metrics": {
+        "official_match": 0.0,
+        "exact_match": 0.0,
+        "gold_containment": 1.0,
+        "token_f1": 0.05882352941176471
+      },
+      "search_calls": 3,
+      "rewrite_calls": 2,
+      "judge_calls": 3,
+      "llm_calls": 6,
+      "search_queries": [
+        "After the report by The Age on October 22, 2023, claiming that Google manipulates Search to maximize ad revenue, and the subsequent report by TechCrunch on October 31, 2023, regarding Google's expenditure to become the default search engine, was the consistency in reporting Google's competitive practices maintained in the TechCrunch article about the class action antitrust suit filed against Google published after December 15, 2023?",
+        "TechCrunch Google class action antitrust lawsuit after December 15 2023 default search engine deals Search manipulation ad revenue competitive practices",
+        "TechCrunch class action antitrust lawsuit Google after December 15 2023 full article competitive practices compared The Age October 22 2023 TechCrunch October 31 default search engine expenditure"
+      ],
+      "final_evidence_sufficient": false,
+      "budget_exhausted": true,
+      "final_chunk_ids": [
+        "multihop_doc_d7ccaaaebb29a021_chunk_0000",
+        "multihop_doc_f402276183651d8b_chunk_0000",
+        "multihop_doc_f402276183651d8b_chunk_0001",
+        "multihop_doc_2a40c9ede73393eb_chunk_0000",
+        "multihop_doc_fd327531641b7331_chunk_0011",
+        "multihop_doc_f402276183651d8b_chunk_0002",
+        "multihop_doc_d7ccaaaebb29a021_chunk_0013",
+        "multihop_doc_2a40c9ede73393eb_chunk_0001"
+      ],
+      "final_context": {
+        "gold_doc_recall": 1.0,
+        "all_gold_docs_present": true,
+        "unique_context_documents": 4
+      },
+      "final_fact_coverage": {
+        "matched_fact_count": 1,
+        "gold_fact_count": 3,
+        "fact_recall": 0.3333333333333333,
+        "any_gold_fact_present": true,
+        "all_gold_facts_present": false
+      },
+      "timing": {
+        "search_latency_ms": 8424.764999992476,
+        "judge_latency_ms": 18401.72509999684,
+        "rewrite_latency_ms": 4361.512999999832,
+        "final_answer_latency_ms": 17853.210399996897
+      },
+      "pipeline_latency_ms": 45644.787900000665,
+      "token_usage": {
+        "prompt_tokens": 1842,
+        "completion_tokens": 3906,
+        "total_tokens": 5748
+      },
+      "trace": [
+        {
+          "event": "evidence_judged",
+          "search_count": 1,
+          "sufficient": false,
+          "reason": "The evidence does not provide the full TechCrunch article about the class action antitrust suit published after December 15, 2023, nor enough content to compare its reporting on Google's competitive practices with The Age article from October 22, 2023 and the TechCrunch article from October 31, 2023. Evidence 1 is dated December 15, 2023, not clearly after that date, and only includes an introductory snippet. The snippets also do not show whether the later TechCrunch article discussed default search engine payments, search manipulation/ad revenue claims, or any consistent framing of Google's competitive practices.",
+          "missing_aspects": [
+            "Full text of the TechCrunch article about the class action antitrust suit published after December 15, 2023",
+            "Explicit reporting in that article on Google's competitive practices, including default search engine deals and alleged Search manipulation for ad revenue",
+            "Sufficient content from the October 31, 2023 TechCrunch article to compare its framing of Google's expenditure/default search deals",
+            "Clear confirmation that the relevant class action article was published after, not on, December 15, 2023"
+          ]
+        },
+        {
+          "event": "query_rewritten",
+          "query": "TechCrunch Google class action antitrust lawsuit after December 15 2023 default search engine deals Search manipulation ad revenue competitive practices",
+          "reason": "The previous search used the full original question, so this query narrows to the missing TechCrunch article on the class action antitrust suit and its explicit framing of Google’s default search deals and alleged Search manipulation for ad revenue, enabling comparison with the October 31, 2023 TechCrunch coverage."
+        },
+        {
+          "event": "search_completed",
+          "query": "TechCrunch Google class action antitrust lawsuit after December 15 2023 default search engine deals Search manipulation ad revenue competitive practices",
+          "new_chunk_ids": [
+            "multihop_doc_f402276183651d8b_chunk_0000",
+            "multihop_doc_f402276183651d8b_chunk_0001",
+            "multihop_doc_d7ccaaaebb29a021_chunk_0000",
+            "multihop_doc_f402276183651d8b_chunk_0002",
+            "multihop_doc_d7ccaaaebb29a021_chunk_0013"
+          ],
+          "total_evidence_chunks": 7
+        },
+        {
+          "event": "evidence_judged",
+          "search_count": 2,
+          "sufficient": false,
+          "reason": "The evidence includes the key claim from The Age and a TechCrunch article on Google's default-search-engine spending, but it does not contain enough of the later TechCrunch class-action article, nor any direct comparison, to determine whether reporting on Google's competitive practices remained consistent. The available Dec 15 article is only partially excerpted and is dated Dec 15, not after Dec 15, and it does not explicitly discuss consistency with the earlier reports.",
+          "missing_aspects": [
+            "Full text of the TechCrunch article about the class action antitrust suit, especially any passages discussing Google's competitive practices",
+            "Any explicit comparison in the later TechCrunch article to The Age October 22 report or TechCrunch October 31 report",
+            "Full details from the October 31 TechCrunch article regarding Google's expenditure to become the default search engine",
+            "Confirmation of whether a relevant TechCrunch article was published after December 15, 2023, rather than on December 15, 2023"
+          ]
+        },
+        {
+          "event": "query_rewritten",
+          "query": "TechCrunch class action antitrust lawsuit Google after December 15 2023 full article competitive practices compared The Age October 22 2023 TechCrunch October 31 default search engine expenditure",
+          "reason": "The previous queries did not retrieve the full later TechCrunch article, explicit comparisons to The Age or October 31 TechCrunch reports, or details of Google's default-search payments. This query combines those missing elements with the exact publication date requirement and core entities to target the needed source."
+        },
+        {
+          "event": "search_completed",
+          "query": "TechCrunch class action antitrust lawsuit Google after December 15 2023 full article competitive practices compared The Age October 22 2023 TechCrunch October 31 default search engine expenditure",
+          "new_chunk_ids": [
+            "multihop_doc_f402276183651d8b_chunk_0000",
+            "multihop_doc_d7ccaaaebb29a021_chunk_0000",
+            "multihop_doc_f402276183651d8b_chunk_0001",
+            "multihop_doc_2a40c9ede73393eb_chunk_0001",
+            "multihop_doc_f402276183651d8b_chunk_0002"
+          ],
+          "total_evidence_chunks": 8
+        },
+        {
+          "event": "evidence_judged",
+          "search_count": 3,
+          "sufficient": false,
+          "reason": "证据中包含 The Age 2023-10-22 关于 Google 操纵搜索以最大化广告收入的报道，也包含 TechCrunch 2023-10-31 关于 Google 反垄断案及默认搜索引擎支出（如 26.3 亿美元）的报道。但是，用户询问的是 2023-12-15 之后发布的 TechCrunch 关于针对 Google 的集体反垄断诉讼的文章；现有证据中相关 TechCrunch 文章标注的发布时间为 2023-12-15，并非“12 月 15 日之后”发布，且仅提供了该文章的片段，不足以完整比较其与前两篇报道在 Google 竞争行为报道上的一致性。因此，当前证据不足以回答该问题。",
+          "missing_aspects": [
+            "2023年12月15日之后发布的 TechCrunch 关于针对 Google 集体反垄断诉讼的文章",
+            "该后续 TechCrunch 文章的完整内容，以便与 The Age 和 10 月 31 日 TechCrunch 报道进行一致性比较",
+            "关于 Google 竞争行为报道一致性的明确可比对内容，而不仅是片段引用"
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "case_id": "multihop_2047",
+      "question_type": "comparison_query",
+      "query": "Does the article from The Verge suggest that a GameStop gift card is a universally useless gift for gamers regardless of console preference, while the Polygon article recommends specific Nintendo Switch games, indicating a more targeted gift approach for owners of that console?",
+      "gold_answer": "no",
+      "baseline_prediction": "No. The Verge says a GameStop gift card is useful if you don’t know which console your giftee prefers, not universally useless. Polygon does have Nintendo Switch-focused game articles, but the provided evidence does not list specific recommended Switch games.",
+      "agentic_prediction": "No. The Verge evidence (chunk_0011) actually states a GameStop gift card is 'useful if you don't know which console your giftee prefers or want to give them the option of buying accessories and games' — the opposite of universally useless. The Polygon article does appear to target Nintendo Switch owners with first-game recommendations (chunk_0001), but the evidence does not list the specific games, so the second half is only partially supported.",
+      "baseline_correct": true,
+      "agentic_correct": true,
+      "comparison": "stable_success",
+      "qa_metrics": {
+        "official_match": 0.0,
+        "exact_match": 0.0,
+        "gold_containment": 1.0,
+        "token_f1": 0.02777777777777778
+      },
+      "search_calls": 1,
+      "rewrite_calls": 0,
+      "judge_calls": 1,
+      "llm_calls": 2,
+      "search_queries": [
+        "Does the article from The Verge suggest that a GameStop gift card is a universally useless gift for gamers regardless of console preference, while the Polygon article recommends specific Nintendo Switch games, indicating a more targeted gift approach for owners of that console?"
+      ],
+      "final_evidence_sufficient": true,
+      "budget_exhausted": false,
+      "final_chunk_ids": [
+        "multihop_doc_6ac7fb044e001dee_chunk_0001",
+        "multihop_doc_609407c83f6fb1c0_chunk_0011",
+        "multihop_doc_609407c83f6fb1c0_chunk_0007",
+        "multihop_doc_145b085e78e9268d_chunk_0001",
+        "multihop_doc_f1d773ec8a36701a_chunk_0027"
+      ],
+      "final_context": {
+        "gold_doc_recall": 1.0,
+        "all_gold_docs_present": true,
+        "unique_context_documents": 4
+      },
+      "final_fact_coverage": {
+        "matched_fact_count": 1,
+        "gold_fact_count": 2,
+        "fact_recall": 0.5,
+        "any_gold_fact_present": true,
+        "all_gold_facts_present": false
+      },
+      "timing": {
+        "search_latency_ms": 2801.7570999982127,
+        "judge_latency_ms": 6886.060999997426,
+        "rewrite_latency_ms": 0.0,
+        "final_answer_latency_ms": 1633.4996999976283
+      },
+      "pipeline_latency_ms": 8521.09879999989,
+      "token_usage": {
+        "prompt_tokens": 1217,
+        "completion_tokens": 302,
+        "total_tokens": 1519
+      },
+      "trace": [
+        {
+          "event": "evidence_judged",
+          "search_count": 1,
+          "sufficient": true,
+          "reason": "The evidence includes The Verge article stating a GameStop gift card is useful if you don't know which console the giftee prefers (Evidence 2), directly contradicting the claim that it suggests universal uselessness. Polygon articles recommend specific Nintendo Switch games (Evidence 1 title and content, Evidence 4), supporting the targeted gift approach. Both parts of the user's question are addressed by the retrieved evidence.",
+          "missing_aspects": []
+        }
+      ],
+      "error": null
+    },
+    {
+      "case_id": "multihop_2091",
+      "question_type": "inference_query",
+      "query": "Which company, known for ranking local search results based on relevance, distance, and prominence according to an article from The Verge, is also mentioned in two TechCrunch articles, one discussing the lack of planned additional measures for a video platform in the next six months, and the other citing a class action antitrust suit for siphoning off content, readers, and ad revenue from news publishers?",
+      "gold_answer": "Google",
+      "baseline_prediction": "Google",
+      "agentic_prediction": "Google",
+      "baseline_correct": true,
+      "agentic_correct": true,
+      "comparison": "stable_success",
+      "qa_metrics": {
+        "official_match": 1.0,
+        "exact_match": 1.0,
+        "gold_containment": 1.0,
+        "token_f1": 1.0
+      },
+      "search_calls": 2,
+      "rewrite_calls": 1,
+      "judge_calls": 2,
+      "llm_calls": 4,
+      "search_queries": [
+        "Which company, known for ranking local search results based on relevance, distance, and prominence according to an article from The Verge, is also mentioned in two TechCrunch articles, one discussing the lack of planned additional measures for a video platform in the next six months, and the other citing a class action antitrust suit for siphoning off content, readers, and ad revenue from news publishers?",
+        "TechCrunch lack of planned additional measures for video platform in next six months YouTube Google"
+      ],
+      "final_evidence_sufficient": true,
+      "budget_exhausted": false,
+      "final_chunk_ids": [
+        "multihop_doc_d7ccaaaebb29a021_chunk_0000",
+        "multihop_doc_d7ccaaaebb29a021_chunk_0013",
+        "multihop_doc_b774a8022d2f9141_chunk_0022",
+        "multihop_doc_b774a8022d2f9141_chunk_0020",
+        "multihop_doc_d7ccaaaebb29a021_chunk_0001",
+        "multihop_doc_3495e16a0247b7dc_chunk_0014",
+        "multihop_doc_91b57a70f0aa46f5_chunk_0008",
+        "multihop_doc_4a6ec53e90f15b73_chunk_0003",
+        "multihop_doc_f3fde92abffb99be_chunk_0009",
+        "multihop_doc_3495e16a0247b7dc_chunk_0027"
+      ],
+      "final_context": {
+        "gold_doc_recall": 1.0,
+        "all_gold_docs_present": true,
+        "unique_context_documents": 6
+      },
+      "final_fact_coverage": {
+        "matched_fact_count": 3,
+        "gold_fact_count": 3,
+        "fact_recall": 1.0,
+        "any_gold_fact_present": true,
+        "all_gold_facts_present": true
+      },
+      "timing": {
+        "search_latency_ms": 5901.425199994264,
+        "judge_latency_ms": 5615.446200001315,
+        "rewrite_latency_ms": 2610.5252999986988,
+        "final_answer_latency_ms": 1245.8204999966256
+      },
+      "pipeline_latency_ms": 11796.83389999991,
+      "token_usage": {
+        "prompt_tokens": 2212,
+        "completion_tokens": 203,
+        "total_tokens": 2415
+      },
+      "trace": [
+        {
+          "event": "evidence_judged",
+          "search_count": 1,
+          "sufficient": false,
+          "reason": "The evidence confirms from The Verge that Google uses relevance, distance, and prominence to rank local search results, and one TechCrunch article mentions Google in the class action antitrust suit about siphoning content, readers, and ad revenue. However, the evidence does not include the second TechCrunch article discussing a lack of planned additional measures for a video platform in the next six months, so the full set of clues in the question is not covered.",
+          "missing_aspects": [
+            "Evidence from the TechCrunch article discussing the lack of planned additional measures for a video platform in the next six months",
+            "Confirmation that the video platform article also refers to the same company"
+          ]
+        },
+        {
+          "event": "query_rewritten",
+          "query": "TechCrunch lack of planned additional measures for video platform in next six months YouTube Google",
+          "reason": "Targets the missing TechCrunch article about a video platform with no additional measures planned in the next six months, while including Google/YouTube to confirm the company connection."
+        },
+        {
+          "event": "search_completed",
+          "query": "TechCrunch lack of planned additional measures for video platform in next six months YouTube Google",
+          "new_chunk_ids": [
+            "multihop_doc_3495e16a0247b7dc_chunk_0014",
+            "multihop_doc_91b57a70f0aa46f5_chunk_0008",
+            "multihop_doc_4a6ec53e90f15b73_chunk_0003",
+            "multihop_doc_f3fde92abffb99be_chunk_0009",
+            "multihop_doc_3495e16a0247b7dc_chunk_0027"
+          ],
+          "total_evidence_chunks": 10
+        },
+        {
+          "event": "evidence_judged",
+          "search_count": 2,
+          "sufficient": true,
+          "reason": "The evidence identifies the company as Google: The Verge article states Google’s public documentation uses relevance, distance, and prominence to rank local search results; one TechCrunch article says Google’s report has no additional measures planned for YouTube over the next six months; another TechCrunch article describes a class action antitrust suit against Google for siphoning off news publishers’ content, readers, and ad revenue.",
+          "missing_aspects": []
+        }
+      ],
+      "error": null
+    },
+    {
+      "case_id": "multihop_2227",
+      "question_type": "comparison_query",
+      "query": "Does the article from The Verge suggest that a GameStop gift card is a universally useful gift for gamers regardless of console preference, while the Polygon article recommends specific Nintendo Switch games, indicating a more targeted gift approach for owners of that console?",
+      "gold_answer": "Yes",
+      "baseline_prediction": "Yes. The Verge article says a GameStop gift card is useful if you don't know which console your giftee prefers or want to give them options, while Polygon articles recommend specific Nintendo Switch games, indicating a more targeted gift approach for Switch owners.",
+      "agentic_prediction": "Yes, the evidence indicates The Verge presents a GameStop gift card as useful when the recipient's console preference is unknown, while the Polygon article is specifically about games for new Nintendo Switch owners.",
+      "baseline_correct": true,
+      "agentic_correct": true,
+      "comparison": "stable_success",
+      "qa_metrics": {
+        "official_match": 0.0,
+        "exact_match": 0.0,
+        "gold_containment": 1.0,
+        "token_f1": 0.05714285714285715
+      },
+      "search_calls": 1,
+      "rewrite_calls": 0,
+      "judge_calls": 1,
+      "llm_calls": 2,
+      "search_queries": [
+        "Does the article from The Verge suggest that a GameStop gift card is a universally useful gift for gamers regardless of console preference, while the Polygon article recommends specific Nintendo Switch games, indicating a more targeted gift approach for owners of that console?"
+      ],
+      "final_evidence_sufficient": true,
+      "budget_exhausted": false,
+      "final_chunk_ids": [
+        "multihop_doc_609407c83f6fb1c0_chunk_0011",
+        "multihop_doc_6ac7fb044e001dee_chunk_0001",
+        "multihop_doc_609407c83f6fb1c0_chunk_0007",
+        "multihop_doc_f1d773ec8a36701a_chunk_0027",
+        "multihop_doc_145b085e78e9268d_chunk_0001"
+      ],
+      "final_context": {
+        "gold_doc_recall": 1.0,
+        "all_gold_docs_present": true,
+        "unique_context_documents": 4
+      },
+      "final_fact_coverage": {
+        "matched_fact_count": 1,
+        "gold_fact_count": 2,
+        "fact_recall": 0.5,
+        "any_gold_fact_present": true,
+        "all_gold_facts_present": false
+      },
+      "timing": {
+        "search_latency_ms": 2839.2591000010725,
+        "judge_latency_ms": 21518.264499998622,
+        "rewrite_latency_ms": 0.0,
+        "final_answer_latency_ms": 4528.947000002518
+      },
+      "pipeline_latency_ms": 26047.933699999703,
+      "token_usage": {
+        "prompt_tokens": 1217,
+        "completion_tokens": 823,
+        "total_tokens": 2040
+      },
+      "trace": [
+        {
+          "event": "evidence_judged",
+          "search_count": 1,
+          "sufficient": true,
+          "reason": "The Verge article states a GameStop gift card is useful if you don’t know which console your giftee prefers, supporting the claim that it is presented as a broadly useful gift regardless of console preference. The Polygon article is titled '6 games to play first on your new Nintendo Switch,' which directly indicates targeted Nintendo Switch game recommendations for owners of that console. Together the evidence covers both parts of the comparison.",
+          "missing_aspects": []
+        }
+      ],
+      "error": null
+    },
+    {
+      "case_id": "multihop_2245",
+      "question_type": "comparison_query",
+      "query": "Do 'The Verge' and 'Engadget' articles both suggest that 'Consumers' can find guidance or deals on tech products, while the 'TechCrunch' article proposes a different interest of 'Consumers' in the realm of social networking?",
+      "gold_answer": "Yes",
+      "baseline_prediction": "Insufficient information",
+      "agentic_prediction": "Yes. The Verge and Engadget articles cover consumer tech deals/guidance, while the TechCrunch article discusses consumers' interest in a new decentralized social networking future.",
+      "baseline_correct": false,
+      "agentic_correct": true,
+      "comparison": "rescued",
+      "qa_metrics": {
+        "official_match": 0.0,
+        "exact_match": 0.0,
+        "gold_containment": 1.0,
+        "token_f1": 0.07692307692307693
+      },
+      "search_calls": 3,
+      "rewrite_calls": 2,
+      "judge_calls": 3,
+      "llm_calls": 6,
+      "search_queries": [
+        "Do 'The Verge' and 'Engadget' articles both suggest that 'Consumers' can find guidance or deals on tech products, while the 'TechCrunch' article proposes a different interest of 'Consumers' in the realm of social networking?",
+        "The Verge article consumers find guidance or deals on tech products Engadget TechCrunch social networking consumers interest",
+        "The Verge article consumers tech products guidance deals buying advice recommendations"
+      ],
+      "final_evidence_sufficient": true,
+      "budget_exhausted": false,
+      "final_chunk_ids": [
+        "multihop_doc_cf3501e4d42f192e_chunk_0008",
+        "multihop_doc_cf3501e4d42f192e_chunk_0000",
+        "multihop_doc_1ba03d777f0c2973_chunk_0000",
+        "multihop_doc_13d624f0262a76d3_chunk_0012",
+        "multihop_doc_cd0e07b48d78a4a9_chunk_0000",
+        "multihop_doc_f1d773ec8a36701a_chunk_0110",
+        "multihop_doc_99438d204c2e3189_chunk_0012",
+        "multihop_doc_cf3501e4d42f192e_chunk_0005",
+        "multihop_doc_79b14488f38ab22d_chunk_0000",
+        "multihop_doc_ebb948ebb646708a_chunk_0001",
+        "multihop_doc_f3fde92abffb99be_chunk_0014",
+        "multihop_doc_99438d204c2e3189_chunk_0011"
+      ],
+      "final_context": {
+        "gold_doc_recall": 0.3333333333333333,
+        "all_gold_docs_present": false,
+        "unique_context_documents": 9
+      },
+      "final_fact_coverage": {
+        "matched_fact_count": 1,
+        "gold_fact_count": 3,
+        "fact_recall": 0.3333333333333333,
+        "any_gold_fact_present": true,
+        "all_gold_facts_present": false
+      },
+      "timing": {
+        "search_latency_ms": 7317.768500000966,
+        "judge_latency_ms": 11691.289899998083,
+        "rewrite_latency_ms": 7321.376499996404,
+        "final_answer_latency_ms": 2775.013000002218
+      },
+      "pipeline_latency_ms": 26303.071800000907,
+      "token_usage": {
+        "prompt_tokens": 2647,
+        "completion_tokens": 568,
+        "total_tokens": 3215
+      },
+      "trace": [
+        {
+          "event": "evidence_judged",
+          "search_count": 1,
+          "sufficient": false,
+          "reason": "当前证据中没有任何《The Verge》文章的内容，因此无法判断《The Verge》与《Engadget》是否都建议消费者可以找到科技产品的指导或优惠。虽然《Engadget》的证据提到消费者科技评测和优惠，且《TechCrunch》的证据提到消费者对社交网络的新兴趣，但缺少《The Verge》的关键证据，无法完成用户问题要求的对比判断。",
+          "missing_aspects": [
+            "《The Verge》文章中关于消费者可以找到科技产品指导或优惠的内容",
+            "《The Verge》文章与《Engadget》文章在这点上是否一致的证据",
+            "用于确认《TechCrunch》文章提出消费者在社交网络领域不同兴趣的对比证据（尤其是缺少《The Verge》一侧）"
+          ]
+        },
+        {
+          "event": "query_rewritten",
+          "query": "The Verge article consumers find guidance or deals on tech products Engadget TechCrunch social networking consumers interest",
+          "reason": "原始查询已搜索过整个问题，但缺少 The Verge 文章的具体内容以及它与 Engadget 的一致性证据，同时需要确认 TechCrunch 的对比。新查询聚焦于 The Verge 文章中消费者找到科技产品指导或优惠的内容，并包含 Engadget 和 TechCrunch 以及社交网络消费者兴趣等关键实体，以检索缺失的对比证据。"
+        },
+        {
+          "event": "search_completed",
+          "query": "The Verge article consumers find guidance or deals on tech products Engadget TechCrunch social networking consumers interest",
+          "new_chunk_ids": [
+            "multihop_doc_cf3501e4d42f192e_chunk_0008",
+            "multihop_doc_f1d773ec8a36701a_chunk_0110",
+            "multihop_doc_cf3501e4d42f192e_chunk_0000",
+            "multihop_doc_99438d204c2e3189_chunk_0012",
+            "multihop_doc_cf3501e4d42f192e_chunk_0005"
+          ],
+          "total_evidence_chunks": 8
+        },
+        {
+          "event": "evidence_judged",
+          "search_count": 2,
+          "sufficient": false,
+          "reason": "The evidence includes Engadget articles (Evidence 3 and 6) that suggest consumers can find deals on tech products, and TechCrunch articles (Evidence 1, 2, 8) that propose consumers' interest in decentralized social networking. However, there is no article from 'The Verge' in the evidence. Evidence 7 is from Polygon, not The Verge, and merely mentions The Verge. Therefore, the claim about 'The Verge' suggesting consumers can find guidance or deals on tech products is not supported.",
+          "missing_aspects": [
+            "A The Verge article suggesting consumers can find guidance or deals on tech products"
+          ]
+        },
+        {
+          "event": "query_rewritten",
+          "query": "The Verge article consumers tech products guidance deals buying advice recommendations",
+          "reason": "The missing information is specifically a The Verge article showing that consumers can find guidance or deals on tech products. This query targets that source and concept directly, avoiding the already-searched broad comparison with Engadget and TechCrunch."
+        },
+        {
+          "event": "search_completed",
+          "query": "The Verge article consumers tech products guidance deals buying advice recommendations",
+          "new_chunk_ids": [
+            "multihop_doc_99438d204c2e3189_chunk_0012",
+            "multihop_doc_79b14488f38ab22d_chunk_0000",
+            "multihop_doc_ebb948ebb646708a_chunk_0001",
+            "multihop_doc_f3fde92abffb99be_chunk_0014",
+            "multihop_doc_99438d204c2e3189_chunk_0011"
+          ],
+          "total_evidence_chunks": 12
+        },
+        {
+          "event": "evidence_judged",
+          "search_count": 3,
+          "sufficient": true,
+          "reason": "The evidence includes The Verge articles about price-matching guidance and tech deals (Evidence 9, 10, 11), Engadget articles about tech deals and shopping guidance (Evidence 3, 6), and a TechCrunch article about consumers' interest in decentralized social networking (Evidence 1, 2, 8). Together these cover the comparison requested: The Verge and Engadget suggest consumers can find guidance/deals on tech products, while TechCrunch proposes a different consumer interest in social networking.",
+          "missing_aspects": []
+        }
+      ],
+      "error": null
+    },
+    {
+      "case_id": "multihop_2374",
+      "question_type": "inference_query",
+      "query": "Who is the individual that presented himself as a trustworthy figure in the cryptocurrency industry according to The Verge, was informed about a significant financial discrepancy after a judge's intervention, and is alleged by the prosecution in a TechCrunch article to have committed fraud for personal gains?",
+      "gold_answer": "Sam Bankman-Fried",
+      "baseline_prediction": "Sam Bankman-Fried",
+      "agentic_prediction": "Sam Bankman-Fried",
+      "baseline_correct": true,
+      "agentic_correct": true,
+      "comparison": "stable_success",
+      "qa_metrics": {
+        "official_match": 1.0,
+        "exact_match": 1.0,
+        "gold_containment": 1.0,
+        "token_f1": 1.0
+      },
+      "search_calls": 3,
+      "rewrite_calls": 2,
+      "judge_calls": 3,
+      "llm_calls": 6,
+      "search_queries": [
+        "Who is the individual that presented himself as a trustworthy figure in the cryptocurrency industry according to The Verge, was informed about a significant financial discrepancy after a judge's intervention, and is alleged by the prosecution in a TechCrunch article to have committed fraud for personal gains?",
+        "SBF Sam Bankman-Fried The Verge trustworthy figure cryptocurrency industry judge intervention informed financial discrepancy TechCrunch prosecution fraud personal gains",
+        "Sam Bankman-Fried The Verge trustworthy crypto figure judge intervention told financial discrepancy TechCrunch prosecutors fraud personal gain"
+      ],
+      "final_evidence_sufficient": false,
+      "budget_exhausted": true,
+      "final_chunk_ids": [
+        "multihop_doc_a9be711178bfec34_chunk_0015",
+        "multihop_doc_0f89e922841f864b_chunk_0012",
+        "multihop_doc_0f89e922841f864b_chunk_0010",
+        "multihop_doc_c5b2a72d9024b262_chunk_0002",
+        "multihop_doc_a546501175a8dd2b_chunk_0000",
+        "multihop_doc_a62d25556990772d_chunk_0000",
+        "multihop_doc_0f89e922841f864b_chunk_0000",
+        "multihop_doc_22a798cdccffe158_chunk_0005",
+        "multihop_doc_a9be711178bfec34_chunk_0000",
+        "multihop_doc_a546501175a8dd2b_chunk_0008",
+        "multihop_doc_0f89e922841f864b_chunk_0028"
+      ],
+      "final_context": {
+        "gold_doc_recall": 0.6666666666666666,
+        "all_gold_docs_present": false,
+        "unique_context_documents": 6
+      },
+      "final_fact_coverage": {
+        "matched_fact_count": 1,
+        "gold_fact_count": 3,
+        "fact_recall": 0.3333333333333333,
+        "any_gold_fact_present": true,
+        "all_gold_facts_present": false
+      },
+      "timing": {
+        "search_latency_ms": 8024.0399000031175,
+        "judge_latency_ms": 28237.585700004274,
+        "rewrite_latency_ms": 13516.220099998463,
+        "final_answer_latency_ms": 1700.7158999986132
+      },
+      "pipeline_latency_ms": 48511.005000000296,
+      "token_usage": {
+        "prompt_tokens": 2529,
+        "completion_tokens": 295,
+        "total_tokens": 2824
+      },
+      "trace": [
+        {
+          "event": "evidence_judged",
+          "search_count": 1,
+          "sufficient": false,
+          "reason": "证据中虽多次出现 Sam Bankman-Fried (SBF)，且部分来自 The Verge 与 TechCrunch，但并未覆盖问题所需的三个具体信息点：The Verge 没有称其将自己呈现为加密货币行业可信赖人物；没有证据显示他在法官介入后被告知重大财务差异；TechCrunch 文章也未提到检方指控其为自己牟利而实施欺诈。",
+          "missing_aspects": [
+            "The Verge 中关于 SBF 将自己呈现为加密货币行业可信人物的具体表述",
+            "SBF 在法官介入后被告知重大财务差异的相关证据",
+            "TechCrunch 文章中检方指控 SBF 为个人利益实施欺诈的相关内容"
+          ]
+        },
+        {
+          "event": "query_rewritten",
+          "query": "SBF Sam Bankman-Fried The Verge trustworthy figure cryptocurrency industry judge intervention informed financial discrepancy TechCrunch prosecution fraud personal gains",
+          "reason": "原问题描述了一个人物但未明确姓名；缺失信息已确认该人物为 SBF。新 Query 加入 Sam Bankman-Fried/SBF 并保留 The Verge、法官介入、重大财务差异、TechCrunch、检方指控欺诈等关键要素，以检索此前未覆盖的具体报道和证据。"
+        },
+        {
+          "event": "search_completed",
+          "query": "SBF Sam Bankman-Fried The Verge trustworthy figure cryptocurrency industry judge intervention informed financial discrepancy TechCrunch prosecution fraud personal gains",
+          "new_chunk_ids": [
+            "multihop_doc_c5b2a72d9024b262_chunk_0002",
+            "multihop_doc_a62d25556990772d_chunk_0000",
+            "multihop_doc_0f89e922841f864b_chunk_0000",
+            "multihop_doc_22a798cdccffe158_chunk_0005",
+            "multihop_doc_a9be711178bfec34_chunk_0000"
+          ],
+          "total_evidence_chunks": 9
+        },
+        {
+          "event": "evidence_judged",
+          "search_count": 2,
+          "sufficient": false,
+          "reason": "The evidence identifies Sam Bankman-Fried as the individual involved in the cryptocurrency fraud trial, but it does not explicitly cover all the specific aspects mentioned in the question: (1) The Verge describing him as presenting himself as a trustworthy figure; (2) him being informed about a significant financial discrepancy after a judge's intervention; (3) the prosecution in a TechCrunch article alleging he committed fraud for personal gains. Therefore, the evidence is insufficient to fully answer the question.",
+          "missing_aspects": [
+            "The Verge's description of the individual presenting himself as a trustworthy figure in the cryptocurrency industry",
+            "The individual being informed about a significant financial discrepancy after a judge's intervention",
+            "The prosecution in a TechCrunch article alleging the individual committed fraud for personal gains"
+          ]
+        },
+        {
+          "event": "query_rewritten",
+          "query": "Sam Bankman-Fried The Verge trustworthy crypto figure judge intervention told financial discrepancy TechCrunch prosecutors fraud personal gain",
+          "reason": "该 Query 保留了核心人物 Sam Bankman-Fried 以及来源 The Verge 和 TechCrunch，并聚焦于缺失的三个信息点：The Verge 对其可信形象的描述、法官干预后被告知财务差异、TechCrunch 中检方指控欺诈牟利。通过使用同义词（crypto industry 代替 cryptocurrency industry，told 代替 informed，prosecutors 代替 prosecution，personal gain 代替 personal gains）和调整词序，避免与已搜索的 Query 重复，同时保持检索相关性。"
+        },
+        {
+          "event": "search_completed",
+          "query": "Sam Bankman-Fried The Verge trustworthy crypto figure judge intervention told financial discrepancy TechCrunch prosecutors fraud personal gain",
+          "new_chunk_ids": [
+            "multihop_doc_0f89e922841f864b_chunk_0010",
+            "multihop_doc_c5b2a72d9024b262_chunk_0002",
+            "multihop_doc_a546501175a8dd2b_chunk_0008",
+            "multihop_doc_22a798cdccffe158_chunk_0005",
+            "multihop_doc_0f89e922841f864b_chunk_0028"
+          ],
+          "total_evidence_chunks": 11
+        },
+        {
+          "event": "evidence_judged",
+          "search_count": 3,
+          "sufficient": false,
+          "reason": "The evidence identifies Sam Bankman-Fried via The Verge as presenting himself as the trustworthy face of crypto, and includes TechCrunch articles about fraud charges. However, it does not cover the required detail that he was informed about a significant financial discrepancy after a judge's intervention, nor does it contain a TechCrunch article specifically showing the prosecution alleging fraud for personal gains.",
+          "missing_aspects": [
+            "Evidence that the individual was informed about a significant financial discrepancy after a judge's intervention",
+            "A TechCrunch article in which the prosecution specifically alleges fraud for personal gains"
+          ]
+        }
+      ],
+      "error": null
+    }
+  ]
+}

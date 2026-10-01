@@ -1,0 +1,559 @@
+{
+  "dataset": "MultiHop-RAG",
+  "experiment": "context_failure_analysis",
+  "total_cases": 20,
+  "summary": {
+    "answer_accuracy": 0.6,
+    "avg_gold_fact_recall": 0.3333333333333333,
+    "all_gold_facts_present_rate": 0.15,
+    "all_gold_docs_present_rate": 0.45,
+    "doc_complete_but_fact_incomplete": 6,
+    "failure_counts": {
+      "retrieval_limited": 8,
+      "partial_evidence_success": 9,
+      "success": 3
+    }
+  },
+  "records": [
+    {
+      "case_id": "multihop_0074",
+      "question_type": "inference_query",
+      "query": "Which football club, recently discussed in articles from 'The Guardian', 'The Roar | Sports Writers Blog', and 'BBC News - Entertainment & Arts', had a significant change in league position due to a points penalty after a series of wins, and is recognized for its history and community importance as emphasized by Farhad Moshiri following an introduction by its late chairman Bill Kenwright?",
+      "gold_answer": "Everton Football Club",
+      "prediction": "Everton",
+      "document_coverage": {
+        "gold_doc_recall": 0.3333333333333333,
+        "all_gold_docs_present": false,
+        "unique_context_documents": 1
+      },
+      "fact_coverage": {
+        "matched_fact_count": 1,
+        "gold_fact_count": 3,
+        "fact_recall": 0.3333333333333333,
+        "any_gold_fact_present": true,
+        "all_gold_facts_present": false
+      },
+      "qa_metrics": {
+        "official_match": 1.0,
+        "exact_match": 0.0,
+        "gold_containment": 0.0,
+        "token_f1": 0.5
+      },
+      "answer_correct": false,
+      "failure_type": "retrieval_limited"
+    },
+    {
+      "case_id": "multihop_0141",
+      "question_type": "temporal_query",
+      "query": "After the Polygon report on Valve's updates to the Steam Deck hardware published on November 9, 2023, and the Engadget review of the Steam Deck OLED version published on the same date, was the reporting on Valve's improvements to the Steam Deck hardware consistent?",
+      "gold_answer": "Yes",
+      "prediction": "Yes, the reporting was consistent. Both Polygon and Engadget described Valve's Steam Deck OLED as a mid-cycle refresh with hardware improvements beyond the screen, including better battery life, thumbsticks, haptics, charging, and antennas.",
+      "document_coverage": {
+        "gold_doc_recall": 0.6666666666666666,
+        "all_gold_docs_present": false,
+        "unique_context_documents": 3
+      },
+      "fact_coverage": {
+        "matched_fact_count": 1,
+        "gold_fact_count": 3,
+        "fact_recall": 0.3333333333333333,
+        "any_gold_fact_present": true,
+        "all_gold_facts_present": false
+      },
+      "qa_metrics": {
+        "official_match": 0.0,
+        "exact_match": 0.0,
+        "gold_containment": 1.0,
+        "token_f1": 0.05714285714285715
+      },
+      "answer_correct": true,
+      "failure_type": "partial_evidence_success"
+    },
+    {
+      "case_id": "multihop_0161",
+      "question_type": "temporal_query",
+      "query": "Between the TechCrunch report on Sam Bankman-Fried's trial and the subsequent report by the same source on the prosecution's allegations against him, was there consistency in the portrayal of the charges he is facing?",
+      "gold_answer": "Yes",
+      "prediction": "Insufficient information",
+      "document_coverage": {
+        "gold_doc_recall": 0.3333333333333333,
+        "all_gold_docs_present": false,
+        "unique_context_documents": 5
+      },
+      "fact_coverage": {
+        "matched_fact_count": 1,
+        "gold_fact_count": 3,
+        "fact_recall": 0.3333333333333333,
+        "any_gold_fact_present": true,
+        "all_gold_facts_present": false
+      },
+      "qa_metrics": {
+        "official_match": 0.0,
+        "exact_match": 0.0,
+        "gold_containment": 0.0,
+        "token_f1": 0.0
+      },
+      "answer_correct": false,
+      "failure_type": "retrieval_limited"
+    },
+    {
+      "case_id": "multihop_0261",
+      "question_type": "comparison_query",
+      "query": "Does the article from 'The Independent - Life and Style' claim that Taylor Swift is secretive about her relationship with a specific individual, in contrast to the 'CBSSports.com' article which discusses her rumored romance but focuses on her attendance and performance at a specific venue?",
+      "gold_answer": "no",
+      "prediction": "Yes, the Independent article references a 'secret start' to her relationship with Travis Kelce, while the CBS article discusses the rumored romance and her attendance at Chiefs games.",
+      "document_coverage": {
+        "gold_doc_recall": 1.0,
+        "all_gold_docs_present": true,
+        "unique_context_documents": 4
+      },
+      "fact_coverage": {
+        "matched_fact_count": 0,
+        "gold_fact_count": 2,
+        "fact_recall": 0.0,
+        "any_gold_fact_present": false,
+        "all_gold_facts_present": false
+      },
+      "qa_metrics": {
+        "official_match": 0.0,
+        "exact_match": 0.0,
+        "gold_containment": 0.0,
+        "token_f1": 0.0
+      },
+      "answer_correct": false,
+      "failure_type": "retrieval_limited"
+    },
+    {
+      "case_id": "multihop_0312",
+      "question_type": "comparison_query",
+      "query": "Does the CBSSports.com article claim that Caesars Sportsbook offers a different new customer bonus bet amount than the Sporting News article claims Caesars Sportsbook is expected to offer to new sign-ups in Vermont?",
+      "gold_answer": "no",
+      "prediction": "No, the CBSSports.com article claims Caesars offers up to $1000 in bonus bets, which is the same amount the Sporting News article says Caesars is expected to offer to new sign-ups in Vermont.",
+      "document_coverage": {
+        "gold_doc_recall": 1.0,
+        "all_gold_docs_present": true,
+        "unique_context_documents": 3
+      },
+      "fact_coverage": {
+        "matched_fact_count": 2,
+        "gold_fact_count": 2,
+        "fact_recall": 1.0,
+        "any_gold_fact_present": true,
+        "all_gold_facts_present": true
+      },
+      "qa_metrics": {
+        "official_match": 0.0,
+        "exact_match": 0.0,
+        "gold_containment": 1.0,
+        "token_f1": 0.05714285714285715
+      },
+      "answer_correct": true,
+      "failure_type": "success"
+    },
+    {
+      "case_id": "multihop_0382",
+      "question_type": "inference_query",
+      "query": "Who is the individual that has become a significant figure in the realm of artificial intelligence, particularly due to their association with generative AI technology and the envisioning of AI agents to assist with various tasks, and whose integrity was questioned by a prevailing theory as mentioned in articles from both Fortune and TechCrunch?",
+      "gold_answer": "Sam Altman",
+      "prediction": "Insufficient information",
+      "document_coverage": {
+        "gold_doc_recall": 0.0,
+        "all_gold_docs_present": false,
+        "unique_context_documents": 5
+      },
+      "fact_coverage": {
+        "matched_fact_count": 0,
+        "gold_fact_count": 4,
+        "fact_recall": 0.0,
+        "any_gold_fact_present": false,
+        "all_gold_facts_present": false
+      },
+      "qa_metrics": {
+        "official_match": 0.0,
+        "exact_match": 0.0,
+        "gold_containment": 0.0,
+        "token_f1": 0.0
+      },
+      "answer_correct": false,
+      "failure_type": "retrieval_limited"
+    },
+    {
+      "case_id": "multihop_0406",
+      "question_type": "comparison_query",
+      "query": "Does 'The Sydney Morning Herald' suggest that the US economy is at an optimal slowing pace to avoid a recession, in contrast to 'The Age' which implies that a government shutdown could increase the risk of a recession in the US economy?",
+      "gold_answer": "Yes",
+      "prediction": "Yes. The Sydney Morning Herald reports rising hope that the US economy is slowing from its hot pace by just the right amount—too much strength would fuel inflation, while too little would mean a recession. In contrast, The Age says a government shutdown would drag on the US economy and raise the risk of a recession.",
+      "document_coverage": {
+        "gold_doc_recall": 1.0,
+        "all_gold_docs_present": true,
+        "unique_context_documents": 4
+      },
+      "fact_coverage": {
+        "matched_fact_count": 2,
+        "gold_fact_count": 2,
+        "fact_recall": 1.0,
+        "any_gold_fact_present": true,
+        "all_gold_facts_present": true
+      },
+      "qa_metrics": {
+        "official_match": 0.0,
+        "exact_match": 0.0,
+        "gold_containment": 1.0,
+        "token_f1": 0.034482758620689655
+      },
+      "answer_correct": true,
+      "failure_type": "success"
+    },
+    {
+      "case_id": "multihop_0453",
+      "question_type": "temporal_query",
+      "query": "Did TechCrunch report on Meta's moderation issues affecting Palestinian voices on a date other than October 19, 2023, and again on Meta's ad-free subscription service being potentially illegal and unfair on a date other than November 30, 2023, resulting in inconsistency in the news source's critical perspective towards Meta's policies and practices?",
+      "gold_answer": "no",
+      "prediction": "Insufficient information",
+      "document_coverage": {
+        "gold_doc_recall": 1.0,
+        "all_gold_docs_present": true,
+        "unique_context_documents": 2
+      },
+      "fact_coverage": {
+        "matched_fact_count": 0,
+        "gold_fact_count": 2,
+        "fact_recall": 0.0,
+        "any_gold_fact_present": false,
+        "all_gold_facts_present": false
+      },
+      "qa_metrics": {
+        "official_match": 0.0,
+        "exact_match": 0.0,
+        "gold_containment": 0.0,
+        "token_f1": 0.0
+      },
+      "answer_correct": false,
+      "failure_type": "retrieval_limited"
+    },
+    {
+      "case_id": "multihop_0728",
+      "question_type": "inference_query",
+      "query": "Who is the individual associated with FTX, who, according to reports from 'Cnbc | World Business News Leader', 'The Verge', 'TechCrunch', and another 'TechCrunch' article, planned to establish a board with experts for his company, struggled with managing the significant growth of his company alongside Alameda Research, was implicated in directing a $14 billion customer fund misappropriation, and is alleged by the prosecution to have committed fraud for personal gain?",
+      "gold_answer": "Sam Bankman-Fried",
+      "prediction": "Sam Bankman-Fried",
+      "document_coverage": {
+        "gold_doc_recall": 0.25,
+        "all_gold_docs_present": false,
+        "unique_context_documents": 5
+      },
+      "fact_coverage": {
+        "matched_fact_count": 0,
+        "gold_fact_count": 4,
+        "fact_recall": 0.0,
+        "any_gold_fact_present": false,
+        "all_gold_facts_present": false
+      },
+      "qa_metrics": {
+        "official_match": 1.0,
+        "exact_match": 1.0,
+        "gold_containment": 1.0,
+        "token_f1": 1.0
+      },
+      "answer_correct": true,
+      "failure_type": "partial_evidence_success"
+    },
+    {
+      "case_id": "multihop_0796",
+      "question_type": "inference_query",
+      "query": "Which company, according to TechCrunch articles, invested billions to secure its status as the default search engine on various platforms and is also accused of harming news publishers' revenue streams through anticompetitive practices?",
+      "gold_answer": "Google",
+      "prediction": "Google",
+      "document_coverage": {
+        "gold_doc_recall": 1.0,
+        "all_gold_docs_present": true,
+        "unique_context_documents": 3
+      },
+      "fact_coverage": {
+        "matched_fact_count": 2,
+        "gold_fact_count": 2,
+        "fact_recall": 1.0,
+        "any_gold_fact_present": true,
+        "all_gold_facts_present": true
+      },
+      "qa_metrics": {
+        "official_match": 1.0,
+        "exact_match": 1.0,
+        "gold_containment": 1.0,
+        "token_f1": 1.0
+      },
+      "answer_correct": true,
+      "failure_type": "success"
+    },
+    {
+      "case_id": "multihop_0913",
+      "question_type": "inference_query",
+      "query": "Who is the individual under 30, once considered the richest in that age bracket, who has pleaded not guilty to fraud and conspiracy charges and is accused by the prosecution of committing fraud to achieve wealth, power, and influence, as reported by TechCrunch?",
+      "gold_answer": "Sam Bankman-Fried",
+      "prediction": "Sam Bankman-Fried",
+      "document_coverage": {
+        "gold_doc_recall": 0.5,
+        "all_gold_docs_present": false,
+        "unique_context_documents": 5
+      },
+      "fact_coverage": {
+        "matched_fact_count": 1,
+        "gold_fact_count": 3,
+        "fact_recall": 0.3333333333333333,
+        "any_gold_fact_present": true,
+        "all_gold_facts_present": false
+      },
+      "qa_metrics": {
+        "official_match": 1.0,
+        "exact_match": 1.0,
+        "gold_containment": 1.0,
+        "token_f1": 1.0
+      },
+      "answer_correct": true,
+      "failure_type": "partial_evidence_success"
+    },
+    {
+      "case_id": "multihop_1005",
+      "question_type": "temporal_query",
+      "query": "Between the report from The Independent - Life and Style on Travis Kelce's absence at a Taylor Swift concert published on November 25, 2023, and the Yardbarker report on Travis Kelce's potential performance against the Raiders published on December 24, 2023, was there a change in the type of events and activities involving Travis Kelce covered by the news sources?",
+      "gold_answer": "no",
+      "prediction": "Insufficient information",
+      "document_coverage": {
+        "gold_doc_recall": 0.0,
+        "all_gold_docs_present": false,
+        "unique_context_documents": 5
+      },
+      "fact_coverage": {
+        "matched_fact_count": 0,
+        "gold_fact_count": 2,
+        "fact_recall": 0.0,
+        "any_gold_fact_present": false,
+        "all_gold_facts_present": false
+      },
+      "qa_metrics": {
+        "official_match": 0.0,
+        "exact_match": 0.0,
+        "gold_containment": 0.0,
+        "token_f1": 0.0
+      },
+      "answer_correct": false,
+      "failure_type": "retrieval_limited"
+    },
+    {
+      "case_id": "multihop_1072",
+      "question_type": "temporal_query",
+      "query": "Between the TechCrunch report on Epic Games' antitrust battle with Google published on November 6, 2023, and the TechCrunch report on the class action antitrust suit against Google published on December 15, 2023, was there inconsistency in reporting Google's engagement in anticompetitive behavior?",
+      "gold_answer": "no",
+      "prediction": "No. Both reports are consistent: the November 6, 2023 report describes Epic Games' trial hoping to prove Google engages in anticompetitive behavior regarding Google Play, and the December 15, 2023 report describes a class action accusing Google/Alphabet of anticompetitive behavior in violation of antitrust law. In both, Google is reported as being accused of anticompetitive behavior, with no inconsistency.",
+      "document_coverage": {
+        "gold_doc_recall": 1.0,
+        "all_gold_docs_present": true,
+        "unique_context_documents": 4
+      },
+      "fact_coverage": {
+        "matched_fact_count": 0,
+        "gold_fact_count": 3,
+        "fact_recall": 0.0,
+        "any_gold_fact_present": false,
+        "all_gold_facts_present": false
+      },
+      "qa_metrics": {
+        "official_match": 1.0,
+        "exact_match": 0.0,
+        "gold_containment": 1.0,
+        "token_f1": 0.03278688524590164
+      },
+      "answer_correct": true,
+      "failure_type": "partial_evidence_success"
+    },
+    {
+      "case_id": "multihop_1672",
+      "question_type": "comparison_query",
+      "query": "Does the TechCrunch article claim that Sam Bankman-Fried directed Caroline Ellison to use customer funds for debt repayment, while the Fortune article focuses on Sam Bankman-Fried's persuasion of Adam Yedidia to join his ventures, and does the second TechCrunch article allege that Sam Bankman-Fried's motivation for committing fraud was personal gain?",
+      "gold_answer": "Yes",
+      "prediction": "Insufficient information",
+      "document_coverage": {
+        "gold_doc_recall": 0.3333333333333333,
+        "all_gold_docs_present": false,
+        "unique_context_documents": 4
+      },
+      "fact_coverage": {
+        "matched_fact_count": 0,
+        "gold_fact_count": 3,
+        "fact_recall": 0.0,
+        "any_gold_fact_present": false,
+        "all_gold_facts_present": false
+      },
+      "qa_metrics": {
+        "official_match": 0.0,
+        "exact_match": 0.0,
+        "gold_containment": 0.0,
+        "token_f1": 0.0
+      },
+      "answer_correct": false,
+      "failure_type": "retrieval_limited"
+    },
+    {
+      "case_id": "multihop_1899",
+      "question_type": "temporal_query",
+      "query": "After the report by The Age on October 22, 2023, claiming that Google manipulates Search to maximize ad revenue, and the subsequent report by TechCrunch on October 31, 2023, regarding Google's expenditure to become the default search engine, was the consistency in reporting Google's competitive practices maintained in the TechCrunch article about the class action antitrust suit filed against Google published after December 15, 2023?",
+      "gold_answer": "Yes",
+      "prediction": "Yes. The TechCrunch article on the class action antitrust suit reported that Google and Alphabet were accused of anticompetitive behavior, consistent with the earlier TechCrunch coverage of Google's antitrust trial and default search deals and with The Age's report on Google's competitive practices.",
+      "document_coverage": {
+        "gold_doc_recall": 1.0,
+        "all_gold_docs_present": true,
+        "unique_context_documents": 4
+      },
+      "fact_coverage": {
+        "matched_fact_count": 1,
+        "gold_fact_count": 3,
+        "fact_recall": 0.3333333333333333,
+        "any_gold_fact_present": true,
+        "all_gold_facts_present": false
+      },
+      "qa_metrics": {
+        "official_match": 0.0,
+        "exact_match": 0.0,
+        "gold_containment": 1.0,
+        "token_f1": 0.042553191489361694
+      },
+      "answer_correct": true,
+      "failure_type": "partial_evidence_success"
+    },
+    {
+      "case_id": "multihop_2047",
+      "question_type": "comparison_query",
+      "query": "Does the article from The Verge suggest that a GameStop gift card is a universally useless gift for gamers regardless of console preference, while the Polygon article recommends specific Nintendo Switch games, indicating a more targeted gift approach for owners of that console?",
+      "gold_answer": "no",
+      "prediction": "No. The Verge says a GameStop gift card is useful if you don’t know which console your giftee prefers, not universally useless. Polygon does have Nintendo Switch-focused game articles, but the provided evidence does not list specific recommended Switch games.",
+      "document_coverage": {
+        "gold_doc_recall": 1.0,
+        "all_gold_docs_present": true,
+        "unique_context_documents": 4
+      },
+      "fact_coverage": {
+        "matched_fact_count": 1,
+        "gold_fact_count": 2,
+        "fact_recall": 0.5,
+        "any_gold_fact_present": true,
+        "all_gold_facts_present": false
+      },
+      "qa_metrics": {
+        "official_match": 0.0,
+        "exact_match": 0.0,
+        "gold_containment": 1.0,
+        "token_f1": 0.047619047619047616
+      },
+      "answer_correct": true,
+      "failure_type": "partial_evidence_success"
+    },
+    {
+      "case_id": "multihop_2091",
+      "question_type": "inference_query",
+      "query": "Which company, known for ranking local search results based on relevance, distance, and prominence according to an article from The Verge, is also mentioned in two TechCrunch articles, one discussing the lack of planned additional measures for a video platform in the next six months, and the other citing a class action antitrust suit for siphoning off content, readers, and ad revenue from news publishers?",
+      "gold_answer": "Google",
+      "prediction": "Google",
+      "document_coverage": {
+        "gold_doc_recall": 0.6666666666666666,
+        "all_gold_docs_present": false,
+        "unique_context_documents": 2
+      },
+      "fact_coverage": {
+        "matched_fact_count": 2,
+        "gold_fact_count": 3,
+        "fact_recall": 0.6666666666666666,
+        "any_gold_fact_present": true,
+        "all_gold_facts_present": false
+      },
+      "qa_metrics": {
+        "official_match": 1.0,
+        "exact_match": 1.0,
+        "gold_containment": 1.0,
+        "token_f1": 1.0
+      },
+      "answer_correct": true,
+      "failure_type": "partial_evidence_success"
+    },
+    {
+      "case_id": "multihop_2227",
+      "question_type": "comparison_query",
+      "query": "Does the article from The Verge suggest that a GameStop gift card is a universally useful gift for gamers regardless of console preference, while the Polygon article recommends specific Nintendo Switch games, indicating a more targeted gift approach for owners of that console?",
+      "gold_answer": "Yes",
+      "prediction": "Yes. The Verge article says a GameStop gift card is useful if you don't know which console your giftee prefers or want to give them options, while Polygon articles recommend specific Nintendo Switch games, indicating a more targeted gift approach for Switch owners.",
+      "document_coverage": {
+        "gold_doc_recall": 1.0,
+        "all_gold_docs_present": true,
+        "unique_context_documents": 4
+      },
+      "fact_coverage": {
+        "matched_fact_count": 1,
+        "gold_fact_count": 2,
+        "fact_recall": 0.5,
+        "any_gold_fact_present": true,
+        "all_gold_facts_present": false
+      },
+      "qa_metrics": {
+        "official_match": 0.0,
+        "exact_match": 0.0,
+        "gold_containment": 1.0,
+        "token_f1": 0.044444444444444446
+      },
+      "answer_correct": true,
+      "failure_type": "partial_evidence_success"
+    },
+    {
+      "case_id": "multihop_2245",
+      "question_type": "comparison_query",
+      "query": "Do 'The Verge' and 'Engadget' articles both suggest that 'Consumers' can find guidance or deals on tech products, while the 'TechCrunch' article proposes a different interest of 'Consumers' in the realm of social networking?",
+      "gold_answer": "Yes",
+      "prediction": "Insufficient information",
+      "document_coverage": {
+        "gold_doc_recall": 0.3333333333333333,
+        "all_gold_docs_present": false,
+        "unique_context_documents": 4
+      },
+      "fact_coverage": {
+        "matched_fact_count": 1,
+        "gold_fact_count": 3,
+        "fact_recall": 0.3333333333333333,
+        "any_gold_fact_present": true,
+        "all_gold_facts_present": false
+      },
+      "qa_metrics": {
+        "official_match": 0.0,
+        "exact_match": 0.0,
+        "gold_containment": 0.0,
+        "token_f1": 0.0
+      },
+      "answer_correct": false,
+      "failure_type": "retrieval_limited"
+    },
+    {
+      "case_id": "multihop_2374",
+      "question_type": "inference_query",
+      "query": "Who is the individual that presented himself as a trustworthy figure in the cryptocurrency industry according to The Verge, was informed about a significant financial discrepancy after a judge's intervention, and is alleged by the prosecution in a TechCrunch article to have committed fraud for personal gains?",
+      "gold_answer": "Sam Bankman-Fried",
+      "prediction": "Sam Bankman-Fried",
+      "document_coverage": {
+        "gold_doc_recall": 0.3333333333333333,
+        "all_gold_docs_present": false,
+        "unique_context_documents": 4
+      },
+      "fact_coverage": {
+        "matched_fact_count": 0,
+        "gold_fact_count": 3,
+        "fact_recall": 0.0,
+        "any_gold_fact_present": false,
+        "all_gold_facts_present": false
+      },
+      "qa_metrics": {
+        "official_match": 1.0,
+        "exact_match": 1.0,
+        "gold_containment": 1.0,
+        "token_f1": 1.0
+      },
+      "answer_correct": true,
+      "failure_type": "partial_evidence_success"
+    }
+  ]
+}

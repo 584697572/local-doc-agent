@@ -1,0 +1,11 @@
+# 仅包含 API 和 Agent 运行依赖；开发、测试、Benchmark 仍用 requirements.txt。
+openai
+python-dotenv
+pypdf
+rank-bm25
+jieba
+sentence-transformers
+faiss-cpu
+numpy
+fastapi
+uvicorn

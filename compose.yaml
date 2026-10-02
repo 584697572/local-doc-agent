@@ -1,0 +1,23 @@
+services:
+  local-doc-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      # API 暂无鉴权，默认只允许本机访问；容器内仍监听 0.0.0.0。
+      - "127.0.0.1:8000:8000"
+    environment:
+      # Compose 自动读取根目录 .env；只传递此服务需要的密钥。
+      # 未配置时直接报错，不启动一个无法问答的服务。
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:?请在项目根目录 .env 中配置 DEEPSEEK_API_KEY}
+    volumes:
+      # 文档只读，索引可写；两者都不存放在容器可丢弃的文件层中。
+      - ./data:/app/data:ro
+      - ./.localdoc_index:/app/.localdoc_index
+      # 删除并重建容器后仍保留模型，不必重新下载全部模型。
+      - huggingface-cache:/root/.cache/huggingface
+    restart: unless-stopped
+
+volumes:
+  # 普通重启使用 docker compose down / up -d，不要加 down -v。
+  huggingface-cache:

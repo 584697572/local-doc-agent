@@ -1,0 +1,28 @@
+# 排除密钥及其本地变体；公开模板不包含真实密钥。
+.env
+.env.*
+**/.env
+**/.env.*
+!.env.example
+.git/
+.codex/
+.agents/
+.idea/
+.vscode/
+
+# 排除本机缓存、虚拟环境、私人文档和持久化索引。
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+.pytest_cache/
+.venv/
+venv/
+data/*
+.localdoc_index/
+.cache/
+*.log
+
+# 评测与测试不属于 Runtime 镜像，也不发送到构建引擎。
+evaluation/
+tests/
+pytest.ini

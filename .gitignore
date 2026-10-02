@@ -9,6 +9,10 @@ venv/
 data/*
 !data/.gitkeep
 
+# Persistent Retrieval Index。
+# 由本地文档自动生成，不进入 Git。
+.localdoc_index/
+
 # Public benchmark datasets
 evaluation/data/
 

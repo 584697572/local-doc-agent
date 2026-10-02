@@ -243,7 +243,13 @@ def _run_agent(user_input, chat_history, state):
                 "function": {
                     "name": "search_documents"
                 },
-            },            
+            },  
+
+            extra_body={
+                "thinking": {
+                    "type": "disabled",
+                }
+            },          
         )
 
         message = response.choices[0].message

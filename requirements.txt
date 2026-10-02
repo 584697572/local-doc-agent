@@ -7,3 +7,8 @@ sentence-transformers
 faiss-cpu
 numpy
 beir
+
+# API
+fastapi
+uvicorn
+httpx

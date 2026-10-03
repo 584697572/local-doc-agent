@@ -21,6 +21,8 @@ data/*
 .localdoc_index/
 .cache/
 *.log
+*.tmp
+*.bak
 
 # 评测与测试不属于 Runtime 镜像，也不发送到构建引擎。
 evaluation/

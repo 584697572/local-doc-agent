@@ -1,14 +1,9 @@
-openai
-python-dotenv
-pypdf
-rank-bm25
-jieba
-sentence-transformers
-faiss-cpu
-numpy
-beir
+# 开发、测试和 Benchmark 环境，复用 Docker / FastAPI 的运行依赖。
+-r requirements-runtime.txt
 
-# API
-fastapi
-uvicorn
+# 单元测试及 FastAPI TestClient。
+pytest
 httpx
+
+# 公开检索 Benchmark。
+beir

@@ -1,9 +1,16 @@
 .env
+.env.*
+!.env.example
 __pycache__/
 *.pyc
 .pytest_cache/
 .venv/
 venv/
+
+# 本地日志、临时文件和编辑器备份。
+*.log
+*.tmp
+*.bak
 
 # 本地知识库默认不提交，避免误上传私人文档。
 data/*
@@ -15,6 +22,10 @@ data/*
 
 # Public benchmark datasets
 evaluation/data/
+
+# 新生成的断点文件不提交；已跟踪的历史断点保留用于实验追溯。
+evaluation/results/checkpoints/
+evaluation/results/**/*.checkpoint.json
 
 # 内部回归原始结果可重新生成，只提交精选基线。
 evaluation/results/agent/*

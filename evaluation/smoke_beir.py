@@ -1,4 +1,8 @@
-"""BEIR SciFact 数据加载 Smoke Test。"""
+"""
+BEIR SciFact 真实数据加载检查：python -m evaluation.smoke_beir。
+
+首次运行可能下载公开数据；只打印加载摘要，不生成正式实验报告。
+"""
 
 from evaluation.beir_adapter import (
     beir_corpus_to_chunks,
@@ -37,7 +41,7 @@ def main():
         f"Converted chunks: {len(chunks)}"
     )
 
-    # 随便打印一个 Query
+    # 展示一条真实查询及其相关性标注，便于确认数据加载结果。
     query_id = next(
         iter(queries)
     )

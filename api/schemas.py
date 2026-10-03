@@ -7,13 +7,7 @@ from pydantic import BaseModel, Field
 
 class ChatMessage(BaseModel):
     """
-    一条聊天历史。
-
-    API v1 只接受正常的：
-        user
-        assistant
-
-    不允许客户端伪造 system / tool 消息。
+    聊天历史仅接受 user / assistant，禁止客户端伪造 system / tool 消息。
     """
 
     role: Literal[
@@ -41,10 +35,7 @@ class AskRequest(BaseModel):
         default_factory=list
     )
 
-    # Trace 可能包含搜索 Query、
-    # Tool 状态甚至 Evidence。
-    #
-    # 默认关闭，只用于调试。
+    # Trace 可能包含检索证据，默认关闭，仅在调用方明确请求时返回。
     include_trace: bool = False
 
 
@@ -102,10 +93,6 @@ class HealthResponse(BaseModel):
     service: str
 
     version: str
-
-# 文件：api/schemas.py
-# 位置：文件末尾
-# 操作：新增
 
 
 class ReadyResponse(BaseModel):

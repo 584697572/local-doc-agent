@@ -14,39 +14,17 @@ from retrieval.engine import (
 from tools.result import ToolResult
 
 
-# ======================================================
 # Process-local Engine Cache
-# ======================================================
 
-# Persistent Index 解决的是：
-#
-#     程序关闭以后
-#     下一次启动仍然可以复用 Dense Index。
-#
-# _engine 解决的是：
-#
-#     同一个 Python 进程中
-#     不要每次搜索都重新创建 RetrievalEngine。
+# 磁盘索引用于跨进程复用；_engine 避免同一进程每次搜索都重复初始化。
 _engine = None
 
 
 def _get_retrieval_engine() -> RetrievalEngine:
     """
-    获取 RetrievalEngine。
+    首次创建并构建检索引擎，后续调用复用进程缓存。
 
-    第一次调用：
-
-        创建 Engine
-            ↓
-        build()
-            ↓
-        Persistent Cache Hit
-            或
-        全量 Build + 保存 Cache
-
-    同一进程后续调用：
-
-        直接复用 _engine。
+    build() 根据磁盘缓存和源文件变化选择缓存命中、增量更新或全量重建。
     """
 
     global _engine
@@ -57,38 +35,21 @@ def _get_retrieval_engine() -> RetrievalEngine:
             chunk_size=CHUNK_SIZE,
             overlap=CHUNK_OVERLAP,
 
-            # 正式启用 Persistent Index。
+            # 跨进程保留索引及原始向量，供缓存命中和增量更新使用。
             cache_dir=INDEX_DIR,
         )
 
         engine.build()
 
-        # build 成功以后再赋值。
-        #
-        # 如果初始化期间抛异常，
-        # 不会把一个半初始化 Engine
-        # 留在全局缓存中。
+        # 仅在构建成功后发布实例，避免后续请求使用半初始化的引擎。
         _engine = engine
 
     return _engine
 
-# 文件：tools/retrieval.py
-# 位置：_get_retrieval_engine() 后
-# 操作：新增
-
 
 def get_retrieval_status() -> dict:
     """
-    获取 Retrieval / Persistent Index 状态。
-
-    重要：
-
-    这个函数只是查看状态，
-    不会主动调用 _get_retrieval_engine()。
-
-    因此：
-        查看 /v1/index/status
-    不会导致模型加载或索引重建。
+    读取运行时或磁盘索引状态，不调用引擎初始化、加载模型或重建索引。
     """
 
     # ==================================================

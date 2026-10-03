@@ -35,9 +35,7 @@ logger = logging.getLogger(
 )
 
 
-# ======================================================
 # Application
-# ======================================================
 
 app = FastAPI(
     title="LocalDoc-Agent API",
@@ -50,14 +48,9 @@ app = FastAPI(
 )
 
 
-# ======================================================
 # Agent Execution
-# ======================================================
 
-# 当前 Agent / Retriever 使用进程内共享对象。
-#
-# v1 先串行执行 Agent，
-# 避免多个请求同时初始化模型 / Index。
+# Agent / Retriever 共享进程内状态，串行执行以避免并发初始化模型和索引。
 _AGENT_LOCK = Lock()
 
 
@@ -66,20 +59,9 @@ def _run_agent_request(
     history: list[dict],
 ):
     """
-    FastAPI 和 Agent Core 之间的适配层。
+    延迟加载 Agent，使健康检查不依赖模型初始化。
 
-    使用 Lazy Import：
-
-        启动 API
-            ↓
-        不加载 Agent / LLM
-
-        第一次 /v1/ask
-            ↓
-        才真正加载 Agent。
-
-    测试也可以直接替换这个函数，
-    完全不调用真实 DeepSeek API。
+    测试可替换此适配函数，避免调用真实 LLM。
     """
 
     from agent import (
@@ -93,10 +75,6 @@ def _run_agent_request(
                 history,
             )
         )
-
-# 文件：api/app.py
-# 位置：_run_agent_request() 后
-# 操作：新增
 
 
 def _readiness_checks() -> dict[
@@ -148,9 +126,7 @@ def _get_index_status() -> dict:
         get_retrieval_status()
     )
 
-# ======================================================
 # Health
-# ======================================================
 
 @app.get(
     "/health",
@@ -158,18 +134,7 @@ def _get_index_status() -> dict:
 )
 def health():
     """
-    Liveness Endpoint。
-
-    注意：
-    这里只验证 HTTP 服务本身活着。
-
-    不主动加载：
-        - LLM
-        - Embedding Model
-        - Reranker
-        - Retrieval Index
-
-    因此 Health Check 很轻量。
+    检查 HTTP 服务存活，不加载 LLM、检索模型或索引。
     """
 
     return HealthResponse(
@@ -177,10 +142,6 @@ def health():
         service="local-doc-agent",
         version="0.1.0",
     )
-
-# 文件：api/app.py
-# 位置：GET /health 后
-# 操作：新增
 
 
 @app.get(
@@ -222,10 +183,6 @@ def ready(
         checks=checks,
     )
 
-# 文件：api/app.py
-# 位置：GET /ready 后
-# 操作：新增
-
 
 @app.get(
     "/v1/index/status",
@@ -249,9 +206,7 @@ def index_status():
         **_get_index_status()
     )
 
-# ======================================================
 # Ask
-# ======================================================
 
 @app.post(
     "/v1/ask",
@@ -272,11 +227,7 @@ def ask(
         request.query.strip()
     )
 
-    # Field(min_length=1) 无法阻止：
-    #
-    #     "      "
-    #
-    # 所以还要明确检查纯空白输入。
+    # 长度校验不能识别纯空白输入，需要在 strip 后再次检查。
     if not query:
         raise HTTPException(
             status_code=422,
@@ -305,8 +256,7 @@ def ask(
             ),
         )
 
-    # Pydantic Model
-    # → Agent 原本使用的 dict 格式。
+    # 将请求模型转换为 Agent 使用的消息字典。
     history = [
         message.model_dump()
         for message
@@ -322,13 +272,7 @@ def ask(
         )
 
     except Exception:
-        # Server Log 保存完整 traceback。
-        #
-        # HTTP Response 不直接暴露内部异常，
-        # 避免泄漏：
-        # - API Key
-        # - 文件路径
-        # - SDK 内部信息
+        # 完整异常仅写入服务端日志，HTTP 响应不暴露密钥、路径或 SDK 细节。
         logger.exception(
             "Agent request failed"
         )

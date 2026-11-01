@@ -19,25 +19,23 @@ class RewriteResult:
 
 
 def _call_rewriter(
-    original_query: str,
-    missing_aspects: list[str],
-    used_queries: set[str],
+    original_query: str, missing_aspects: list[str], used_queries: set[str]
 ) -> str:
     """
     调用 LLM，根据证据缺口生成一条新的检索 Query。
     """
 
     # 把缺失信息整理成人类和 LLM 都容易读的文本
-    missing_text = "\n".join(
-        f"- {aspect}"
-        for aspect in missing_aspects
-    )
+    missing_lines = []
+    for aspect in missing_aspects:
+        missing_lines.append(f"- {aspect}")
+    missing_text = "\n".join(missing_lines)
 
     # 把已经执行过的 Query 告诉 Rewriter，减少重复搜索
-    used_query_text = "\n".join(
-        f"- {query}"
-        for query in sorted(used_queries)
-    )
+    used_query_lines = []
+    for query in sorted(used_queries):
+        used_query_lines.append(f"- {query}")
+    used_query_text = "\n".join(used_query_lines)
 
     if not used_query_text:
         used_query_text = "无"
@@ -51,13 +49,10 @@ def _call_rewriter(
                     "你是 Query Rewriter。"
                     "你的任务不是回答用户问题，"
                     "而是生成下一条知识库检索 Query。"
-
                     "新 Query 应重点搜索当前缺失的信息，"
                     "同时保留原问题中的关键实体和专业术语。"
-
                     "不要生成已经搜索过的 Query。"
                     "只生成一条简洁、适合检索的 Query。"
-
                     "必须返回 JSON，格式如下："
                     "{"
                     '"query": "新的检索 Query",'
@@ -74,19 +69,18 @@ def _call_rewriter(
                 ),
             },
         ],
-        response_format={
-            "type": "json_object"
-        },
+        response_format={"type": "json_object"},
         temperature=0,
     )
 
-    return response.choices[0].message.content or "{}"
+    content = response.choices[0].message.content
+    if not content:
+        content = "{}"
+    return content
 
 
 def rewrite_query(
-    original_query: str,
-    missing_aspects: list[str],
-    used_queries: set[str],
+    original_query: str, missing_aspects: list[str], used_queries: set[str]
 ) -> RewriteResult:
     """
     根据缺失信息生成下一条检索 Query。
@@ -95,8 +89,7 @@ def rewrite_query(
     # 连缺什么都不知道时，不进行盲目改写
     if not missing_aspects:
         return RewriteResult(
-            query="",
-            reason="当前没有明确的证据缺口，无法进行定向 Query Rewrite。",
+            query="", reason="当前没有明确的证据缺口，无法进行定向 Query Rewrite。"
         )
 
     try:
@@ -110,10 +103,7 @@ def rewrite_query(
 
     except Exception as exc:
         # Rewriter 出错时，不让整个 Agent 崩溃
-        return RewriteResult(
-            query="",
-            reason=f"Query Rewrite 失败：{exc}",
-        )
+        return RewriteResult(query="", reason=f"Query Rewrite 失败：{exc}")
 
     query = data.get("query", "")
     reason = data.get("reason", "")
@@ -125,7 +115,9 @@ def rewrite_query(
     if not isinstance(reason, str):
         reason = ""
 
-    return RewriteResult(
-        query=query.strip(),
-        reason=reason.strip() or "未提供改写原因。",
-    )
+    query = query.strip()
+    reason = reason.strip()
+    if not reason:
+        reason = "未提供改写原因。"
+
+    return RewriteResult(query=query, reason=reason)

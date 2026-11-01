@@ -2,9 +2,7 @@
 
 
 def hit_at_k(
-    retrieved_chunk_ids: list[str],
-    relevant_chunk_ids: list[str],
-    k: int,
+    retrieved_chunk_ids: list[str], relevant_chunk_ids: list[str], k: int
 ) -> float:
     """
     Hit@K：
@@ -17,18 +15,14 @@ def hit_at_k(
     relevant_set = set(relevant_chunk_ids)
     top_k = retrieved_chunk_ids[:k]
 
-    return float(
-        any(
-            chunk_id in relevant_set
-            for chunk_id in top_k
-        )
-    )
+    for chunk_id in top_k:
+        if chunk_id in relevant_set:
+            return 1.0
+    return 0.0
 
 
 def recall_at_k(
-    retrieved_chunk_ids: list[str],
-    relevant_chunk_ids: list[str],
-    k: int,
+    retrieved_chunk_ids: list[str], relevant_chunk_ids: list[str], k: int
 ) -> float:
     """
     Recall@K：
@@ -42,23 +36,15 @@ def recall_at_k(
         return 0.0
 
     relevant_set = set(relevant_chunk_ids)
-    retrieved_set = set(
-        retrieved_chunk_ids[:k]
-    )
+    retrieved_set = set(retrieved_chunk_ids[:k])
 
-    found_count = len(
-        relevant_set & retrieved_set
-    )
+    found_count = len(relevant_set & retrieved_set)
 
-    return (
-        found_count
-        / len(relevant_set)
-    )
+    return found_count / len(relevant_set)
 
 
 def reciprocal_rank(
-    retrieved_chunk_ids: list[str],
-    relevant_chunk_ids: list[str],
+    retrieved_chunk_ids: list[str], relevant_chunk_ids: list[str]
 ) -> float:
     """
     Reciprocal Rank：
@@ -70,14 +56,9 @@ def reciprocal_rank(
     没找到 → 0.0
     """
 
-    relevant_set = set(
-        relevant_chunk_ids
-    )
+    relevant_set = set(relevant_chunk_ids)
 
-    for rank, chunk_id in enumerate(
-        retrieved_chunk_ids,
-        start=1,
-    ):
+    for rank, chunk_id in enumerate(retrieved_chunk_ids, start=1):
         if chunk_id in relevant_set:
             return 1.0 / rank
 

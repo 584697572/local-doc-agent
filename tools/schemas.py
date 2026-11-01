@@ -1,6 +1,5 @@
 """提供给 LLM 的 Tool Calling Schema。"""
 
-
 TOOLS = [
     {
         "type": "function",

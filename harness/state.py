@@ -47,13 +47,11 @@ class AgentState:
         """
         把 Query 统一格式，方便判断是否重复。
         """
-        return " ".join(query.lower().split())
+        lowercase_query = query.lower()
+        words = lowercase_query.split()
+        return " ".join(words)
 
-    def reserve_search(
-        self,
-        query: str,
-        step: int,
-    ) -> tuple[bool, str]:
+    def reserve_search(self, query: str, step: int) -> tuple[bool, str]:
         """
         判断当前搜索是否允许执行。
 
@@ -81,11 +79,7 @@ class AgentState:
         self.last_query = query.strip()
         self.used_queries.add(normalized_query)
 
-        self.add_trace(
-            "search_accepted",
-            step=step,
-            query=self.last_query,
-        )
+        self.add_trace("search_accepted", step=step, query=self.last_query)
 
         return True, "ok"
 
@@ -98,26 +92,25 @@ class AgentState:
     def record_tool_execution(self, query, result) -> None:
         """把执行与预约搜索分开记录，便于发现去重失效和错误证据。"""
         self.add_trace(
-            "tool_executed", query=query, status=result.status,
-            content=result.content, error=result.error, metadata=result.metadata,
+            "tool_executed",
+            query=query,
+            status=result.status,
+            content=result.content,
+            error=result.error,
+            metadata=result.metadata,
         )
 
     def add_trace(self, event: str, **details) -> None:
         """
         记录 Agent 运行事件。
         """
-        self.trace.append(
-            {
-                "event": event,
-                **details,
-            }
-        )
+        # details 接收额外的具名参数，再合并到同一条事件记录中。
+        trace_entry = {"event": event}
+        trace_entry.update(details)
+        self.trace.append(trace_entry)
 
     def record_evidence_decision(
-        self,
-        sufficient: bool,
-        reason: str,
-        missing_aspects: list[str],
+        self, sufficient: bool, reason: str, missing_aspects: list[str]
     ) -> None:
         """保存 Evidence Judge 的判断。"""
 

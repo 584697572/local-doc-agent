@@ -2,7 +2,6 @@
 
 from pathlib import Path
 
-
 PROJECT_DIR = Path(__file__).parent
 
 # 用户本地知识库。

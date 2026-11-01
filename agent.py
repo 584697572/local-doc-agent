@@ -4,11 +4,7 @@ import json
 from dataclasses import dataclass
 from time import perf_counter
 
-from config import (
-    MAX_AGENT_STEPS,
-    MAX_SEARCH_CALLS,
-    MODEL_NAME,
-)
+from config import MAX_AGENT_STEPS, MAX_SEARCH_CALLS, MODEL_NAME
 from harness.state import AgentState
 from harness.evidence import evaluate_evidence
 from harness.rewrite import rewrite_query
@@ -20,7 +16,6 @@ from tools.retrieval import search_documents
 from tools.schemas import TOOLS
 from tools.result import ToolResult
 
-
 SYSTEM_PROMPT = (
     "你是 LocalDoc-Agent，一个面向本地知识库的检索问答助手。"
     "当用户的问题依赖本地文档中的事实、概念或技术内容时，调用 search_documents。"
@@ -31,16 +26,13 @@ SYSTEM_PROMPT = (
 
 
 tool_registry = ToolRegistry()
-tool_registry.register(
-    "search_documents",
-    search_documents,
-    ["query"],
-)
+tool_registry.register("search_documents", search_documents, ["query"])
 
 
 def run_tool(tool_name, arguments):
     """根据模型返回的工具名执行对应 Python 函数。"""
     return tool_registry.run(tool_name, arguments)
+
 
 def generate_direct_answer(user_input, chat_history):
     """
@@ -57,20 +49,16 @@ def generate_direct_answer(user_input, chat_history):
                 "请直接自然回答。"
                 "不要声称自己查询了本地文档。"
             ),
-        },
-        *chat_history,
-        {
-            "role": "user",
-            "content": user_input,
-        },
+        }
     ]
+    # 消息按时间排列：系统要求、历史对话、这一次的用户问题。
+    messages.extend(chat_history)
+    messages.append({"role": "user", "content": user_input})
 
-    response = client.chat.completions.create(
-        model=MODEL_NAME,
-        messages=messages,
-    )
+    response = client.chat.completions.create(model=MODEL_NAME, messages=messages)
 
     return response.choices[0].message.content
+
 
 def generate_final_answer(chat_history, state):
     """
@@ -89,9 +77,7 @@ def generate_final_answer(chat_history, state):
         )
 
     else:
-        missing_text = "；".join(
-            state.missing_aspects
-        )
+        missing_text = "；".join(state.missing_aspects)
 
         if not missing_text:
             missing_text = "无法明确确定具体缺失信息"
@@ -107,31 +93,19 @@ def generate_final_answer(chat_history, state):
         )
 
     # 把所有成功检索到的 Evidence 统一整理给最终回答模型
-    evidence_text = "\n\n".join(
-        state.evidence
-    )
+    evidence_text = "\n\n".join(state.evidence)
 
     if not evidence_text:
-        evidence_text = "当前没有有效的知识库证据。"        
+        evidence_text = "当前没有有效的知识库证据。"
 
     # Final Answer 使用干净上下文，
     # 不再重复携带前面的 Tool Call / Tool Result。
-    final_messages = [
-        {
-            "role": "system",
-            "content": instruction,
-        },
+    final_messages = [{"role": "system", "content": instruction}]
+    final_messages.extend(chat_history)
+    final_messages.append({"role": "user", "content": state.original_query})
 
-        # 保留之前几轮正常聊天历史
-        *chat_history,
-
-        # 当前用户问题
-        {
-            "role": "user",
-            "content": state.original_query,
-        },
-
-        # 最终统一整理后的 Evidence
+    # 证据单独作为一条资料消息发送，保留原来的消息顺序。
+    final_messages.append(
         {
             "role": "user",
             "content": (
@@ -141,13 +115,10 @@ def generate_final_answer(chat_history, state):
                 f"{evidence_text}\n"
                 "</evidence>"
             ),
-        },
-    ]
-
-    response = client.chat.completions.create(
-        model=MODEL_NAME,
-        messages=final_messages,
+        }
     )
+
+    response = client.chat.completions.create(model=MODEL_NAME, messages=final_messages)
 
     return response.choices[0].message.content
 
@@ -172,15 +143,19 @@ class AgentRun:
 
 def run_agent_with_trace(user_input, chat_history, *, state=None):
     """评测入口复用原主循环；可传入状态以便异常后仍能读取轨迹。"""
-    state = state or AgentState(user_input, MAX_SEARCH_CALLS)
+    if not state:
+        state = AgentState(user_input, MAX_SEARCH_CALLS)
     started = perf_counter()
     answer = _run_agent(user_input, chat_history, state)
-    return AgentRun(answer, state, (perf_counter() - started) * 1000)
+    elapsed_seconds = perf_counter() - started
+    latency_ms = elapsed_seconds * 1000
+    return AgentRun(answer, state, latency_ms)
 
 
 def run_agent(user_input, chat_history):
     """保留 CLI 原来的字符串返回接口。"""
-    return run_agent_with_trace(user_input, chat_history).answer
+    run = run_agent_with_trace(user_input, chat_history)
+    return run.answer
 
 
 def _run_agent(user_input, chat_history, state):
@@ -189,9 +164,7 @@ def _run_agent(user_input, chat_history, state):
     # 先判断这个问题是否需要查询本地知识库
     if user_input.strip():
         state.llm_calls += 1
-    route_decision = route_query(
-        user_input
-    )
+    route_decision = route_query(user_input)
 
     state.add_trace(
         "query_routed",
@@ -199,35 +172,18 @@ def _run_agent(user_input, chat_history, state):
         reason=route_decision.reason,
     )
 
-    print(
-        f"[Agent] needs_retrieval="
-        f"{route_decision.needs_retrieval}"
-    )
+    print(f"[Agent] needs_retrieval={route_decision.needs_retrieval}")
 
-    print(
-        f"[Agent] route_reason="
-        f"{route_decision.reason}"
-    )
+    print(f"[Agent] route_reason={route_decision.reason}")
 
     # 不需要知识库的问题直接回答
     if not route_decision.needs_retrieval:
         state.llm_calls += 1
-        return generate_direct_answer(
-            user_input,
-            chat_history,
-        )   
+        return generate_direct_answer(user_input, chat_history)
 
-    messages = [
-        {
-            "role": "system",
-            "content": SYSTEM_PROMPT,
-        },
-        *chat_history,
-        {
-            "role": "user",
-            "content": user_input,
-        },
-    ]
+    messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+    messages.extend(chat_history)
+    messages.append({"role": "user", "content": user_input})
 
     for step in range(MAX_AGENT_STEPS):
         state.llm_calls += 1
@@ -235,21 +191,10 @@ def _run_agent(user_input, chat_history, state):
             model=MODEL_NAME,
             messages=messages,
             tools=TOOLS,
-
             # Router 已经确认需要知识库，
             # 所以这里不再允许模型跳过 Retrieval。
-            tool_choice={
-                "type": "function",
-                "function": {
-                    "name": "search_documents"
-                },
-            },  
-
-            extra_body={
-                "thinking": {
-                    "type": "disabled",
-                }
-            },          
+            tool_choice={"type": "function", "function": {"name": "search_documents"}},
+            extra_body={"thinking": {"type": "disabled"}},
         )
 
         message = response.choices[0].message
@@ -257,10 +202,7 @@ def _run_agent(user_input, chat_history, state):
         # Router 已经判定必须 Retrieval，
         # 如果模型仍然没有产生 Tool Call，就不能直接回答。
         if not message.tool_calls:
-            state.add_trace(
-                "missing_required_tool_call",
-                step=step + 1,
-            )
+            state.add_trace("missing_required_tool_call", step=step + 1)
 
             messages.append(
                 {
@@ -293,10 +235,7 @@ def _run_agent(user_input, chat_history, state):
                 query = arguments.get("query", "")
 
                 # 先检查 Query 是否重复、搜索预算是否耗尽
-                allowed, reason = state.reserve_search(
-                    query=query,
-                    step=step + 1,
-                )
+                allowed, reason = state.reserve_search(query=query, step=step + 1)
 
                 if not allowed:
                     # Harness 拒绝这次搜索
@@ -311,52 +250,34 @@ def _run_agent(user_input, chat_history, state):
                         )
 
                     else:
-                        tool_result = ToolResult.failure(
-                            error="当前检索请求无效。"
-                        )
+                        tool_result = ToolResult.failure(error="当前检索请求无效。")
 
                     state.add_trace(
-                        "search_rejected",
-                        step=step + 1,
-                        query=query,
-                        reason=reason,
+                        "search_rejected", step=step + 1, query=query, reason=reason
                     )
 
                 else:
                     # Harness 允许搜索，真正执行 Tool
-                    tool_result = run_tool(
-                        tool_name,
-                        arguments,
-                    )
+                    tool_result = run_tool(tool_name, arguments)
                     state.record_tool_execution(query, tool_result)
 
                     # 只有真正找到内容，才加入 Evidence
                     if tool_result.status == "success":
-                        state.record_evidence(
-                            tool_result.content
-                        )
+                        state.record_evidence(tool_result.content)
 
                         search_executed = True
 
                     elif tool_result.status == "empty":
-                        state.add_trace(
-                            "search_empty",
-                            query=query,
-                        )
+                        state.add_trace("search_empty", query=query)
 
                     elif tool_result.status == "error":
                         state.add_trace(
-                            "search_error",
-                            query=query,
-                            error=tool_result.error,
+                            "search_error", query=query, error=tool_result.error
                         )
 
             else:
                 # 其他 Tool 正常执行
-                tool_result = run_tool(
-                    tool_name,
-                    arguments,
-                )
+                tool_result = run_tool(tool_name, arguments)
 
             print(
                 f"[Agent] search_count="
@@ -375,8 +296,7 @@ def _run_agent(user_input, chat_history, state):
         if search_executed:
             state.llm_calls += 1
             decision = evaluate_evidence(
-                user_query=state.original_query,
-                evidence=state.evidence,
+                user_query=state.original_query, evidence=state.evidence
             )
 
             state.record_evidence_decision(
@@ -385,25 +305,15 @@ def _run_agent(user_input, chat_history, state):
                 missing_aspects=decision.missing_aspects,
             )
 
-            print(
-                f"[Agent] evidence_sufficient="
-                f"{decision.sufficient}"
-            )
-            print(
-                f"[Agent] evidence_reason="
-                f"{decision.reason}"
-            )
+            print(f"[Agent] evidence_sufficient={decision.sufficient}")
+            print(f"[Agent] evidence_reason={decision.reason}")
 
             if not decision.sufficient:
-                print(
-                    f"[Agent] missing_aspects="
-                    f"{decision.missing_aspects}"
-                )
+                print(f"[Agent] missing_aspects={decision.missing_aspects}")
 
             # 证据不足并且还有搜索预算时，自动 Rewrite + Search
             while (
-                not decision.sufficient
-                and state.search_count < state.max_search_calls
+                not decision.sufficient and state.search_count < state.max_search_calls
             ):
                 if decision.missing_aspects:
                     state.llm_calls += 1
@@ -413,14 +323,8 @@ def _run_agent(user_input, chat_history, state):
                     used_queries=state.used_queries,
                 )
 
-                print(
-                    f"[Agent] rewritten_query="
-                    f"{rewrite_result.query}"
-                )
-                print(
-                    f"[Agent] rewrite_reason="
-                    f"{rewrite_result.reason}"
-                )
+                print(f"[Agent] rewritten_query={rewrite_result.query}")
+                print(f"[Agent] rewrite_reason={rewrite_result.reason}")
 
                 state.add_trace(
                     "query_rewritten",
@@ -434,8 +338,7 @@ def _run_agent(user_input, chat_history, state):
 
                 # 新 Query 仍然要经过 Harness 的去重和预算检查
                 allowed, reason = state.reserve_search(
-                    query=rewrite_result.query,
-                    step=step + 1,
+                    query=rewrite_result.query, step=step + 1
                 )
 
                 if not allowed:
@@ -445,32 +348,21 @@ def _run_agent(user_input, chat_history, state):
                         reason=reason,
                     )
 
-                    print(
-                        f"[Agent] rewrite_search_rejected="
-                        f"{reason}"
-                    )
+                    print(f"[Agent] rewrite_search_rejected={reason}")
 
                     break
 
                 # Harness 直接执行 Rewrite 后的新 Query
                 rewritten_result = run_tool(
-                    "search_documents",
-                    {
-                        "query": rewrite_result.query,
-                    },
+                    "search_documents", {"query": rewrite_result.query}
                 )
                 state.record_tool_execution(rewrite_result.query, rewritten_result)
 
                 if rewritten_result.status == "success":
-                    state.record_evidence(
-                        rewritten_result.content
-                    )
+                    state.record_evidence(rewritten_result.content)
 
                 elif rewritten_result.status == "empty":
-                    state.add_trace(
-                        "rewrite_search_empty",
-                        query=rewrite_result.query,
-                    )
+                    state.add_trace("rewrite_search_empty", query=rewrite_result.query)
 
                     # 没找到新证据，但还有预算的话，
                     # while 可以继续尝试下一条 Rewrite Query
@@ -492,12 +384,10 @@ def _run_agent(user_input, chat_history, state):
                     f"{state.max_search_calls}"
                 )
 
-
                 # 有了新 Evidence，再重新判断一次
                 state.llm_calls += 1
                 decision = evaluate_evidence(
-                    user_query=state.original_query,
-                    evidence=state.evidence,
+                    user_query=state.original_query, evidence=state.evidence
                 )
 
                 state.record_evidence_decision(
@@ -506,30 +396,17 @@ def _run_agent(user_input, chat_history, state):
                     missing_aspects=decision.missing_aspects,
                 )
 
-                print(
-                    f"[Agent] evidence_sufficient="
-                    f"{decision.sufficient}"
-                )
-                print(
-                    f"[Agent] evidence_reason="
-                    f"{decision.reason}"
-                )
+                print(f"[Agent] evidence_sufficient={decision.sufficient}")
+                print(f"[Agent] evidence_reason={decision.reason}")
 
                 if not decision.sufficient:
-                    print(
-                        f"[Agent] missing_aspects="
-                        f"{decision.missing_aspects}"
-                    )
+                    print(f"[Agent] missing_aspects={decision.missing_aspects}")
 
             # 到这里：
             # 1. 要么证据已经足够
             # 2. 要么搜索预算耗尽
             # 3. 要么 Rewriter 无法产生有效 Query
             state.llm_calls += 1
-            return generate_final_answer(
-                chat_history,
-                state,
-
-            )             
+            return generate_final_answer(chat_history, state)
 
     return "达到最大工具调用轮数，已停止执行。"

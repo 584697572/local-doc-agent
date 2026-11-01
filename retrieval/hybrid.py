@@ -1,8 +1,7 @@
+"""组织关键词检索、语义检索、排名融合和精排的完整流程。"""
+
 from retrieval.bm25 import BM25Retriever
-from retrieval.dense import (
-    DEFAULT_EMBEDDING_MODEL,
-    DenseRetriever,
-)
+from retrieval.dense import DEFAULT_EMBEDDING_MODEL, DenseRetriever
 from retrieval.fusion import (
     DEFAULT_RRF_K,
     rank_preserving_rerank_fusion,
@@ -11,7 +10,6 @@ from retrieval.fusion import (
 from retrieval.reranker import Reranker
 from retrieval.result import RetrievalResult
 from retrieval.document import DocumentChunk
-
 
 DEFAULT_SAFE_FUSION_K = DEFAULT_RRF_K
 DEFAULT_SAFE_RRF_WEIGHT = 1.0
@@ -40,85 +38,46 @@ class HybridRetriever:
         chunks: list[DocumentChunk],
         dense_encoder=None,
         reranker_model=None,
-        dense_model_name: str = (
-            DEFAULT_EMBEDDING_MODEL
-        ),
+        dense_model_name: str = DEFAULT_EMBEDDING_MODEL,
         dense_index=None,
         dense_embeddings=None,
-        safe_fusion_k: int = (
-            DEFAULT_SAFE_FUSION_K
-        ),
-        safe_rrf_weight: float = (
-            DEFAULT_SAFE_RRF_WEIGHT
-        ),
-        safe_reranker_weight: float = (
-            DEFAULT_SAFE_RERANKER_WEIGHT
-        ),
+        safe_fusion_k: int = DEFAULT_SAFE_FUSION_K,
+        safe_rrf_weight: float = DEFAULT_SAFE_RRF_WEIGHT,
+        safe_reranker_weight: float = DEFAULT_SAFE_RERANKER_WEIGHT,
     ):
         self.chunks = list(chunks)
 
-        self.bm25_retriever = (
-            BM25Retriever(
-                self.chunks
-            )
+        self.bm25_retriever = BM25Retriever(self.chunks)
+
+        self.dense_retriever = DenseRetriever(
+            self.chunks,
+            model_name=dense_model_name,
+            encoder=dense_encoder,
+            index=dense_index,
+            embeddings=dense_embeddings,
         )
 
-        self.dense_retriever = (
-            DenseRetriever(
-                self.chunks,
-                model_name=(
-                    dense_model_name
-                ),
-                encoder=(
-                    dense_encoder
-                ),
-                index=(
-                    dense_index
-                ),
-                embeddings=(
-                    dense_embeddings
-                ),
-            )
-        )
+        self.reranker = Reranker(model=reranker_model)
 
-        self.reranker = Reranker(
-            model=reranker_model,
-        )
+        self.safe_fusion_k = safe_fusion_k
 
-        self.safe_fusion_k = (
-            safe_fusion_k
-        )
+        self.safe_rrf_weight = safe_rrf_weight
 
-        self.safe_rrf_weight = (
-            safe_rrf_weight
-        )
-
-        self.safe_reranker_weight = (
-            safe_reranker_weight
-        )
+        self.safe_reranker_weight = safe_reranker_weight
 
     def search(
-        self,
-        query: str,
-        top_k: int = 5,
-        candidate_k: int = 20,
+        self, query: str, top_k: int = 5, candidate_k: int = 20
     ) -> list[RetrievalResult]:
         """执行完整 Retrieval v1。"""
 
         if top_k <= 0:
-            raise ValueError(
-                "top_k 必须大于 0"
-            )
+            raise ValueError("top_k 必须大于 0")
 
         if candidate_k <= 0:
-            raise ValueError(
-                "candidate_k 必须大于 0"
-            )
+            raise ValueError("candidate_k 必须大于 0")
 
         if candidate_k < top_k:
-            raise ValueError(
-                "candidate_k 必须大于等于 top_k"
-            )
+            raise ValueError("candidate_k 必须大于等于 top_k")
 
         if not query.strip():
             return []
@@ -126,63 +85,31 @@ class HybridRetriever:
         if not self.chunks:
             return []
 
-        # Stage 1
-        bm25_results = (
-            self.bm25_retriever.search(
-                query,
-                top_k=candidate_k,
-            )
-        )
+        # 1. 用关键词匹配找候选，先取 candidate_k 条。
+        bm25_results = self.bm25_retriever.search(query, top_k=candidate_k)
 
-        # Stage 2
-        dense_results = (
-            self.dense_retriever.search(
-                query,
-                top_k=candidate_k,
-            )
-        )
+        # 2. 用向量相似度找另一批候选。
+        dense_results = self.dense_retriever.search(query, top_k=candidate_k)
 
-        # Stage 3
-        fused_results = (
-            reciprocal_rank_fusion(
-                bm25_results,
-                dense_results,
-                top_k=candidate_k,
-            )
+        # 3. 根据两份排名合并同一片段，得到精排候选池。
+        fused_results = reciprocal_rank_fusion(
+            bm25_results, dense_results, top_k=candidate_k
         )
 
         if not fused_results:
             return []
 
-        # Stage 4
-        reranked_results = (
-            self.reranker.rerank(
-                query=query,
-                candidates=fused_results,
-                top_k=len(
-                    fused_results
-                ),
-            )
+        # 4. 让 Cross-Encoder 逐对比较问题和候选文本，重新排序。
+        reranked_results = self.reranker.rerank(
+            query=query, candidates=fused_results, top_k=len(fused_results)
         )
 
-        # Stage 5
-        return (
-            rank_preserving_rerank_fusion(
-                rrf_results=(
-                    fused_results
-                ),
-                reranked_results=(
-                    reranked_results
-                ),
-                top_k=top_k,
-                fusion_k=(
-                    self.safe_fusion_k
-                ),
-                rrf_weight=(
-                    self.safe_rrf_weight
-                ),
-                reranker_weight=(
-                    self.safe_reranker_weight
-                ),
-            )
+        # 5. 综合初始融合排名和精排排名，最终只返回 top_k 条。
+        return rank_preserving_rerank_fusion(
+            rrf_results=fused_results,
+            reranked_results=reranked_results,
+            top_k=top_k,
+            fusion_k=self.safe_fusion_k,
+            rrf_weight=self.safe_rrf_weight,
+            reranker_weight=self.safe_reranker_weight,
         )

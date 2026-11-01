@@ -1,3 +1,5 @@
+"""读取 TXT、Markdown 和 PDF，统一转换为 Document。"""
+
 from pathlib import Path
 
 from retrieval.document import Document
@@ -37,9 +39,7 @@ def load_txt_file(file_path: str | Path) -> Document:
         content=content,
         filename=path.name,
         file_type="txt",
-        metadata={
-            "source_path": str(path),
-        },
+        metadata={"source_path": str(path)},
     )
 
 
@@ -62,9 +62,7 @@ def load_markdown_file(file_path: str | Path) -> Document:
         content=content,
         filename=path.name,
         file_type="md",
-        metadata={
-            "source_path": str(path),
-        },
+        metadata={"source_path": str(path)},
     )
 
 
@@ -91,17 +89,16 @@ def load_pdf_file(file_path: str | Path) -> Document:
     current_pos = 0
 
     for page_number, page in enumerate(reader.pages, start=1):
-        text = page.extract_text() or ""
+        text = page.extract_text()
+        # 某些页面提取不到文字，仍保留该页记录，用空字符串参与拼接。
+        if not text:
+            text = ""
 
         start_char = current_pos
         end_char = start_char + len(text)
 
         page_boundaries.append(
-            {
-                "page": page_number,
-                "start_char": start_char,
-                "end_char": end_char,
-            }
+            {"page": page_number, "start_char": start_char, "end_char": end_char}
         )
 
         page_texts.append(text)

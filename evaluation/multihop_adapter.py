@@ -25,27 +25,20 @@ from pathlib import Path
 from urllib.request import Request, urlopen
 
 from retrieval.chunker import chunk_document
-from retrieval.document import (
-    Document,
-    DocumentChunk,
-)
-
+from retrieval.document import Document, DocumentChunk
 
 # ======================================================
 # Official Dataset
 # ======================================================
 
 MULTIHOP_RAG_BASE_URL = (
-    "https://huggingface.co/datasets/"
-    "yixuantt/MultiHopRAG/resolve/main"
+    "https://huggingface.co/datasets/yixuantt/MultiHopRAG/resolve/main"
 )
 
 CORPUS_FILENAME = "corpus.json"
 QUERY_FILENAME = "MultiHopRAG.json"
 
-DEFAULT_DATA_DIR = Path(
-    "evaluation/data/multihop_rag"
-)
+DEFAULT_DATA_DIR = Path("evaluation/data/multihop_rag")
 
 
 @dataclass(frozen=True)
@@ -88,9 +81,7 @@ class MultiHopCase:
     evidence_document_ids: tuple[str, ...]
 
 
-def _normalize_lookup_text(
-    value: str | None,
-) -> str:
+def _normalize_lookup_text(value: str | None) -> str:
     """
     对 title / URL 做稳定匹配。
 
@@ -100,17 +91,10 @@ def _normalize_lookup_text(
     if not value:
         return ""
 
-    return " ".join(
-        str(value)
-        .strip()
-        .casefold()
-        .split()
-    )
+    return " ".join(str(value).strip().casefold().split())
 
 
-def _make_document_id(
-    item: dict,
-) -> str:
+def _make_document_id(item: dict) -> str:
     """
     为 Corpus 文档生成稳定 document_id。
 
@@ -121,10 +105,7 @@ def _make_document_id(
     避免把很长的 URL 直接塞进 ID。
     """
 
-    url = str(
-        item.get("url", "")
-        or ""
-    ).strip()
+    url = str(item.get("url", "") or "").strip()
 
     if url:
         identity = url
@@ -132,39 +113,18 @@ def _make_document_id(
     else:
         identity = "|".join(
             [
-                str(
-                    item.get("title", "")
-                    or ""
-                ),
-                str(
-                    item.get("source", "")
-                    or ""
-                ),
-                str(
-                    item.get(
-                        "published_at",
-                        "",
-                    )
-                    or ""
-                ),
+                str(item.get("title", "") or ""),
+                str(item.get("source", "") or ""),
+                str(item.get("published_at", "") or ""),
             ]
         )
 
-    digest = hashlib.sha1(
-        identity.encode(
-            "utf-8"
-        )
-    ).hexdigest()[:16]
+    digest = hashlib.sha1(identity.encode("utf-8")).hexdigest()[:16]
 
-    return (
-        f"multihop_doc_{digest}"
-    )
+    return f"multihop_doc_{digest}"
 
 
-def _download_file(
-    url: str,
-    destination: Path,
-) -> None:
+def _download_file(url: str, destination: Path) -> None:
     """
     下载一个数据文件。
 
@@ -172,41 +132,19 @@ def _download_file(
     避免下载中断时留下半个 JSON。
     """
 
-    destination.parent.mkdir(
-        parents=True,
-        exist_ok=True,
-    )
+    destination.parent.mkdir(parents=True, exist_ok=True)
 
-    temporary_path = (
-        destination.with_suffix(
-            destination.suffix
-            + ".tmp"
-        )
-    )
+    temporary_path = destination.with_suffix(destination.suffix + ".tmp")
 
-    request = Request(
-        url,
-        headers={
-            "User-Agent": (
-                "LocalDoc-Agent/1.0"
-            )
-        },
-    )
+    request = Request(url, headers={"User-Agent": "LocalDoc-Agent/1.0"})
 
     try:
-        with urlopen(
-            request,
-            timeout=120,
-        ) as response:
+        with urlopen(request, timeout=120) as response:
             content = response.read()
 
-        temporary_path.write_bytes(
-            content
-        )
+        temporary_path.write_bytes(content)
 
-        temporary_path.replace(
-            destination
-        )
+        temporary_path.replace(destination)
 
     finally:
         # 如果下载中途失败，
@@ -216,9 +154,7 @@ def _download_file(
 
 
 def ensure_multihop_rag_files(
-    data_dir: str | Path = (
-        DEFAULT_DATA_DIR
-    ),
+    data_dir: str | Path = DEFAULT_DATA_DIR,
 ) -> tuple[Path, Path]:
     """
     保证两个官方数据文件已经存在。
@@ -226,64 +162,29 @@ def ensure_multihop_rag_files(
     已存在时不会重复下载。
     """
 
-    data_dir = Path(
-        data_dir
-    )
+    data_dir = Path(data_dir)
 
-    corpus_path = (
-        data_dir
-        / CORPUS_FILENAME
-    )
+    corpus_path = data_dir / CORPUS_FILENAME
 
-    query_path = (
-        data_dir
-        / QUERY_FILENAME
-    )
+    query_path = data_dir / QUERY_FILENAME
 
-    files = [
-        (
-            CORPUS_FILENAME,
-            corpus_path,
-        ),
-        (
-            QUERY_FILENAME,
-            query_path,
-        ),
-    ]
+    files = [(CORPUS_FILENAME, corpus_path), (QUERY_FILENAME, query_path)]
 
-    for (
-        filename,
-        path,
-    ) in files:
+    for filename, path in files:
         if path.exists():
             continue
 
-        url = (
-            f"{MULTIHOP_RAG_BASE_URL}/"
-            f"{filename}"
-        )
+        url = f"{MULTIHOP_RAG_BASE_URL}/{filename}"
 
-        print(
-            f"[MultiHop-RAG] "
-            f"Downloading {filename}..."
-        )
+        print(f"[MultiHop-RAG] Downloading {filename}...")
 
-        _download_file(
-            url=url,
-            destination=path,
-        )
+        _download_file(url=url, destination=path)
 
-    return (
-        corpus_path,
-        query_path,
-    )
+    return (corpus_path, query_path)
 
 
 def load_multihop_rag(
-    data_dir: str | Path = (
-        DEFAULT_DATA_DIR
-    ),
-    download: bool = True,
+    data_dir: str | Path = DEFAULT_DATA_DIR, download: bool = True
 ) -> tuple[list[dict], list[dict]]:
     """
     加载官方 Corpus 和 Query 数据。
@@ -293,82 +194,38 @@ def load_multihop_rag(
         query_data
     """
 
-    data_dir = Path(
-        data_dir
-    )
+    data_dir = Path(data_dir)
 
     if download:
-        (
-            corpus_path,
-            query_path,
-        ) = ensure_multihop_rag_files(
-            data_dir
-        )
+        corpus_path, query_path = ensure_multihop_rag_files(data_dir)
 
     else:
-        corpus_path = (
-            data_dir
-            / CORPUS_FILENAME
-        )
+        corpus_path = data_dir / CORPUS_FILENAME
 
-        query_path = (
-            data_dir
-            / QUERY_FILENAME
-        )
+        query_path = data_dir / QUERY_FILENAME
 
         if not corpus_path.exists():
-            raise FileNotFoundError(
-                f"找不到 MultiHop-RAG Corpus："
-                f"{corpus_path}"
-            )
+            raise FileNotFoundError(f"找不到 MultiHop-RAG Corpus：{corpus_path}")
 
         if not query_path.exists():
-            raise FileNotFoundError(
-                f"找不到 MultiHop-RAG Query："
-                f"{query_path}"
-            )
+            raise FileNotFoundError(f"找不到 MultiHop-RAG Query：{query_path}")
 
-    with corpus_path.open(
-        "r",
-        encoding="utf-8",
-    ) as file:
-        corpus_data = json.load(
-            file
-        )
+    with corpus_path.open("r", encoding="utf-8") as file:
+        corpus_data = json.load(file)
 
-    with query_path.open(
-        "r",
-        encoding="utf-8",
-    ) as file:
-        query_data = json.load(
-            file
-        )
+    with query_path.open("r", encoding="utf-8") as file:
+        query_data = json.load(file)
 
-    if not isinstance(
-        corpus_data,
-        list,
-    ):
-        raise ValueError(
-            "corpus.json 顶层必须是 list"
-        )
+    if not isinstance(corpus_data, list):
+        raise ValueError("corpus.json 顶层必须是 list")
 
-    if not isinstance(
-        query_data,
-        list,
-    ):
-        raise ValueError(
-            "MultiHopRAG.json 顶层必须是 list"
-        )
+    if not isinstance(query_data, list):
+        raise ValueError("MultiHopRAG.json 顶层必须是 list")
 
-    return (
-        corpus_data,
-        query_data,
-    )
+    return (corpus_data, query_data)
 
 
-def corpus_to_documents(
-    corpus_data: list[dict],
-) -> list[Document]:
+def corpus_to_documents(corpus_data: list[dict]) -> list[Document]:
     """
     把 MultiHop-RAG Corpus
     转成 LocalDoc-Agent Document。
@@ -394,126 +251,58 @@ def corpus_to_documents(
     documents = []
 
     for item in corpus_data:
-        title = str(
-            item.get(
-                "title",
-                "",
-            )
-            or ""
-        ).strip()
+        title = str(item.get("title", "") or "").strip()
 
-        body = str(
-            item.get(
-                "body",
-                "",
-            )
-            or ""
-        ).strip()
+        body = str(item.get("body", "") or "").strip()
 
-        source = str(
-            item.get(
-                "source",
-                "",
-            )
-            or ""
-        ).strip()
+        source = str(item.get("source", "") or "").strip()
 
-        published_at = str(
-            item.get(
-                "published_at",
-                "",
-            )
-            or ""
-        ).strip()
+        published_at = str(item.get("published_at", "") or "").strip()
 
-        author = str(
-            item.get(
-                "author",
-                "",
-            )
-            or ""
-        ).strip()
+        author = str(item.get("author", "") or "").strip()
 
-        category = str(
-            item.get(
-                "category",
-                "",
-            )
-            or ""
-        ).strip()
+        category = str(item.get("category", "") or "").strip()
 
-        url = str(
-            item.get(
-                "url",
-                "",
-            )
-            or ""
-        ).strip()
+        url = str(item.get("url", "") or "").strip()
 
-        document_id = (
-            _make_document_id(
-                item
-            )
-        )
+        document_id = _make_document_id(item)
 
         # Metadata 进入可检索文本。
         content_parts = [
             f"Title: {title}",
             f"Source: {source}",
-            (
-                "Published At: "
-                f"{published_at}"
-            ),
+            (f"Published At: {published_at}"),
             f"Author: {author}",
             f"Category: {category}",
             "",
             body,
         ]
 
-        content = "\n".join(
-            content_parts
-        ).strip()
+        content = "\n".join(content_parts).strip()
 
         document = Document(
-            document_id=(
-                document_id
-            ),
-
+            document_id=document_id,
             content=content,
-
-            filename=(
-                f"multihop:"
-                f"{document_id}"
-            ),
-
+            filename=(f"multihop:{document_id}"),
             file_type="json",
-
             metadata={
-                "dataset": (
-                    "MultiHop-RAG"
-                ),
+                "dataset": "MultiHop-RAG",
                 "title": title,
                 "source": source,
-                "published_at": (
-                    published_at
-                ),
+                "published_at": published_at,
                 "author": author,
                 "category": category,
                 "url": url,
             },
         )
 
-        documents.append(
-            document
-        )
+        documents.append(document)
 
     return documents
 
 
 def documents_to_chunks(
-    documents: list[Document],
-    chunk_size: int = 500,
-    overlap: int = 100,
+    documents: list[Document], chunk_size: int = 500, overlap: int = 100
 ) -> list[DocumentChunk]:
     """
     使用项目自己的 Chunker
@@ -529,37 +318,24 @@ def documents_to_chunks(
     chunks = []
 
     for document in documents:
-        document_chunks = (
-            chunk_document(
-                document=document,
-                chunk_size=chunk_size,
-                overlap=overlap,
-            )
+        document_chunks = chunk_document(
+            document=document, chunk_size=chunk_size, overlap=overlap
         )
 
-        for chunk in (
-            document_chunks
-        ):
+        for chunk in document_chunks:
             # chunk_document 当前只保存 file_type。
             # Benchmark 需要更多 metadata，
             # 因此这里补充父文档 metadata。
-            chunk.metadata.update(
-                document.metadata
-            )
+            chunk.metadata.update(document.metadata)
 
-        chunks.extend(
-            document_chunks
-        )
+        chunks.extend(document_chunks)
 
     return chunks
 
 
 def _build_document_lookup(
     documents: list[Document],
-) -> tuple[
-    dict[str, str],
-    dict[str, list[str]],
-]:
+) -> tuple[dict[str, str], dict[str, list[str]]]:
     """
     建立 Gold Evidence → Corpus Document 映射。
 
@@ -575,44 +351,21 @@ def _build_document_lookup(
     title_lookup = {}
 
     for document in documents:
-        url = _normalize_lookup_text(
-            document.metadata.get(
-                "url"
-            )
-        )
+        url = _normalize_lookup_text(document.metadata.get("url"))
 
-        title = _normalize_lookup_text(
-            document.metadata.get(
-                "title"
-            )
-        )
+        title = _normalize_lookup_text(document.metadata.get("title"))
 
         if url:
-            url_lookup[url] = (
-                document.document_id
-            )
+            url_lookup[url] = document.document_id
 
         if title:
-            title_lookup.setdefault(
-                title,
-                [],
-            ).append(
-                document.document_id
-            )
+            title_lookup.setdefault(title, []).append(document.document_id)
 
-    return (
-        url_lookup,
-        title_lookup,
-    )
+    return (url_lookup, title_lookup)
 
 
 def _find_evidence_document_id(
-    evidence: dict,
-    url_lookup: dict[str, str],
-    title_lookup: dict[
-        str,
-        list[str],
-    ],
+    evidence: dict, url_lookup: dict[str, str], title_lookup: dict[str, list[str]]
 ) -> str | None:
     """
     将一条 Gold Evidence
@@ -624,45 +377,23 @@ def _find_evidence_document_id(
         2. 唯一 Title 匹配
     """
 
-    url = _normalize_lookup_text(
-        evidence.get(
-            "url"
-        )
-    )
+    url = _normalize_lookup_text(evidence.get("url"))
 
-    if (
-        url
-        and url in url_lookup
-    ):
-        return url_lookup[
-            url
-        ]
+    if url and url in url_lookup:
+        return url_lookup[url]
 
-    title = _normalize_lookup_text(
-        evidence.get(
-            "title"
-        )
-    )
+    title = _normalize_lookup_text(evidence.get("title"))
 
-    title_matches = (
-        title_lookup.get(
-            title,
-            [],
-        )
-    )
+    title_matches = title_lookup.get(title, [])
 
-    if len(
-        title_matches
-    ) == 1:
+    if len(title_matches) == 1:
         return title_matches[0]
 
     return None
 
 
 def queries_to_cases(
-    query_data: list[dict],
-    documents: list[Document],
-    strict: bool = True,
+    query_data: list[dict], documents: list[Document], strict: bool = True
 ) -> list[MultiHopCase]:
     """
     把官方 Query 转成 MultiHopCase。
@@ -676,89 +407,34 @@ def queries_to_cases(
     不要悄悄吞掉 Gold。
     """
 
-    (
-        url_lookup,
-        title_lookup,
-    ) = _build_document_lookup(
-        documents
-    )
+    url_lookup, title_lookup = _build_document_lookup(documents)
 
     cases = []
 
-    for index, item in enumerate(
-        query_data
-    ):
-        query = str(
-            item.get(
-                "query",
-                "",
-            )
-            or ""
-        ).strip()
+    for index, item in enumerate(query_data):
+        query = str(item.get("query", "") or "").strip()
 
-        answer = str(
-            item.get(
-                "answer",
-                "",
-            )
-            or ""
-        ).strip()
+        answer = str(item.get("answer", "") or "").strip()
 
-        question_type = str(
-            item.get(
-                "question_type",
-                "",
-            )
-            or ""
-        ).strip()
+        question_type = str(item.get("question_type", "") or "").strip()
 
-        evidence_list = (
-            item.get(
-                "evidence_list",
-                [],
-            )
-            or []
-        )
+        evidence_list = item.get("evidence_list", []) or []
 
         evidence_facts = []
         evidence_document_ids = []
 
-        for evidence in (
-            evidence_list
-        ):
-            fact = str(
-                evidence.get(
-                    "fact",
-                    "",
-                )
-                or ""
-            ).strip()
+        for evidence in evidence_list:
+            fact = str(evidence.get("fact", "") or "").strip()
 
             if fact:
-                evidence_facts.append(
-                    fact
-                )
+                evidence_facts.append(fact)
 
-            document_id = (
-                _find_evidence_document_id(
-                    evidence=(
-                        evidence
-                    ),
-                    url_lookup=(
-                        url_lookup
-                    ),
-                    title_lookup=(
-                        title_lookup
-                    ),
-                )
+            document_id = _find_evidence_document_id(
+                evidence=evidence, url_lookup=url_lookup, title_lookup=title_lookup
             )
 
             if document_id is None:
-                if (
-                    strict
-                    and question_type
-                    != "null_query"
-                ):
+                if strict and question_type != "null_query":
                     raise ValueError(
                         "无法把 Gold Evidence "
                         "映射到 Corpus："
@@ -772,56 +448,29 @@ def queries_to_cases(
                 continue
 
             # 去重但保持原始顺序。
-            if (
-                document_id
-                not in
-                evidence_document_ids
-            ):
-                evidence_document_ids.append(
-                    document_id
-                )
+            if document_id not in evidence_document_ids:
+                evidence_document_ids.append(document_id)
 
         case = MultiHopCase(
-            case_id=(
-                f"multihop_"
-                f"{index:04d}"
-            ),
-
+            case_id=(f"multihop_{index:04d}"),
             query=query,
             answer=answer,
-
-            question_type=(
-                question_type
-            ),
-
-            evidence_facts=tuple(
-                evidence_facts
-            ),
-
-            evidence_document_ids=tuple(
-                evidence_document_ids
-            ),
+            question_type=question_type,
+            evidence_facts=tuple(evidence_facts),
+            evidence_document_ids=tuple(evidence_document_ids),
         )
 
-        cases.append(
-            case
-        )
+        cases.append(case)
 
     return cases
 
 
 def load_multihop_benchmark(
-    data_dir: str | Path = (
-        DEFAULT_DATA_DIR
-    ),
+    data_dir: str | Path = DEFAULT_DATA_DIR,
     chunk_size: int = 500,
     overlap: int = 100,
     download: bool = True,
-) -> tuple[
-    list[Document],
-    list[DocumentChunk],
-    list[MultiHopCase],
-]:
+) -> tuple[list[Document], list[DocumentChunk], list[MultiHopCase]]:
     """
     Benchmark 统一入口。
 
@@ -831,41 +480,17 @@ def load_multihop_benchmark(
         cases
     """
 
-    (
-        corpus_data,
-        query_data,
-    ) = load_multihop_rag(
-        data_dir=data_dir,
-        download=download,
+    corpus_data, query_data = load_multihop_rag(data_dir=data_dir, download=download)
+
+    documents = corpus_to_documents(corpus_data)
+
+    chunks = documents_to_chunks(
+        documents=documents, chunk_size=chunk_size, overlap=overlap
     )
 
-    documents = (
-        corpus_to_documents(
-            corpus_data
-        )
-    )
+    cases = queries_to_cases(query_data=query_data, documents=documents, strict=True)
 
-    chunks = (
-        documents_to_chunks(
-            documents=documents,
-            chunk_size=chunk_size,
-            overlap=overlap,
-        )
-    )
-
-    cases = (
-        queries_to_cases(
-            query_data=query_data,
-            documents=documents,
-            strict=True,
-        )
-    )
-
-    return (
-        documents,
-        chunks,
-        cases,
-    )
+    return (documents, chunks, cases)
 
 
 def main() -> None:
@@ -877,93 +502,48 @@ def main() -> None:
     """
 
     parser = argparse.ArgumentParser(
-        description=(
-            "Load and inspect "
-            "MultiHop-RAG dataset."
-        )
+        description="Load and inspect MultiHop-RAG dataset."
     )
 
-    parser.add_argument(
-        "--data-dir",
-        default=str(
-            DEFAULT_DATA_DIR
-        ),
-    )
+    parser.add_argument("--data-dir", default=str(DEFAULT_DATA_DIR))
 
-    parser.add_argument(
-        "--chunk-size",
-        type=int,
-        default=500,
-    )
+    parser.add_argument("--chunk-size", type=int, default=500)
 
-    parser.add_argument(
-        "--overlap",
-        type=int,
-        default=100,
-    )
+    parser.add_argument("--overlap", type=int, default=100)
 
     args = parser.parse_args()
 
-    (
-        documents,
-        chunks,
-        cases,
-    ) = load_multihop_benchmark(
+    documents, chunks, cases = load_multihop_benchmark(
         data_dir=args.data_dir,
         chunk_size=args.chunk_size,
         overlap=args.overlap,
         download=True,
     )
 
-    type_counts = Counter(
-        case.question_type
-        for case in cases
-    )
+    type_counts = Counter()
+    for case in cases:
+        type_counts[case.question_type] += 1
 
-    non_null_cases = [
-        case
-        for case in cases
-        if (
-            case.question_type
-            != "null_query"
-        )
-    ]
+    non_null_cases = []
+    for case in cases:
+        if case.question_type != "null_query":
+            non_null_cases.append(case)
 
-    unmapped_non_null = [
-        case.case_id
-        for case in non_null_cases
-        if not (
-            case.evidence_document_ids
-        )
-    ]
+    unmapped_non_null = []
+    for case in non_null_cases:
+        if not case.evidence_document_ids:
+            unmapped_non_null.append(case.case_id)
 
     print()
-    print(
-        "[MultiHop-RAG] "
-        f"Documents: {len(documents)}"
-    )
+    print(f"[MultiHop-RAG] Documents: {len(documents)}")
 
-    print(
-        "[MultiHop-RAG] "
-        f"Chunks: {len(chunks)}"
-    )
+    print(f"[MultiHop-RAG] Chunks: {len(chunks)}")
 
-    print(
-        "[MultiHop-RAG] "
-        f"Cases: {len(cases)}"
-    )
+    print(f"[MultiHop-RAG] Cases: {len(cases)}")
 
-    print(
-        "[MultiHop-RAG] "
-        f"Question types: "
-        f"{dict(type_counts)}"
-    )
+    print(f"[MultiHop-RAG] Question types: {dict(type_counts)}")
 
-    print(
-        "[MultiHop-RAG] "
-        "Unmapped non-null cases: "
-        f"{len(unmapped_non_null)}"
-    )
+    print(f"[MultiHop-RAG] Unmapped non-null cases: {len(unmapped_non_null)}")
 
 
 if __name__ == "__main__":

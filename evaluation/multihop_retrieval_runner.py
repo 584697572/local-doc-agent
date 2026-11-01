@@ -43,10 +43,7 @@ from collections import Counter
 from pathlib import Path
 from statistics import mean
 
-from evaluation.multihop_adapter import (
-    MultiHopCase,
-    load_multihop_benchmark,
-)
+from evaluation.multihop_adapter import MultiHopCase, load_multihop_benchmark
 from retrieval.bm25 import BM25Retriever
 from retrieval.dense import DenseRetriever
 from retrieval.fusion import (
@@ -54,12 +51,8 @@ from retrieval.fusion import (
     rank_preserving_rerank_fusion,
     reciprocal_rank_fusion,
 )
-from retrieval.reranker import (
-    DEFAULT_RERANKER_MODEL,
-    Reranker,
-)
+from retrieval.reranker import DEFAULT_RERANKER_MODEL, Reranker
 from retrieval.result import RetrievalResult
-
 
 # ======================================================
 # Benchmark Defaults
@@ -67,9 +60,7 @@ from retrieval.result import RetrievalResult
 
 # MultiHop-RAG 是英文新闻语料，
 # 因此这里显式使用英文 Embedding。
-DEFAULT_MULTIHOP_EMBEDDING_MODEL = (
-    "BAAI/bge-small-en-v1.5"
-)
+DEFAULT_MULTIHOP_EMBEDDING_MODEL = "BAAI/bge-small-en-v1.5"
 
 DEFAULT_RETRIEVAL_DEPTH = 100
 DEFAULT_RERANK_CANDIDATE_K = 20
@@ -78,36 +69,19 @@ DEFAULT_SAFE_FUSION_K = 60
 DEFAULT_SAFE_RRF_WEIGHT = 1.0
 DEFAULT_SAFE_RERANKER_WEIGHT = 2.0
 
-METHOD_NAMES = (
-    "bm25",
-    "dense",
-    "rrf",
-    "rerank",
-    "safe_rerank",
-)
+METHOD_NAMES = ("bm25", "dense", "rrf", "rerank", "safe_rerank")
 
-NON_NULL_TYPES = (
-    "inference_query",
-    "comparison_query",
-    "temporal_query",
-)
+NON_NULL_TYPES = ("inference_query", "comparison_query", "temporal_query")
 
-OFFICIAL_METRIC_NAMES = (
-    "hits@4",
-    "hits@10",
-    "map@10",
-    "mrr@10",
-)
+OFFICIAL_METRIC_NAMES = ("hits@4", "hits@10", "map@10", "mrr@10")
 
 DOCUMENT_METRIC_NAMES = (
     "doc_hit@4",
     "doc_recall@4",
     "all_evidence_hit@4",
-
     "doc_hit@10",
     "doc_recall@10",
     "all_evidence_hit@10",
-
     "doc_hit@20",
     "doc_recall@20",
     "all_evidence_hit@20",
@@ -119,9 +93,7 @@ DOCUMENT_METRIC_NAMES = (
 # ======================================================
 
 
-def normalize_official_text(
-    text: str,
-) -> str:
+def normalize_official_text(text: str) -> str:
     """
     对齐 MultiHop-RAG 官方 Retrieval Eval
     的文本匹配方式。
@@ -134,16 +106,11 @@ def normalize_official_text(
     是否为 Retrieved Chunk 的子串。
     """
 
-    return (
-        str(text)
-        .replace(" ", "")
-        .replace("\n", "")
-    )
+    return str(text).replace(" ", "").replace("\n", "")
 
 
 def score_official_facts(
-    retrieved_texts: list[str],
-    gold_facts: list[str] | tuple[str, ...],
+    retrieved_texts: list[str], gold_facts: list[str] | tuple[str, ...]
 ) -> dict[str, float]:
     """
     计算 MultiHop-RAG 官方风格 Retrieval 指标。
@@ -158,37 +125,19 @@ def score_official_facts(
     """
 
     if not gold_facts:
-        return {
-            "hits@4": 0.0,
-            "hits@10": 0.0,
-            "map@10": 0.0,
-            "mrr@10": 0.0,
-        }
+        return {"hits@4": 0.0, "hits@10": 0.0, "map@10": 0.0, "mrr@10": 0.0}
 
-    normalized_gold = [
-        normalize_official_text(
-            fact
-        )
-        for fact in gold_facts
-        if str(fact).strip()
-    ]
+    normalized_gold = []
+    for fact in gold_facts:
+        if str(fact).strip():
+            normalized_gold.append(normalize_official_text(fact))
 
-    normalized_retrieved = [
-        normalize_official_text(
-            text
-        )
-        for text in retrieved_texts[
-            :10
-        ]
-    ]
+    normalized_retrieved = []
+    for text in retrieved_texts[:10]:
+        normalized_retrieved.append(normalize_official_text(text))
 
     if not normalized_gold:
-        return {
-            "hits@4": 0.0,
-            "hits@10": 0.0,
-            "map@10": 0.0,
-            "mrr@10": 0.0,
-        }
+        return {"hits@4": 0.0, "hits@10": 0.0, "map@10": 0.0, "mrr@10": 0.0}
 
     hits_at_4 = False
     hits_at_10 = False
@@ -201,22 +150,11 @@ def score_official_facts(
 
     average_precision_sum = 0.0
 
-    for rank, retrieved_text in enumerate(
-        normalized_retrieved,
-        start=1,
-    ):
-        matched_indices = [
-            index
-            for index, gold_fact
-            in enumerate(
-                normalized_gold
-            )
-            if (
-                gold_fact
-                and gold_fact
-                in retrieved_text
-            )
-        ]
+    for rank, retrieved_text in enumerate(normalized_retrieved, start=1):
+        matched_indices = []
+        for index, gold_fact in enumerate(normalized_gold):
+            if gold_fact and gold_fact in retrieved_text:
+                matched_indices.append(index)
 
         if not matched_indices:
             continue
@@ -231,56 +169,32 @@ def score_official_facts(
             first_relevant_rank = rank
 
         # 当前 Rank 第一次新找到几个 Gold Fact。
-        new_matches = [
-            index
-            for index in matched_indices
-            if index not in found_gold
-        ]
+        new_matches = []
+        for index in matched_indices:
+            if index not in found_gold:
+                new_matches.append(index)
 
         for index in new_matches:
-            found_gold.add(
-                index
-            )
+            found_gold.add(index)
 
         if new_matches:
             # 这里保持和官方脚本的思想一致：
             # 新 Gold 数量 / 当前 Rank。
-            average_precision_sum += (
-                len(new_matches)
-                / rank
-            )
+            average_precision_sum += len(new_matches) / rank
 
-    denominator = min(
-        len(normalized_gold),
-        10,
-    )
+    denominator = min(len(normalized_gold), 10)
 
-    map_at_10 = (
-        average_precision_sum
-        / denominator
-    )
+    map_at_10 = average_precision_sum / denominator
 
-    mrr_at_10 = (
-        1.0
-        / first_relevant_rank
-        if first_relevant_rank
-        is not None
-        else 0.0
-    )
+    mrr_at_10 = 0.0
+    if first_relevant_rank is not None:
+        mrr_at_10 = 1.0 / first_relevant_rank
 
     return {
-        "hits@4": float(
-            hits_at_4
-        ),
-        "hits@10": float(
-            hits_at_10
-        ),
-        "map@10": float(
-            map_at_10
-        ),
-        "mrr@10": float(
-            mrr_at_10
-        ),
+        "hits@4": float(hits_at_4),
+        "hits@10": float(hits_at_10),
+        "map@10": float(map_at_10),
+        "mrr@10": float(mrr_at_10),
     }
 
 
@@ -291,10 +205,7 @@ def score_official_facts(
 
 def score_evidence_documents(
     results: list[RetrievalResult],
-    gold_document_ids: (
-        list[str]
-        | tuple[str, ...]
-    ),
+    gold_document_ids: list[str] | tuple[str, ...],
     k: int,
 ) -> dict[str, float]:
     """
@@ -313,13 +224,9 @@ def score_evidence_documents(
     """
 
     if k <= 0:
-        raise ValueError(
-            "k 必须大于 0"
-        )
+        raise ValueError("k 必须大于 0")
 
-    gold_set = set(
-        gold_document_ids
-    )
+    gold_set = set(gold_document_ids)
 
     if not gold_set:
         return {
@@ -328,82 +235,44 @@ def score_evidence_documents(
             f"all_evidence_hit@{k}": 0.0,
         }
 
-    retrieved_document_ids = {
-        result.chunk.document_id
-        for result in results[:k]
-    }
+    retrieved_document_ids = set()
+    for result in results[:k]:
+        retrieved_document_ids.add(result.chunk.document_id)
 
-    found = (
-        gold_set
-        & retrieved_document_ids
-    )
+    found = gold_set & retrieved_document_ids
 
-    doc_hit = float(
-        bool(found)
-    )
+    doc_hit = float(bool(found))
 
-    doc_recall = (
-        len(found)
-        / len(gold_set)
-    )
+    doc_recall = len(found) / len(gold_set)
 
-    all_evidence_hit = float(
-        gold_set.issubset(
-            retrieved_document_ids
-        )
-    )
+    all_evidence_hit = float(gold_set.issubset(retrieved_document_ids))
 
     return {
-        f"doc_hit@{k}": (
-            doc_hit
-        ),
-
-        f"doc_recall@{k}": (
-            doc_recall
-        ),
-
-        f"all_evidence_hit@{k}": (
-            all_evidence_hit
-        ),
+        f"doc_hit@{k}": doc_hit,
+        f"doc_recall@{k}": doc_recall,
+        f"all_evidence_hit@{k}": all_evidence_hit,
     }
 
 
 def score_method(
-    results: list[RetrievalResult],
-    case: MultiHopCase,
+    results: list[RetrievalResult], case: MultiHopCase
 ) -> dict[str, float]:
     """
     对一个 Method 的结果计算完整指标。
     """
 
-    retrieved_texts = [
-        result.chunk.content
-        for result in results
-    ]
+    retrieved_texts = []
+    for result in results:
+        retrieved_texts.append(result.chunk.content)
 
-    metrics = (
-        score_official_facts(
-            retrieved_texts=(
-                retrieved_texts
-            ),
-            gold_facts=(
-                case.evidence_facts
-            ),
-        )
+    metrics = score_official_facts(
+        retrieved_texts=retrieved_texts, gold_facts=case.evidence_facts
     )
 
-    for k in (
-        4,
-        10,
-        20,
-    ):
+    for k in (4, 10, 20):
         metrics.update(
             score_evidence_documents(
-                results=results,
-                gold_document_ids=(
-                    case.evidence_document_ids
-                ),
-                k=k,
+                results=results, gold_document_ids=case.evidence_document_ids, k=k
             )
         )
 
@@ -416,9 +285,7 @@ def score_method(
 
 
 def select_benchmark_cases(
-    cases: list[MultiHopCase],
-    limit: int,
-    seed: int,
+    cases: list[MultiHopCase], limit: int, seed: int
 ) -> list[MultiHopCase]:
     """
     选择参与 Retrieval Benchmark 的 Case。
@@ -437,112 +304,49 @@ def select_benchmark_cases(
     避免随机 20 条恰好集中在某一种 Query Type。
     """
 
-    groups = {
-        question_type: []
-        for question_type
-        in NON_NULL_TYPES
-    }
+    groups = {}
+    for question_type in NON_NULL_TYPES:
+        groups[question_type] = []
 
     for case in cases:
-        if (
-            case.question_type
-            in groups
-        ):
-            groups[
-                case.question_type
-            ].append(
-                case
-            )
+        if case.question_type in groups:
+            groups[case.question_type].append(case)
 
-    for question_type in (
-        NON_NULL_TYPES
-    ):
-        groups[
-            question_type
-        ].sort(
-            key=lambda case: (
-                case.case_id
-            )
-        )
+    def get_case_id(case):
+        return case.case_id
 
-    all_non_null = [
-        case
-        for question_type
-        in NON_NULL_TYPES
-        for case
-        in groups[
-            question_type
-        ]
-    ]
+    for question_type in NON_NULL_TYPES:
+        groups[question_type].sort(key=get_case_id)
 
-    if (
-        limit <= 0
-        or limit
-        >= len(all_non_null)
-    ):
-        return sorted(
-            all_non_null,
-            key=lambda case: (
-                case.case_id
-            ),
-        )
+    all_non_null = []
+    for question_type in NON_NULL_TYPES:
+        all_non_null.extend(groups[question_type])
 
-    random_generator = (
-        random.Random(
-            seed
-        )
-    )
+    if limit <= 0 or limit >= len(all_non_null):
+        return sorted(all_non_null, key=get_case_id)
 
-    type_count = len(
-        NON_NULL_TYPES
-    )
+    random_generator = random.Random(seed)
 
-    base_quota = (
-        limit
-        // type_count
-    )
+    type_count = len(NON_NULL_TYPES)
 
-    remainder = (
-        limit
-        % type_count
-    )
+    base_quota = limit // type_count
+
+    remainder = limit % type_count
 
     selected = []
 
-    for index, question_type in enumerate(
-        NON_NULL_TYPES
-    ):
-        quota = (
-            base_quota
-            + (
-                1
-                if index < remainder
-                else 0
-            )
-        )
+    for index, question_type in enumerate(NON_NULL_TYPES):
+        quota = base_quota
+        if index < remainder:
+            quota += 1
 
-        group = groups[
-            question_type
-        ]
+        group = groups[question_type]
 
-        quota = min(
-            quota,
-            len(group),
-        )
+        quota = min(quota, len(group))
 
-        selected.extend(
-            random_generator.sample(
-                group,
-                quota,
-            )
-        )
+        selected.extend(random_generator.sample(group, quota))
 
-    return sorted(
-        selected,
-        key=lambda case: (
-            case.case_id
-        ),
-    )
+    return sorted(selected, key=get_case_id)
 
 
 # ======================================================
@@ -550,62 +354,38 @@ def select_benchmark_cases(
 # ======================================================
 
 
-def summarize_method_records(
-    records: list[dict],
-    method_name: str,
-) -> dict:
+def summarize_method_records(records: list[dict], method_name: str) -> dict:
     """
     汇总一个 Retrieval Method 的平均指标。
     """
 
     if not records:
-        return {
-            metric_name: 0.0
-            for metric_name in (
-                OFFICIAL_METRIC_NAMES
-                + DOCUMENT_METRIC_NAMES
-            )
-        }
+        empty_summary = {}
+        for metric_name in OFFICIAL_METRIC_NAMES + DOCUMENT_METRIC_NAMES:
+            empty_summary[metric_name] = 0.0
+        return empty_summary
 
-    method_records = [
-        record["methods"][
-            method_name
-        ]
-        for record in records
-    ]
+    method_records = []
+    for record in records:
+        method_records.append(record["methods"][method_name])
 
     summary = {}
 
-    for metric_name in (
-        OFFICIAL_METRIC_NAMES
-        + DOCUMENT_METRIC_NAMES
-    ):
-        summary[
-            metric_name
-        ] = mean(
-            item["metrics"][
-                metric_name
-            ]
-            for item
-            in method_records
-        )
+    for metric_name in OFFICIAL_METRIC_NAMES + DOCUMENT_METRIC_NAMES:
+        values = []
+        for item in method_records:
+            values.append(item["metrics"][metric_name])
+        summary[metric_name] = mean(values)
 
-    summary[
-        "avg_latency_ms"
-    ] = mean(
-        item[
-            "latency_ms"
-        ]
-        for item
-        in method_records
-    )
+    latencies = []
+    for item in method_records:
+        latencies.append(item["latency_ms"])
+    summary["avg_latency_ms"] = mean(latencies)
 
     return summary
 
 
-def summarize_records(
-    records: list[dict],
-) -> dict:
+def summarize_records(records: list[dict]) -> dict:
     """
     同时输出：
 
@@ -613,61 +393,31 @@ def summarize_records(
         by_question_type
     """
 
-    overall = {
-        method_name: (
-            summarize_method_records(
-                records,
-                method_name,
-            )
-        )
-        for method_name
-        in METHOD_NAMES
-    }
+    overall = {}
+    for method_name in METHOD_NAMES:
+        overall[method_name] = summarize_method_records(records, method_name)
 
-    question_types = sorted(
-        {
-            record[
-                "question_type"
-            ]
-            for record in records
-        }
-    )
+    unique_question_types = set()
+    for record in records:
+        unique_question_types.add(record["question_type"])
+    question_types = sorted(unique_question_types)
 
     by_question_type = {}
 
-    for question_type in (
-        question_types
-    ):
-        type_records = [
-            record
-            for record in records
-            if (
-                record[
-                    "question_type"
-                ]
-                == question_type
-            )
-        ]
+    for question_type in question_types:
+        type_records = []
+        for record in records:
+            if record["question_type"] == question_type:
+                type_records.append(record)
 
-        by_question_type[
-            question_type
-        ] = {
-            method_name: (
-                summarize_method_records(
-                    type_records,
-                    method_name,
-                )
+        type_summary = {}
+        for method_name in METHOD_NAMES:
+            type_summary[method_name] = summarize_method_records(
+                type_records, method_name
             )
-            for method_name
-            in METHOD_NAMES
-        }
+        by_question_type[question_type] = type_summary
 
-    return {
-        "overall": overall,
-        "by_question_type": (
-            by_question_type
-        ),
-    }
+    return {"overall": overall, "by_question_type": by_question_type}
 
 
 # ======================================================
@@ -675,11 +425,7 @@ def summarize_records(
 # ======================================================
 
 
-def warmup_reranker(
-    reranker: Reranker,
-    chunks,
-    query: str,
-) -> float:
+def warmup_reranker(reranker: Reranker, chunks, query: str) -> float:
     """
     正式计时前加载 Cross-Encoder，
     避免第一条 Query 单独承担模型加载成本。
@@ -688,26 +434,13 @@ def warmup_reranker(
     if not chunks:
         return 0.0
 
-    candidate = RetrievalResult(
-        chunk=chunks[0],
-        score=0.0,
-        rank=1,
-    )
+    candidate = RetrievalResult(chunk=chunks[0], score=0.0, rank=1)
 
     start = time.perf_counter()
 
-    reranker.rerank(
-        query=query,
-        candidates=[
-            candidate
-        ],
-        top_k=1,
-    )
+    reranker.rerank(query=query, candidates=[candidate], top_k=1)
 
-    return (
-        time.perf_counter()
-        - start
-    )
+    return time.perf_counter() - start
 
 
 # ======================================================
@@ -720,177 +453,89 @@ def run_benchmark(
     seed: int = 42,
     chunk_size: int = 500,
     overlap: int = 100,
-    retrieval_depth: int = (
-        DEFAULT_RETRIEVAL_DEPTH
-    ),
-    rerank_candidate_k: int = (
-        DEFAULT_RERANK_CANDIDATE_K
-    ),
-    embedding_model: str = (
-        DEFAULT_MULTIHOP_EMBEDDING_MODEL
-    ),
-    reranker_model: str = (
-        DEFAULT_RERANKER_MODEL
-    ),
+    retrieval_depth: int = DEFAULT_RETRIEVAL_DEPTH,
+    rerank_candidate_k: int = DEFAULT_RERANK_CANDIDATE_K,
+    embedding_model: str = DEFAULT_MULTIHOP_EMBEDDING_MODEL,
+    reranker_model: str = DEFAULT_RERANKER_MODEL,
     rrf_k: int = DEFAULT_RRF_K,
-    safe_fusion_k: int = (
-        DEFAULT_SAFE_FUSION_K
-    ),
-    safe_rrf_weight: float = (
-        DEFAULT_SAFE_RRF_WEIGHT
-    ),
-    safe_reranker_weight: float = (
-        DEFAULT_SAFE_RERANKER_WEIGHT
-    ),
+    safe_fusion_k: int = DEFAULT_SAFE_FUSION_K,
+    safe_rrf_weight: float = DEFAULT_SAFE_RRF_WEIGHT,
+    safe_reranker_weight: float = DEFAULT_SAFE_RERANKER_WEIGHT,
 ) -> dict:
     """
     运行 MultiHop-RAG Retrieval Benchmark。
     """
 
     if retrieval_depth < 20:
-        raise ValueError(
-            "retrieval_depth 至少为 20"
-        )
+        raise ValueError("retrieval_depth 至少为 20")
 
-    if (
-        rerank_candidate_k < 10
-    ):
-        raise ValueError(
-            "rerank_candidate_k "
-            "至少为 10"
-        )
+    if rerank_candidate_k < 10:
+        raise ValueError("rerank_candidate_k 至少为 10")
 
-    if (
-        rerank_candidate_k
-        > retrieval_depth
-    ):
-        raise ValueError(
-            "rerank_candidate_k 不能大于 "
-            "retrieval_depth"
-        )
+    if rerank_candidate_k > retrieval_depth:
+        raise ValueError("rerank_candidate_k 不能大于 retrieval_depth")
 
-    print(
-        "[MultiHop Eval] Loading dataset..."
+    print("[MultiHop Eval] Loading dataset...")
+
+    documents, chunks, cases = load_multihop_benchmark(
+        chunk_size=chunk_size, overlap=overlap, download=False
     )
 
-    (
-        documents,
-        chunks,
-        cases,
-    ) = load_multihop_benchmark(
-        chunk_size=chunk_size,
-        overlap=overlap,
-        download=False,
-    )
-
-    selected_cases = (
-        select_benchmark_cases(
-            cases=cases,
-            limit=limit,
-            seed=seed,
-        )
-    )
+    selected_cases = select_benchmark_cases(cases=cases, limit=limit, seed=seed)
 
     if not selected_cases:
-        raise ValueError(
-            "没有可评测的 non-null Case"
-        )
+        raise ValueError("没有可评测的 non-null Case")
 
-    type_counts = Counter(
-        case.question_type
-        for case in selected_cases
-    )
+    type_counts = Counter()
+    for case in selected_cases:
+        type_counts[case.question_type] += 1
 
-    print(
-        f"[MultiHop Eval] Documents="
-        f"{len(documents)}"
-    )
+    print(f"[MultiHop Eval] Documents={len(documents)}")
 
-    print(
-        f"[MultiHop Eval] Chunks="
-        f"{len(chunks)}"
-    )
+    print(f"[MultiHop Eval] Chunks={len(chunks)}")
 
-    print(
-        f"[MultiHop Eval] Cases="
-        f"{len(selected_cases)}"
-    )
+    print(f"[MultiHop Eval] Cases={len(selected_cases)}")
 
-    print(
-        f"[MultiHop Eval] Types="
-        f"{dict(type_counts)}"
-    )
+    print(f"[MultiHop Eval] Types={dict(type_counts)}")
 
-    print(
-        f"[MultiHop Eval] Embedding="
-        f"{embedding_model}"
-    )
+    print(f"[MultiHop Eval] Embedding={embedding_model}")
 
-    print(
-        f"[MultiHop Eval] Reranker="
-        f"{reranker_model}"
-    )
+    print(f"[MultiHop Eval] Reranker={reranker_model}")
 
     # ==================================================
     # Build BM25
     # ==================================================
 
-    print(
-        "[MultiHop Eval] Building BM25..."
-    )
+    print("[MultiHop Eval] Building BM25...")
 
     start = time.perf_counter()
 
-    bm25 = BM25Retriever(
-        chunks
-    )
+    bm25 = BM25Retriever(chunks)
 
-    bm25_build_seconds = (
-        time.perf_counter()
-        - start
-    )
+    bm25_build_seconds = time.perf_counter() - start
 
     # ==================================================
     # Build Dense
     # ==================================================
 
-    print(
-        "[MultiHop Eval] Building Dense + FAISS..."
-    )
+    print("[MultiHop Eval] Building Dense + FAISS...")
 
     start = time.perf_counter()
 
-    dense = DenseRetriever(
-        chunks=chunks,
-        model_name=embedding_model,
-    )
+    dense = DenseRetriever(chunks=chunks, model_name=embedding_model)
 
-    dense_build_seconds = (
-        time.perf_counter()
-        - start
-    )
+    dense_build_seconds = time.perf_counter() - start
 
     # ==================================================
     # Reranker
     # ==================================================
 
-    reranker = Reranker(
-        model_name=reranker_model,
-    )
+    reranker = Reranker(model_name=reranker_model)
 
-    print(
-        "[MultiHop Eval] Warming up Reranker..."
-    )
+    print("[MultiHop Eval] Warming up Reranker...")
 
-    reranker_warmup_seconds = (
-        warmup_reranker(
-            reranker=reranker,
-            chunks=chunks,
-            query=(
-                selected_cases[0]
-                .query
-            ),
-        )
+    reranker_warmup_seconds = warmup_reranker(
+        reranker=reranker, chunks=chunks, query=selected_cases[0].query
     )
 
     records = []
@@ -899,14 +544,9 @@ def run_benchmark(
     # Query Loop
     # ==================================================
 
-    total_cases = len(
-        selected_cases
-    )
+    total_cases = len(selected_cases)
 
-    for case_index, case in enumerate(
-        selected_cases,
-        start=1,
-    ):
+    for case_index, case in enumerate(selected_cases, start=1):
         print(
             f"[MultiHop Eval] "
             f"{case_index}/{total_cases} "
@@ -920,15 +560,9 @@ def run_benchmark(
 
         start = time.perf_counter()
 
-        bm25_results = bm25.search(
-            case.query,
-            top_k=retrieval_depth,
-        )
+        bm25_results = bm25.search(case.query, top_k=retrieval_depth)
 
-        bm25_ms = (
-            time.perf_counter()
-            - start
-        ) * 1000.0
+        bm25_ms = (time.perf_counter() - start) * 1000.0
 
         # ==============================================
         # Dense
@@ -936,17 +570,9 @@ def run_benchmark(
 
         start = time.perf_counter()
 
-        dense_results = (
-            dense.search(
-                case.query,
-                top_k=retrieval_depth,
-            )
-        )
+        dense_results = dense.search(case.query, top_k=retrieval_depth)
 
-        dense_ms = (
-            time.perf_counter()
-            - start
-        ) * 1000.0
+        dense_ms = (time.perf_counter() - start) * 1000.0
 
         # ==============================================
         # RRF
@@ -954,41 +580,22 @@ def run_benchmark(
 
         start = time.perf_counter()
 
-        rrf_results = (
-            reciprocal_rank_fusion(
-                bm25_results=(
-                    bm25_results
-                ),
-                dense_results=(
-                    dense_results
-                ),
-                top_k=(
-                    retrieval_depth
-                ),
-                rrf_k=rrf_k,
-            )
+        rrf_results = reciprocal_rank_fusion(
+            bm25_results=bm25_results,
+            dense_results=dense_results,
+            top_k=retrieval_depth,
+            rrf_k=rrf_k,
         )
 
-        rrf_fusion_ms = (
-            time.perf_counter()
-            - start
-        ) * 1000.0
+        rrf_fusion_ms = (time.perf_counter() - start) * 1000.0
 
-        rrf_pipeline_ms = (
-            bm25_ms
-            + dense_ms
-            + rrf_fusion_ms
-        )
+        rrf_pipeline_ms = bm25_ms + dense_ms + rrf_fusion_ms
 
         # ==============================================
         # Candidate Pool
         # ==============================================
 
-        rerank_candidates = (
-            rrf_results[
-                :rerank_candidate_k
-            ]
-        )
+        rerank_candidates = rrf_results[:rerank_candidate_k]
 
         # ==============================================
         # Reranker
@@ -996,27 +603,13 @@ def run_benchmark(
 
         start = time.perf_counter()
 
-        reranked_results = (
-            reranker.rerank(
-                query=case.query,
-                candidates=(
-                    rerank_candidates
-                ),
-                top_k=len(
-                    rerank_candidates
-                ),
-            )
+        reranked_results = reranker.rerank(
+            query=case.query, candidates=rerank_candidates, top_k=len(rerank_candidates)
         )
 
-        rerank_only_ms = (
-            time.perf_counter()
-            - start
-        ) * 1000.0
+        rerank_only_ms = (time.perf_counter() - start) * 1000.0
 
-        rerank_pipeline_ms = (
-            rrf_pipeline_ms
-            + rerank_only_ms
-        )
+        rerank_pipeline_ms = rrf_pipeline_ms + rerank_only_ms
 
         # ==============================================
         # Safe Rerank
@@ -1024,268 +617,99 @@ def run_benchmark(
 
         start = time.perf_counter()
 
-        safe_results = (
-            rank_preserving_rerank_fusion(
-                rrf_results=(
-                    rerank_candidates
-                ),
-
-                reranked_results=(
-                    reranked_results
-                ),
-
-                top_k=len(
-                    rerank_candidates
-                ),
-
-                fusion_k=(
-                    safe_fusion_k
-                ),
-
-                rrf_weight=(
-                    safe_rrf_weight
-                ),
-
-                reranker_weight=(
-                    safe_reranker_weight
-                ),
-            )
+        safe_results = rank_preserving_rerank_fusion(
+            rrf_results=rerank_candidates,
+            reranked_results=reranked_results,
+            top_k=len(rerank_candidates),
+            fusion_k=safe_fusion_k,
+            rrf_weight=safe_rrf_weight,
+            reranker_weight=safe_reranker_weight,
         )
 
-        safe_fusion_only_ms = (
-            time.perf_counter()
-            - start
-        ) * 1000.0
+        safe_fusion_only_ms = (time.perf_counter() - start) * 1000.0
 
-        safe_pipeline_ms = (
-            rerank_pipeline_ms
-            + safe_fusion_only_ms
-        )
+        safe_pipeline_ms = rerank_pipeline_ms + safe_fusion_only_ms
 
         method_results = {
-            "bm25": (
-                bm25_results
-            ),
-            "dense": (
-                dense_results
-            ),
-            "rrf": (
-                rrf_results
-            ),
-            "rerank": (
-                reranked_results
-            ),
-            "safe_rerank": (
-                safe_results
-            ),
+            "bm25": bm25_results,
+            "dense": dense_results,
+            "rrf": rrf_results,
+            "rerank": reranked_results,
+            "safe_rerank": safe_results,
         }
 
         method_latencies = {
-            "bm25": (
-                bm25_ms
-            ),
-
-            "dense": (
-                dense_ms
-            ),
-
-            "rrf": (
-                rrf_pipeline_ms
-            ),
-
-            "rerank": (
-                rerank_pipeline_ms
-            ),
-
-            "safe_rerank": (
-                safe_pipeline_ms
-            ),
+            "bm25": bm25_ms,
+            "dense": dense_ms,
+            "rrf": rrf_pipeline_ms,
+            "rerank": rerank_pipeline_ms,
+            "safe_rerank": safe_pipeline_ms,
         }
 
         methods = {}
 
-        for method_name in (
-            METHOD_NAMES
-        ):
-            results = (
-                method_results[
-                    method_name
-                ]
-            )
+        for method_name in METHOD_NAMES:
+            results = method_results[method_name]
 
-            methods[
-                method_name
-            ] = {
-                "metrics": (
-                    score_method(
-                        results=results,
-                        case=case,
-                    )
-                ),
-
-                "latency_ms": (
-                    method_latencies[
-                        method_name
-                    ]
-                ),
-
-                "retrieved_chunk_ids": [
-                    result.chunk.chunk_id
-                    for result in results[
-                        :20
-                    ]
-                ],
-
-                "retrieved_document_ids": [
-                    result.chunk.document_id
-                    for result in results[
-                        :20
-                    ]
-                ],
+            retrieved_chunk_ids = []
+            retrieved_document_ids = []
+            for result in results[:20]:
+                retrieved_chunk_ids.append(result.chunk.chunk_id)
+                retrieved_document_ids.append(result.chunk.document_id)
+            methods[method_name] = {
+                "metrics": score_method(results=results, case=case),
+                "latency_ms": method_latencies[method_name],
+                "retrieved_chunk_ids": retrieved_chunk_ids,
+                "retrieved_document_ids": retrieved_document_ids,
             }
 
         records.append(
             {
-                "case_id": (
-                    case.case_id
-                ),
-
-                "question_type": (
-                    case.question_type
-                ),
-
-                "query": (
-                    case.query
-                ),
-
-                "answer": (
-                    case.answer
-                ),
-
-                "gold_evidence_facts": (
-                    list(
-                        case.evidence_facts
-                    )
-                ),
-
-                "gold_document_ids": (
-                    list(
-                        case.evidence_document_ids
-                    )
-                ),
-
-                "gold_document_count": (
-                    len(
-                        case.evidence_document_ids
-                    )
-                ),
-
-                "methods": (
-                    methods
-                ),
-
+                "case_id": case.case_id,
+                "question_type": case.question_type,
+                "query": case.query,
+                "answer": case.answer,
+                "gold_evidence_facts": list(case.evidence_facts),
+                "gold_document_ids": list(case.evidence_document_ids),
+                "gold_document_count": len(case.evidence_document_ids),
+                "methods": methods,
                 "timing": {
-                    "rerank_only_ms": (
-                        rerank_only_ms
-                    ),
-
-                    "safe_fusion_only_ms": (
-                        safe_fusion_only_ms
-                    ),
+                    "rerank_only_ms": rerank_only_ms,
+                    "safe_fusion_only_ms": safe_fusion_only_ms,
                 },
             }
         )
 
-    summary = (
-        summarize_records(
-            records
-        )
-    )
+    summary = summarize_records(records)
 
     return {
-        "dataset": (
-            "MultiHop-RAG"
-        ),
-
+        "dataset": "MultiHop-RAG",
         "configuration": {
             "limit": limit,
             "seed": seed,
-
-            "chunk_size": (
-                chunk_size
-            ),
-
-            "overlap": (
-                overlap
-            ),
-
-            "retrieval_depth": (
-                retrieval_depth
-            ),
-
-            "rerank_candidate_k": (
-                rerank_candidate_k
-            ),
-
-            "embedding_model": (
-                embedding_model
-            ),
-
-            "reranker_model": (
-                reranker_model
-            ),
-
-            "rrf_k": (
-                rrf_k
-            ),
-
-            "safe_fusion_k": (
-                safe_fusion_k
-            ),
-
-            "safe_rrf_weight": (
-                safe_rrf_weight
-            ),
-
-            "safe_reranker_weight": (
-                safe_reranker_weight
-            ),
+            "chunk_size": chunk_size,
+            "overlap": overlap,
+            "retrieval_depth": retrieval_depth,
+            "rerank_candidate_k": rerank_candidate_k,
+            "embedding_model": embedding_model,
+            "reranker_model": reranker_model,
+            "rrf_k": rrf_k,
+            "safe_fusion_k": safe_fusion_k,
+            "safe_rrf_weight": safe_rrf_weight,
+            "safe_reranker_weight": safe_reranker_weight,
         },
-
         "dataset_summary": {
-            "documents": (
-                len(documents)
-            ),
-
-            "chunks": (
-                len(chunks)
-            ),
-
-            "evaluated_cases": (
-                len(selected_cases)
-            ),
-
-            "question_types": (
-                dict(type_counts)
-            ),
+            "documents": len(documents),
+            "chunks": len(chunks),
+            "evaluated_cases": len(selected_cases),
+            "question_types": dict(type_counts),
         },
-
         "build_time_seconds": {
-            "bm25": (
-                bm25_build_seconds
-            ),
-
-            "dense": (
-                dense_build_seconds
-            ),
-
-            "reranker_warmup": (
-                reranker_warmup_seconds
-            ),
+            "bm25": bm25_build_seconds,
+            "dense": dense_build_seconds,
+            "reranker_warmup": reranker_warmup_seconds,
         },
-
         "summary": summary,
-
         "records": records,
     }
 
@@ -1297,102 +721,41 @@ def run_benchmark(
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description=(
-            "Run MultiHop-RAG "
-            "Retrieval Benchmark."
-        )
+        description="Run MultiHop-RAG Retrieval Benchmark."
+    )
+
+    parser.add_argument("--limit", type=int, default=20)
+
+    parser.add_argument("--seed", type=int, default=42)
+
+    parser.add_argument("--chunk-size", type=int, default=500)
+
+    parser.add_argument("--overlap", type=int, default=100)
+
+    parser.add_argument("--retrieval-depth", type=int, default=DEFAULT_RETRIEVAL_DEPTH)
+
+    parser.add_argument(
+        "--rerank-candidate-k", type=int, default=DEFAULT_RERANK_CANDIDATE_K
+    )
+
+    parser.add_argument("--embedding-model", default=DEFAULT_MULTIHOP_EMBEDDING_MODEL)
+
+    parser.add_argument("--reranker-model", default=DEFAULT_RERANKER_MODEL)
+
+    parser.add_argument("--rrf-k", type=int, default=DEFAULT_RRF_K)
+
+    parser.add_argument("--safe-fusion-k", type=int, default=DEFAULT_SAFE_FUSION_K)
+
+    parser.add_argument(
+        "--safe-rrf-weight", type=float, default=DEFAULT_SAFE_RRF_WEIGHT
     )
 
     parser.add_argument(
-        "--limit",
-        type=int,
-        default=20,
+        "--safe-reranker-weight", type=float, default=DEFAULT_SAFE_RERANKER_WEIGHT
     )
 
     parser.add_argument(
-        "--seed",
-        type=int,
-        default=42,
-    )
-
-    parser.add_argument(
-        "--chunk-size",
-        type=int,
-        default=500,
-    )
-
-    parser.add_argument(
-        "--overlap",
-        type=int,
-        default=100,
-    )
-
-    parser.add_argument(
-        "--retrieval-depth",
-        type=int,
-        default=(
-            DEFAULT_RETRIEVAL_DEPTH
-        ),
-    )
-
-    parser.add_argument(
-        "--rerank-candidate-k",
-        type=int,
-        default=(
-            DEFAULT_RERANK_CANDIDATE_K
-        ),
-    )
-
-    parser.add_argument(
-        "--embedding-model",
-        default=(
-            DEFAULT_MULTIHOP_EMBEDDING_MODEL
-        ),
-    )
-
-    parser.add_argument(
-        "--reranker-model",
-        default=(
-            DEFAULT_RERANKER_MODEL
-        ),
-    )
-
-    parser.add_argument(
-        "--rrf-k",
-        type=int,
-        default=DEFAULT_RRF_K,
-    )
-
-    parser.add_argument(
-        "--safe-fusion-k",
-        type=int,
-        default=(
-            DEFAULT_SAFE_FUSION_K
-        ),
-    )
-
-    parser.add_argument(
-        "--safe-rrf-weight",
-        type=float,
-        default=(
-            DEFAULT_SAFE_RRF_WEIGHT
-        ),
-    )
-
-    parser.add_argument(
-        "--safe-reranker-weight",
-        type=float,
-        default=(
-            DEFAULT_SAFE_RERANKER_WEIGHT
-        ),
-    )
-
-    parser.add_argument(
-        "--output",
-        default=(
-            "evaluation/results/"
-            "multihop_retrieval_smoke_20.json"
-        ),
+        "--output", default="evaluation/results/multihop_retrieval_smoke_20.json"
     )
 
     args = parser.parse_args()
@@ -1400,87 +763,35 @@ def main() -> None:
     report = run_benchmark(
         limit=args.limit,
         seed=args.seed,
-
-        chunk_size=(
-            args.chunk_size
-        ),
-
-        overlap=(
-            args.overlap
-        ),
-
-        retrieval_depth=(
-            args.retrieval_depth
-        ),
-
-        rerank_candidate_k=(
-            args.rerank_candidate_k
-        ),
-
-        embedding_model=(
-            args.embedding_model
-        ),
-
-        reranker_model=(
-            args.reranker_model
-        ),
-
-        rrf_k=(
-            args.rrf_k
-        ),
-
-        safe_fusion_k=(
-            args.safe_fusion_k
-        ),
-
-        safe_rrf_weight=(
-            args.safe_rrf_weight
-        ),
-
-        safe_reranker_weight=(
-            args.safe_reranker_weight
-        ),
+        chunk_size=args.chunk_size,
+        overlap=args.overlap,
+        retrieval_depth=args.retrieval_depth,
+        rerank_candidate_k=args.rerank_candidate_k,
+        embedding_model=args.embedding_model,
+        reranker_model=args.reranker_model,
+        rrf_k=args.rrf_k,
+        safe_fusion_k=args.safe_fusion_k,
+        safe_rrf_weight=args.safe_rrf_weight,
+        safe_reranker_weight=args.safe_reranker_weight,
     )
 
-    output_path = Path(
-        args.output
-    )
+    output_path = Path(args.output)
 
-    output_path.parent.mkdir(
-        parents=True,
-        exist_ok=True,
-    )
+    output_path.parent.mkdir(parents=True, exist_ok=True)
 
     output_path.write_text(
-        json.dumps(
-            report,
-            ensure_ascii=False,
-            indent=2,
-        ),
-        encoding="utf-8",
+        json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"
     )
 
     print()
-    print(
-        "[MultiHop Eval] "
-        f"Report saved to: "
-        f"{output_path}"
-    )
+    print(f"[MultiHop Eval] Report saved to: {output_path}")
 
     print()
 
-    overall = report[
-        "summary"
-    ][
-        "overall"
-    ]
+    overall = report["summary"]["overall"]
 
-    for method_name in (
-        METHOD_NAMES
-    ):
-        metrics = overall[
-            method_name
-        ]
+    for method_name in METHOD_NAMES:
+        metrics = overall[method_name]
 
         print(
             f"[{method_name}] "

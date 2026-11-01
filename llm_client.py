@@ -17,7 +17,4 @@ load_dotenv()
 
 # 创建一个全局 client，agent.py 直接 import 使用。
 # os.getenv 会从环境变量中读取 DEEPSEEK_API_KEY。
-client = OpenAI(
-    api_key=os.getenv("DEEPSEEK_API_KEY"),
-    base_url=BASE_URL,
-)
+client = OpenAI(api_key=os.getenv("DEEPSEEK_API_KEY"), base_url=BASE_URL)

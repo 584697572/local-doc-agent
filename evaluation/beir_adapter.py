@@ -7,10 +7,8 @@ from beir.datasets.data_loader import GenericDataLoader
 
 from retrieval.document import DocumentChunk
 
-
 BEIR_DATASET_BASE_URL = (
-    "https://public.ukp.informatik.tu-darmstadt.de/"
-    "thakur/BEIR/datasets"
+    "https://public.ukp.informatik.tu-darmstadt.de/thakur/BEIR/datasets"
 )
 
 
@@ -29,37 +27,21 @@ def load_beir_dataset(
     """
 
     data_dir = Path(data_dir)
-    data_dir.mkdir(
-        parents=True,
-        exist_ok=True,
-    )
+    data_dir.mkdir(parents=True, exist_ok=True)
 
-    url = (
-        f"{BEIR_DATASET_BASE_URL}/"
-        f"{dataset_name}.zip"
-    )
+    url = f"{BEIR_DATASET_BASE_URL}/{dataset_name}.zip"
 
     # BEIR 会自动下载并解压。
-    dataset_path = util.download_and_unzip(
-        url,
-        str(data_dir),
-    )
+    dataset_path = util.download_and_unzip(url, str(data_dir))
 
-    corpus, queries, qrels = (
-        GenericDataLoader(
-            data_folder=dataset_path
-        ).load(
-            split=split
-        )
+    corpus, queries, qrels = GenericDataLoader(data_folder=dataset_path).load(
+        split=split
     )
 
     return corpus, queries, qrels
 
 
-def beir_corpus_to_chunks(
-    corpus: dict,
-    dataset_name: str,
-) -> list[DocumentChunk]:
+def beir_corpus_to_chunks(corpus: dict, dataset_name: str) -> list[DocumentChunk]:
     """
     把 BEIR corpus 转成 DocumentChunk。
 
@@ -74,15 +56,9 @@ def beir_corpus_to_chunks(
     chunks = []
 
     for document_id, document in corpus.items():
-        title = (
-            document.get("title", "")
-            or ""
-        ).strip()
+        title = (document.get("title", "") or "").strip()
 
-        text = (
-            document.get("text", "")
-            or ""
-        ).strip()
+        text = (document.get("text", "") or "").strip()
 
         # 标题和正文合在一起参与检索。
         if title and text:
@@ -94,20 +70,10 @@ def beir_corpus_to_chunks(
             # chunk_id 必须等于 BEIR document_id，
             # 后面才能和官方 qrels 直接比较。
             chunk_id=str(document_id),
-
             document_id=str(document_id),
-
             content=content,
-
-            filename=(
-                f"beir:{dataset_name}:"
-                f"{document_id}"
-            ),
-
-            metadata={
-                "dataset": dataset_name,
-                "title": title,
-            },
+            filename=(f"beir:{dataset_name}:{document_id}"),
+            metadata={"dataset": dataset_name, "title": title},
         )
 
         chunks.append(chunk)

@@ -94,45 +94,29 @@ class AgentEvalRecord:
         """防止错误的 Eval 数据污染最终指标。"""
 
         if not self.case_id.strip():
-            raise ValueError(
-                "case_id 不能为空"
-            )
+            raise ValueError("case_id 不能为空")
 
         if self.search_calls < 0:
-            raise ValueError(
-                "search_calls 不能小于 0"
-            )
+            raise ValueError("search_calls 不能小于 0")
 
         if self.llm_calls < 0:
-            raise ValueError(
-                "llm_calls 不能小于 0"
-            )
+            raise ValueError("llm_calls 不能小于 0")
 
         if self.latency_ms < 0:
-            raise ValueError(
-                "latency_ms 不能小于 0"
-            )
+            raise ValueError("latency_ms 不能小于 0")
 
 
-def safe_divide(
-    numerator: int | float,
-    denominator: int | float,
-) -> float:
+def safe_divide(numerator: int | float, denominator: int | float) -> float:
     """安全除法，避免分母为 0。"""
 
     if denominator == 0:
         return 0.0
 
-    return float(
-        numerator
-    ) / float(
-        denominator
-    )
+    return float(numerator) / float(denominator)
 
 
 def binary_classification_metrics(
-    expected_values: list[bool],
-    actual_values: list[bool],
+    expected_values: list[bool], actual_values: list[bool]
 ) -> dict:
     """
     计算二分类指标。
@@ -161,17 +145,10 @@ def binary_classification_metrics(
         可能产生无证据回答
     """
 
-    if len(expected_values) != len(
-        actual_values
-    ):
-        raise ValueError(
-            "expected_values 和 "
-            "actual_values 长度必须一致"
-        )
+    if len(expected_values) != len(actual_values):
+        raise ValueError("expected_values 和 actual_values 长度必须一致")
 
-    total = len(
-        expected_values
-    )
+    total = len(expected_values)
 
     if total == 0:
         return {
@@ -191,56 +168,33 @@ def binary_classification_metrics(
     fp = 0
     fn = 0
 
-    for expected, actual in zip(
-        expected_values,
-        actual_values,
-    ):
+    for expected, actual in zip(expected_values, actual_values):
         if expected and actual:
             tp += 1
 
-        elif (
-            not expected
-            and not actual
-        ):
+        elif not expected and not actual:
             tn += 1
 
-        elif (
-            not expected
-            and actual
-        ):
+        elif not expected and actual:
             fp += 1
 
         else:
             fn += 1
 
-    accuracy = safe_divide(
-        tp + tn,
-        total,
-    )
+    accuracy = safe_divide(tp + tn, total)
 
-    precision = safe_divide(
-        tp,
-        tp + fp,
-    )
+    precision = safe_divide(tp, tp + fp)
 
-    recall = safe_divide(
-        tp,
-        tp + fn,
-    )
+    recall = safe_divide(tp, tp + fn)
 
-    f1 = safe_divide(
-        2 * precision * recall,
-        precision + recall,
-    )
+    f1 = safe_divide(2 * precision * recall, precision + recall)
 
     return {
         "total": total,
-
         "tp": tp,
         "tn": tn,
         "fp": fp,
         "fn": fn,
-
         "accuracy": accuracy,
         "precision": precision,
         "recall": recall,
@@ -249,9 +203,7 @@ def binary_classification_metrics(
 
 
 def optional_binary_metrics(
-    records: list[AgentEvalRecord],
-    expected_field: str,
-    actual_field: str,
+    records: list[AgentEvalRecord], expected_field: str, actual_field: str
 ) -> dict:
     """
     对 Evidence / Rewrite 这类可选阶段计算指标。
@@ -277,15 +229,9 @@ def optional_binary_metrics(
     eligible_cases = 0
 
     for record in records:
-        expected = getattr(
-            record,
-            expected_field,
-        )
+        expected = getattr(record, expected_field)
 
-        actual = getattr(
-            record,
-            actual_field,
-        )
+        actual = getattr(record, actual_field)
 
         # Gold 为 None：
         # 这个阶段本来就不适用于该 Case。
@@ -300,49 +246,26 @@ def optional_binary_metrics(
         if actual is None:
             continue
 
-        expected_values.append(
-            bool(expected)
-        )
+        expected_values.append(bool(expected))
 
-        actual_values.append(
-            bool(actual)
-        )
+        actual_values.append(bool(actual))
 
-    metrics = (
-        binary_classification_metrics(
-            expected_values,
-            actual_values,
-        )
-    )
+    metrics = binary_classification_metrics(expected_values, actual_values)
 
-    evaluated_cases = len(
-        expected_values
-    )
+    evaluated_cases = len(expected_values)
 
     metrics.update(
         {
-            "eligible_cases": (
-                eligible_cases
-            ),
-
-            "evaluated_cases": (
-                evaluated_cases
-            ),
-
-            "coverage": safe_divide(
-                evaluated_cases,
-                eligible_cases,
-            ),
+            "eligible_cases": eligible_cases,
+            "evaluated_cases": evaluated_cases,
+            "coverage": safe_divide(evaluated_cases, eligible_cases),
         }
     )
 
     return metrics
 
 
-def nearest_rank_percentile(
-    values: list[float],
-    percentile: float,
-) -> float:
+def nearest_rank_percentile(values: list[float], percentile: float) -> float:
     """
     使用 nearest-rank 方法计算 Percentile。
 
@@ -362,35 +285,23 @@ def nearest_rank_percentile(
     if not values:
         return 0.0
 
-    if (
-        percentile <= 0
-        or percentile > 1
-    ):
-        raise ValueError(
-            "percentile 必须在 (0, 1] 范围内"
-        )
+    if percentile <= 0 or percentile > 1:
+        raise ValueError("percentile 必须在 (0, 1] 范围内")
 
-    sorted_values = sorted(
-        float(value)
-        for value in values
-    )
+    numeric_values = []
+    for value in values:
+        numeric_values.append(float(value))
+    sorted_values = sorted(numeric_values)
 
-    rank = ceil(
-        percentile
-        * len(sorted_values)
-    )
+    rank = ceil(percentile * len(sorted_values))
 
     # Python 下标从 0 开始。
     index = rank - 1
 
-    return sorted_values[
-        index
-    ]
+    return sorted_values[index]
 
 
-def summarize_final_answer(
-    records: list[AgentEvalRecord],
-) -> dict:
+def summarize_final_answer(records: list[AgentEvalRecord]) -> dict:
     """
     汇总最终任务表现。
 
@@ -404,85 +315,41 @@ def summarize_final_answer(
     if not records:
         return {
             "task_success_rate": 0.0,
-
             "grounded_answer_rate": 0.0,
             "grounded_answer_evaluated": 0,
-
             "citation_accuracy": 0.0,
             "citation_evaluated": 0,
         }
 
-    task_success_count = sum(
-        1
-        for record in records
-        if record.task_success
-    )
+    task_success_count = 0
+    grounded_values = []
+    citation_values = []
+    grounded_success = 0
+    citation_success = 0
 
-    grounded_values = [
-        record.grounded_answer
-        for record in records
-        if (
-            record.grounded_answer
-            is not None
-        )
-    ]
-
-    citation_values = [
-        record.citation_correct
-        for record in records
-        if (
-            record.citation_correct
-            is not None
-        )
-    ]
-
-    grounded_success = sum(
-        1
-        for value in grounded_values
-        if value
-    )
-
-    citation_success = sum(
-        1
-        for value in citation_values
-        if value
-    )
+    # None 表示没有评价；False 则表示评价过但没有通过，两者不能混算。
+    for record in records:
+        if record.task_success:
+            task_success_count += 1
+        if record.grounded_answer is not None:
+            grounded_values.append(record.grounded_answer)
+            if record.grounded_answer:
+                grounded_success += 1
+        if record.citation_correct is not None:
+            citation_values.append(record.citation_correct)
+            if record.citation_correct:
+                citation_success += 1
 
     return {
-        "task_success_rate": (
-            safe_divide(
-                task_success_count,
-                len(records),
-            )
-        ),
-
-        "grounded_answer_rate": (
-            safe_divide(
-                grounded_success,
-                len(grounded_values),
-            )
-        ),
-
-        "grounded_answer_evaluated": (
-            len(grounded_values)
-        ),
-
-        "citation_accuracy": (
-            safe_divide(
-                citation_success,
-                len(citation_values),
-            )
-        ),
-
-        "citation_evaluated": (
-            len(citation_values)
-        ),
+        "task_success_rate": safe_divide(task_success_count, len(records)),
+        "grounded_answer_rate": safe_divide(grounded_success, len(grounded_values)),
+        "grounded_answer_evaluated": len(grounded_values),
+        "citation_accuracy": safe_divide(citation_success, len(citation_values)),
+        "citation_evaluated": len(citation_values),
     }
 
 
-def summarize_efficiency(
-    records: list[AgentEvalRecord],
-) -> dict:
+def summarize_efficiency(records: list[AgentEvalRecord]) -> dict:
     """
     汇总 Agent 的执行成本。
 
@@ -503,66 +370,32 @@ def summarize_efficiency(
         return {
             "avg_search_calls": 0.0,
             "avg_llm_calls": 0.0,
-
             "avg_latency_ms": 0.0,
             "p95_latency_ms": 0.0,
-
             "budget_exhaustion_rate": 0.0,
         }
 
-    search_calls = [
-        record.search_calls
-        for record in records
-    ]
-
-    llm_calls = [
-        record.llm_calls
-        for record in records
-    ]
-
-    latencies = [
-        record.latency_ms
-        for record in records
-    ]
-
-    exhausted_count = sum(
-        1
-        for record in records
-        if record.budget_exhausted
-    )
+    search_calls = []
+    llm_calls = []
+    latencies = []
+    exhausted_count = 0
+    for record in records:
+        search_calls.append(record.search_calls)
+        llm_calls.append(record.llm_calls)
+        latencies.append(record.latency_ms)
+        if record.budget_exhausted:
+            exhausted_count += 1
 
     return {
-        "avg_search_calls": mean(
-            search_calls
-        ),
-
-        "avg_llm_calls": mean(
-            llm_calls
-        ),
-
-        "avg_latency_ms": mean(
-            latencies
-        ),
-
-        "p95_latency_ms": (
-            nearest_rank_percentile(
-                latencies,
-                0.95,
-            )
-        ),
-
-        "budget_exhaustion_rate": (
-            safe_divide(
-                exhausted_count,
-                len(records),
-            )
-        ),
+        "avg_search_calls": mean(search_calls),
+        "avg_llm_calls": mean(llm_calls),
+        "avg_latency_ms": mean(latencies),
+        "p95_latency_ms": nearest_rank_percentile(latencies, 0.95),
+        "budget_exhaustion_rate": safe_divide(exhausted_count, len(records)),
     }
 
 
-def summarize_agent_eval(
-    records: list[AgentEvalRecord],
-) -> dict:
+def summarize_agent_eval(records: list[AgentEvalRecord]) -> dict:
     """
     汇总完整 Agent Eval。
 
@@ -592,87 +425,51 @@ def summarize_agent_eval(
     # Evidence Judge
     # ==================================================
 
-    evidence_metrics = (
-        optional_binary_metrics(
-            records=records,
-
-            expected_field=(
-                "expected_evidence_sufficient"
-            ),
-
-            actual_field=(
-                "actual_evidence_sufficient"
-            ),
-        )
+    evidence_metrics = optional_binary_metrics(
+        records=records,
+        expected_field="expected_evidence_sufficient",
+        actual_field="actual_evidence_sufficient",
     )
 
     # ==================================================
     # Rewrite Decision
     # ==================================================
 
-    rewrite_metrics = (
-        optional_binary_metrics(
-            records=records,
-
-            expected_field=(
-                "expected_should_rewrite"
-            ),
-
-            actual_field=(
-                "actual_rewrite_used"
-            ),
-        )
+    rewrite_metrics = optional_binary_metrics(
+        records=records,
+        expected_field="expected_should_rewrite",
+        actual_field="actual_rewrite_used",
     )
 
     # ==================================================
     # Final Answer
     # ==================================================
 
-    final_answer_metrics = (
-        summarize_final_answer(
-            records
-        )
-    )
+    final_answer_metrics = summarize_final_answer(records)
 
     # ==================================================
     # Efficiency
     # ==================================================
 
-    efficiency_metrics = (
-        summarize_efficiency(
-            records
-        )
-    )
+    efficiency_metrics = summarize_efficiency(records)
 
-    abstention = optional_binary_metrics(
-        records, "expected_abstain", "actual_abstain"
+    abstention = optional_binary_metrics(records, "expected_abstain", "actual_abstain")
+    rewrite_outcomes = []
+    for record in records:
+        if record.rewrite_success is not None:
+            rewrite_outcomes.append(record.rewrite_success)
+    rewrite_metrics["success_rate"] = safe_divide(
+        sum(rewrite_outcomes), len(rewrite_outcomes)
     )
-    rewrite_outcomes = [r.rewrite_success for r in records if r.rewrite_success is not None]
-    rewrite_metrics["success_rate"] = safe_divide(sum(rewrite_outcomes), len(rewrite_outcomes))
     rewrite_metrics["success_evaluated"] = len(rewrite_outcomes)
     final_answer_metrics["abstention_accuracy"] = abstention["accuracy"]
     final_answer_metrics["abstention_coverage"] = abstention["coverage"]
 
     return {
-        "total_cases": len(
-            records
-        ),
-
+        "total_cases": len(records),
         "router": router_metrics,
-
-        "evidence_judge": (
-            evidence_metrics
-        ),
-
-        "rewrite": (
-            rewrite_metrics
-        ),
-
-        "final_answer": (
-            final_answer_metrics
-        ),
-
-        "efficiency": (
-            efficiency_metrics
-        ),
+        "evidence_judge": evidence_metrics,
+        "rewrite": rewrite_metrics,
+        "final_answer": final_answer_metrics,
+        "efficiency": efficiency_metrics,
     }

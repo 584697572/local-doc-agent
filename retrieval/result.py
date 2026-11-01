@@ -1,3 +1,5 @@
+"""统一保存一次检索命中的片段、分数和排名。"""
+
 from dataclasses import dataclass
 
 from retrieval.document import DocumentChunk

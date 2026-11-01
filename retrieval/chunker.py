@@ -1,3 +1,5 @@
+"""按字符窗口切分文档，相邻片段保留重叠内容，并记录原文位置。"""
+
 from retrieval.document import Document, DocumentChunk
 
 
@@ -18,9 +20,7 @@ def _find_page_number(document: Document, char_position: int) -> int | None:
 
 
 def chunk_document(
-    document: Document,
-    chunk_size: int = 500,
-    overlap: int = 100,
+    document: Document, chunk_size: int = 500, overlap: int = 100
 ) -> list[DocumentChunk]:
     """
     将完整 Document 按固定字符窗口切成多个 DocumentChunk。
@@ -67,9 +67,7 @@ def chunk_document(
                 page=page,
                 start_char=start,
                 end_char=end,
-                metadata={
-                    "file_type": document.file_type,
-                },
+                metadata={"file_type": document.file_type},
             )
 
             chunks.append(chunk)

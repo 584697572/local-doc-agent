@@ -6,6 +6,7 @@ __pycache__/
 .pytest_cache/
 .venv/
 venv/
+.browser-control/
 
 # 本地日志、临时文件和编辑器备份。
 *.log
@@ -30,3 +31,9 @@ evaluation/results/**/*.checkpoint.json
 # 内部回归原始结果可重新生成，只提交精选基线。
 evaluation/results/agent/*
 !evaluation/results/agent/baseline_summary.json
+
+# Personal learning and resume artifacts belong outside the source repository.
+/*.docx
+/*.pdf
+/LocalDoc-Agent*.png
+/LocalDoc-Agent*.svg

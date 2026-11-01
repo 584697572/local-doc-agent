@@ -17,7 +17,6 @@ import numpy as np
 from retrieval.document import DocumentChunk
 from retrieval.result import RetrievalResult
 
-
 DEFAULT_EMBEDDING_MODEL = "BAAI/bge-small-zh-v1.5"
 
 
@@ -48,59 +47,31 @@ class DenseRetriever:
         self.embeddings = None
 
         if embeddings is not None:
-            self.embeddings = self._prepare_embeddings(
-                embeddings
-            )
+            self.embeddings = self._prepare_embeddings(embeddings)
 
         # 空知识库。
         if not self.chunks:
-            if (
-                self.index is not None
-                and int(self.index.ntotal) != 0
-            ):
-                raise ValueError(
-                    "空 Chunk 列表不能绑定非空 FAISS Index"
-                )
+            if self.index is not None and int(self.index.ntotal) != 0:
+                raise ValueError("空 Chunk 列表不能绑定非空 FAISS Index")
 
-            if (
-                self.embeddings is not None
-                and self.embeddings.shape[0] != 0
-            ):
-                raise ValueError(
-                    "空 Chunk 列表不能绑定非空 Embedding Matrix"
-                )
+            if self.embeddings is not None and self.embeddings.shape[0] != 0:
+                raise ValueError("空 Chunk 列表不能绑定非空 Embedding Matrix")
 
             return
 
         # Embedding 数量必须和 Chunk 一致。
-        if (
-            self.embeddings is not None
-            and self.embeddings.shape[0]
-            != len(self.chunks)
-        ):
-            raise ValueError(
-                "Embedding 数量与 Chunk 数量不一致"
-            )
+        if self.embeddings is not None and self.embeddings.shape[0] != len(self.chunks):
+            raise ValueError("Embedding 数量与 Chunk 数量不一致")
 
         # 已经有 FAISS Index。
         if self.index is not None:
-            if (
-                int(self.index.ntotal)
-                != len(self.chunks)
-            ):
-                raise ValueError(
-                    "FAISS Index 中的向量数量"
-                    "与 Chunk 数量不一致"
-                )
+            if int(self.index.ntotal) != len(self.chunks):
+                raise ValueError("FAISS Index 中的向量数量与 Chunk 数量不一致")
 
-            if (
-                self.embeddings is not None
-                and self.embeddings.shape[1]
-                != int(self.index.d)
+            if self.embeddings is not None and self.embeddings.shape[1] != int(
+                self.index.d
             ):
-                raise ValueError(
-                    "Embedding 维度与 FAISS Index 不一致"
-                )
+                raise ValueError("Embedding 维度与 FAISS Index 不一致")
 
             return
 
@@ -111,9 +82,7 @@ class DenseRetriever:
         # 旧 Embedding + 新 Embedding
         # → 快速重建 FAISS。
         if self.embeddings is not None:
-            self.index = self._create_index(
-                self.embeddings
-            )
+            self.index = self._create_index(self.embeddings)
             return
 
         # 什么缓存都没有：
@@ -121,24 +90,15 @@ class DenseRetriever:
         self._build_index()
 
     @staticmethod
-    def _prepare_embeddings(
-        embeddings,
-    ) -> np.ndarray:
+    def _prepare_embeddings(embeddings) -> np.ndarray:
         """统一为连续的 float32 二维数组。"""
 
-        array = np.asarray(
-            embeddings,
-            dtype=np.float32,
-        )
+        array = np.asarray(embeddings, dtype=np.float32)
 
         if array.ndim != 2:
-            raise ValueError(
-                "Embedding 必须是二维数组"
-            )
+            raise ValueError("Embedding 必须是二维数组")
 
-        return np.ascontiguousarray(
-            array
-        )
+        return np.ascontiguousarray(array)
 
     def _get_encoder(self):
         """
@@ -148,20 +108,13 @@ class DenseRetriever:
         """
 
         if self.encoder is None:
-            from sentence_transformers import (
-                SentenceTransformer,
-            )
+            from sentence_transformers import SentenceTransformer
 
-            self.encoder = SentenceTransformer(
-                self.model_name
-            )
+            self.encoder = SentenceTransformer(self.model_name)
 
         return self.encoder
 
-    def encode_chunks(
-        self,
-        chunks: list[DocumentChunk],
-    ) -> np.ndarray:
+    def encode_chunks(self, chunks: list[DocumentChunk]) -> np.ndarray:
         """
         只计算指定 Chunk。
 
@@ -175,26 +128,19 @@ class DenseRetriever:
             dimension = 0
 
             if self.embeddings is not None:
-                dimension = (
-                    self.embeddings.shape[1]
-                )
+                dimension = self.embeddings.shape[1]
 
             elif self.index is not None:
-                dimension = int(
-                    self.index.d
-                )
+                dimension = int(self.index.d)
 
-            return np.empty(
-                (0, dimension),
-                dtype=np.float32,
-            )
+            return np.empty((0, dimension), dtype=np.float32)
 
         encoder = self._get_encoder()
 
-        texts = [
-            chunk.content
-            for chunk in chunks
-        ]
+        # 编码器接收文本列表，列表顺序必须与 chunks 保持一致。
+        texts = []
+        for chunk in chunks:
+            texts.append(chunk.content)
 
         embeddings = encoder.encode(
             texts,
@@ -203,24 +149,15 @@ class DenseRetriever:
             show_progress_bar=False,
         )
 
-        embeddings = self._prepare_embeddings(
-            embeddings
-        )
+        embeddings = self._prepare_embeddings(embeddings)
 
-        if (
-            embeddings.shape[0]
-            != len(chunks)
-        ):
-            raise ValueError(
-                "Embedding 数量与 Chunk 数量不一致"
-            )
+        if embeddings.shape[0] != len(chunks):
+            raise ValueError("Embedding 数量与 Chunk 数量不一致")
 
         return embeddings
 
     @staticmethod
-    def _create_index(
-        embeddings: np.ndarray,
-    ):
+    def _create_index(embeddings: np.ndarray):
         """
         从已经算好的 Embedding
         快速创建 FAISS。
@@ -228,28 +165,17 @@ class DenseRetriever:
         这里没有神经网络推理。
         """
 
-        embeddings = (
-            DenseRetriever
-            ._prepare_embeddings(
-                embeddings
-            )
-        )
+        embeddings = DenseRetriever._prepare_embeddings(embeddings)
 
         if embeddings.shape[0] == 0:
             return None
 
         if embeddings.shape[1] <= 0:
-            raise ValueError(
-                "Embedding 维度必须大于 0"
-            )
+            raise ValueError("Embedding 维度必须大于 0")
 
-        index = faiss.IndexFlatIP(
-            embeddings.shape[1]
-        )
+        index = faiss.IndexFlatIP(embeddings.shape[1])
 
-        index.add(
-            embeddings
-        )
+        index.add(embeddings)
 
         return index
 
@@ -261,48 +187,30 @@ class DenseRetriever:
             self.index = None
             return
 
-        self.embeddings = self.encode_chunks(
-            self.chunks
-        )
+        self.embeddings = self.encode_chunks(self.chunks)
 
-        self.index = self._create_index(
-            self.embeddings
-        )
+        self.index = self._create_index(self.embeddings)
 
     # ==================================================
     # FAISS Persistence
     # ==================================================
 
-    def save_index(
-        self,
-        path: str | Path,
-    ) -> None:
+    def save_index(self, path: str | Path) -> None:
         """保存 FAISS，文件 I/O 由 Python 处理。"""
 
         if self.index is None:
-            raise RuntimeError(
-                "当前没有可保存的 FAISS Index"
-            )
+            raise RuntimeError("当前没有可保存的 FAISS Index")
 
         path = Path(path)
 
-        serialized = faiss.serialize_index(
-            self.index
-        )
+        serialized = faiss.serialize_index(self.index)
 
-        serialized = np.asarray(
-            serialized,
-            dtype=np.uint8,
-        )
+        serialized = np.asarray(serialized, dtype=np.uint8)
 
-        path.write_bytes(
-            serialized.tobytes()
-        )
+        path.write_bytes(serialized.tobytes())
 
     @staticmethod
-    def load_index(
-        path: str | Path,
-    ):
+    def load_index(path: str | Path):
         """加载 FAISS Index。"""
 
         path = Path(path)
@@ -310,28 +218,18 @@ class DenseRetriever:
         raw_bytes = path.read_bytes()
 
         if not raw_bytes:
-            raise ValueError(
-                "FAISS Index 文件为空"
-            )
+            raise ValueError("FAISS Index 文件为空")
 
-        serialized = np.frombuffer(
-            raw_bytes,
-            dtype=np.uint8,
-        ).copy()
+        serialized = np.frombuffer(raw_bytes, dtype=np.uint8).copy()
 
-        return faiss.deserialize_index(
-            serialized
-        )
+        return faiss.deserialize_index(serialized)
 
     # ==================================================
     # Embedding Persistence
     # ==================================================
 
     @staticmethod
-    def save_embeddings(
-        path: str | Path,
-        embeddings: np.ndarray,
-    ) -> None:
+    def save_embeddings(path: str | Path, embeddings: np.ndarray) -> None:
         """
         保存原始向量矩阵。
 
@@ -341,56 +239,31 @@ class DenseRetriever:
 
         path = Path(path)
 
-        embeddings = (
-            DenseRetriever
-            ._prepare_embeddings(
-                embeddings
-            )
-        )
+        embeddings = DenseRetriever._prepare_embeddings(embeddings)
 
         with path.open("wb") as file:
-            np.save(
-                file,
-                embeddings,
-                allow_pickle=False,
-            )
+            np.save(file, embeddings, allow_pickle=False)
 
     @staticmethod
-    def load_embeddings(
-        path: str | Path,
-    ) -> np.ndarray:
+    def load_embeddings(path: str | Path) -> np.ndarray:
         """加载原始向量矩阵。"""
 
         path = Path(path)
 
         with path.open("rb") as file:
-            embeddings = np.load(
-                file,
-                allow_pickle=False,
-            )
+            embeddings = np.load(file, allow_pickle=False)
 
-        return (
-            DenseRetriever
-            ._prepare_embeddings(
-                embeddings
-            )
-        )
+        return DenseRetriever._prepare_embeddings(embeddings)
 
     # ==================================================
     # Search
     # ==================================================
 
-    def search(
-        self,
-        query: str,
-        top_k: int = 5,
-    ) -> list[RetrievalResult]:
+    def search(self, query: str, top_k: int = 5) -> list[RetrievalResult]:
         """执行 Dense Retrieval。"""
 
         if top_k <= 0:
-            raise ValueError(
-                "top_k 必须大于 0"
-            )
+            raise ValueError("top_k 必须大于 0")
 
         if not query.strip():
             return []
@@ -407,47 +280,20 @@ class DenseRetriever:
             show_progress_bar=False,
         )
 
-        query_embedding = (
-            self._prepare_embeddings(
-                query_embedding
-            )
-        )
+        query_embedding = self._prepare_embeddings(query_embedding)
 
-        k = min(
-            top_k,
-            len(self.chunks),
-        )
+        k = min(top_k, len(self.chunks))
 
-        scores, indices = (
-            self.index.search(
-                query_embedding,
-                k,
-            )
-        )
+        scores, indices = self.index.search(query_embedding, k)
 
         results = []
 
-        for rank, (
-            score,
-            index,
-        ) in enumerate(
-            zip(
-                scores[0],
-                indices[0],
-            ),
-            start=1,
-        ):
+        for rank, (score, index) in enumerate(zip(scores[0], indices[0]), start=1):
             if index < 0:
                 continue
 
             results.append(
-                RetrievalResult(
-                    chunk=self.chunks[
-                        index
-                    ],
-                    score=float(score),
-                    rank=rank,
-                )
+                RetrievalResult(chunk=self.chunks[index], score=float(score), rank=rank)
             )
 
         return results

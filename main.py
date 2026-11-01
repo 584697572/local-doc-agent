@@ -3,7 +3,6 @@
 from agent import run_agent
 from config import MAX_HISTORY_PAIRS
 
-
 if __name__ == "__main__":
     print("LocalDoc-Agent 已启动。")
     print("把知识库文档放入 data/，然后直接用自然语言提问。")
@@ -25,20 +24,14 @@ if __name__ == "__main__":
 
         reply = run_agent(user_input, chat_history)
 
-        chat_history.append(
-            {
-                "role": "user",
-                "content": user_input,
-            }
-        )
-        chat_history.append(
-            {
-                "role": "assistant",
-                "content": reply,
-            }
-        )
+        chat_history.append({"role": "user", "content": user_input})
+        chat_history.append({"role": "assistant", "content": reply})
 
-        chat_history[:] = chat_history[-MAX_HISTORY_PAIRS * 2:]
+        # 一轮对话有两条消息：用户的问题和助手的回答。
+        max_history_messages = MAX_HISTORY_PAIRS * 2
+        recent_history = chat_history[-max_history_messages:]
+        # 原地替换列表内容，保留 chat_history 这个列表对象。
+        chat_history[:] = recent_history
 
         print("助手：", reply)
         print("-" * 50)

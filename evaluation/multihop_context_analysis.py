@@ -23,35 +23,21 @@ import json
 from pathlib import Path
 from statistics import mean
 
-from evaluation.multihop_adapter import (
-    load_multihop_benchmark,
-)
+from evaluation.multihop_adapter import load_multihop_benchmark
 
 from evaluation.multihop_qa_metrics import (
     semantic_review_candidate,
     strict_answer_correct,
 )
 
+DEFAULT_RETRIEVAL_REPORT = "evaluation/results/multihop_retrieval_smoke_20.json"
 
-DEFAULT_RETRIEVAL_REPORT = (
-    "evaluation/results/"
-    "multihop_retrieval_smoke_20.json"
-)
+DEFAULT_SINGLE_SHOT_REPORT = "evaluation/results/multihop_single_shot_smoke_20.json"
 
-DEFAULT_SINGLE_SHOT_REPORT = (
-    "evaluation/results/"
-    "multihop_single_shot_smoke_20.json"
-)
-
-DEFAULT_OUTPUT = (
-    "evaluation/results/"
-    "multihop_context_analysis_20.json"
-)
+DEFAULT_OUTPUT = "evaluation/results/multihop_context_analysis_20.json"
 
 
-def normalize_match_text(
-    text: str,
-) -> str:
+def normalize_match_text(text: str) -> str:
     """
     Gold Fact 严格字符串匹配标准化。
 
@@ -59,37 +45,20 @@ def normalize_match_text(
     这不是语义匹配。
     """
 
-    return (
-        str(text)
-        .replace(" ", "")
-        .replace("\n", "")
-    )
+    return str(text).replace(" ", "").replace("\n", "")
 
 
-def score_fact_coverage(
-    retrieved_texts: list[str],
-    gold_facts: list[str],
-) -> dict:
+def score_fact_coverage(retrieved_texts: list[str], gold_facts: list[str]) -> dict:
     """计算 Gold Fact Coverage。"""
 
-    normalized_chunks = [
-        normalize_match_text(
-            text
-        )
-        for text
-        in retrieved_texts
-    ]
+    normalized_chunks = []
+    for text in retrieved_texts:
+        normalized_chunks.append(normalize_match_text(text))
 
-    normalized_facts = [
-        normalize_match_text(
-            fact
-        )
-        for fact
-        in gold_facts
-        if str(
-            fact
-        ).strip()
-    ]
+    normalized_facts = []
+    for fact in gold_facts:
+        if str(fact).strip():
+            normalized_facts.append(normalize_match_text(fact))
 
     if not normalized_facts:
         return {
@@ -102,524 +71,212 @@ def score_fact_coverage(
 
     matched_count = 0
 
-    for gold_fact in (
-        normalized_facts
-    ):
-        found = any(
-            gold_fact
-            in chunk_text
-
-            for chunk_text
-            in normalized_chunks
-        )
+    for gold_fact in normalized_facts:
+        found = False
+        for chunk_text in normalized_chunks:
+            if gold_fact in chunk_text:
+                found = True
+                break
 
         if found:
             matched_count += 1
 
     return {
-        "matched_fact_count": (
-            matched_count
-        ),
-
-        "gold_fact_count": (
-            len(
-                normalized_facts
-            )
-        ),
-
-        "fact_recall": (
-            matched_count
-            / len(
-                normalized_facts
-            )
-        ),
-
-        "any_gold_fact_present": (
-            matched_count > 0
-        ),
-
-        "all_gold_facts_present": (
-            matched_count
-            == len(
-                normalized_facts
-            )
-        ),
+        "matched_fact_count": matched_count,
+        "gold_fact_count": len(normalized_facts),
+        "fact_recall": (matched_count / len(normalized_facts)),
+        "any_gold_fact_present": (matched_count > 0),
+        "all_gold_facts_present": (matched_count == len(normalized_facts)),
     }
 
 
-def classify_failure(
-    answer_correct: bool,
-    all_gold_facts_present: bool,
-) -> str:
+def classify_failure(answer_correct: bool, all_gold_facts_present: bool) -> str:
     """基础 Failure Classification。"""
 
-    if (
-        all_gold_facts_present
-        and answer_correct
-    ):
+    if all_gold_facts_present and answer_correct:
         return "success"
 
-    if (
-        all_gold_facts_present
-        and not answer_correct
-    ):
+    if all_gold_facts_present and not answer_correct:
         return "reasoning_limited"
 
-    if (
-        not all_gold_facts_present
-        and answer_correct
-    ):
-        return (
-            "partial_evidence_success"
-        )
+    if not all_gold_facts_present and answer_correct:
+        return "partial_evidence_success"
 
     return "retrieval_limited"
 
 
-def load_json(
-    path: str | Path,
-) -> dict:
-    path = Path(
-        path
-    )
+def load_json(path: str | Path) -> dict:
+    path = Path(path)
 
     if not path.exists():
-        raise FileNotFoundError(
-            f"找不到文件：{path}"
-        )
+        raise FileNotFoundError(f"找不到文件：{path}")
 
-    with path.open(
-        "r",
-        encoding="utf-8",
-    ) as file:
-        return json.load(
-            file
-        )
+    with path.open("r", encoding="utf-8") as file:
+        return json.load(file)
 
 
 def run_analysis(
-    retrieval_report_path: str | Path,
-    single_shot_report_path: str | Path,
+    retrieval_report_path: str | Path, single_shot_report_path: str | Path
 ) -> dict:
     """执行离线 Failure Analysis。"""
 
-    retrieval_report = (
-        load_json(
-            retrieval_report_path
-        )
-    )
+    retrieval_report = load_json(retrieval_report_path)
 
-    single_shot_report = (
-        load_json(
-            single_shot_report_path
-        )
-    )
+    single_shot_report = load_json(single_shot_report_path)
 
-    configuration = (
-        retrieval_report[
-            "configuration"
-        ]
-    )
+    configuration = retrieval_report["configuration"]
 
-    (
-        _documents,
-        chunks,
-        _cases,
-    ) = load_multihop_benchmark(
-        chunk_size=(
-            configuration[
-                "chunk_size"
-            ]
-        ),
-
-        overlap=(
-            configuration[
-                "overlap"
-            ]
-        ),
-
+    _documents, chunks, _cases = load_multihop_benchmark(
+        chunk_size=configuration["chunk_size"],
+        overlap=configuration["overlap"],
         download=False,
     )
 
-    chunk_lookup = {
-        chunk.chunk_id: chunk
-        for chunk in chunks
-    }
+    chunk_lookup = {}
+    for chunk in chunks:
+        chunk_lookup[chunk.chunk_id] = chunk
 
-    single_lookup = {
-        record[
-            "case_id"
-        ]: record
-
-        for record
-        in single_shot_report[
-            "records"
-        ]
-    }
+    single_lookup = {}
+    for record in single_shot_report["records"]:
+        single_lookup[record["case_id"]] = record
 
     analysis_records = []
 
-    for retrieval_record in (
-        retrieval_report[
-            "records"
-        ]
-    ):
-        case_id = (
-            retrieval_record[
-                "case_id"
-            ]
-        )
+    for retrieval_record in retrieval_report["records"]:
+        case_id = retrieval_record["case_id"]
 
-        single_record = (
-            single_lookup.get(
-                case_id
-            )
-        )
+        single_record = single_lookup.get(case_id)
 
         if single_record is None:
-            raise ValueError(
-                f"Single-shot 缺少 "
-                f"Case={case_id}"
-            )
+            raise ValueError(f"Single-shot 缺少 Case={case_id}")
 
         retrieved_texts = []
 
-        for chunk_id in (
-            single_record[
-                "selected_chunk_ids"
-            ]
-        ):
-            chunk = (
-                chunk_lookup.get(
-                    chunk_id
-                )
-            )
+        for chunk_id in single_record["selected_chunk_ids"]:
+            chunk = chunk_lookup.get(chunk_id)
 
             if chunk is None:
-                raise ValueError(
-                    f"找不到 Chunk：{chunk_id}"
-                )
+                raise ValueError(f"找不到 Chunk：{chunk_id}")
 
-            retrieved_texts.append(
-                chunk.content
-            )
+            retrieved_texts.append(chunk.content)
 
-        fact_metrics = (
-            score_fact_coverage(
-                retrieved_texts,
-                retrieval_record[
-                    "gold_evidence_facts"
-                ],
-            )
+        fact_metrics = score_fact_coverage(
+            retrieved_texts, retrieval_record["gold_evidence_facts"]
         )
 
-        gold_answer = (
-            retrieval_record[
-                "answer"
-            ]
-        )
+        gold_answer = retrieval_record["answer"]
 
-        prediction = (
-            single_record[
-                "prediction"
-            ]
-        )
+        prediction = single_record["prediction"]
 
-        answer_correct = (
-            strict_answer_correct(
-                prediction,
-                gold_answer,
-            )
-        )
+        answer_correct = strict_answer_correct(prediction, gold_answer)
 
-        review_candidate = (
-            semantic_review_candidate(
-                prediction,
-                gold_answer,
-            )
-        )
+        review_candidate = semantic_review_candidate(prediction, gold_answer)
 
-        failure_type = (
-            classify_failure(
-                answer_correct=(
-                    answer_correct
-                ),
-
-                all_gold_facts_present=(
-                    fact_metrics[
-                        "all_gold_facts_present"
-                    ]
-                ),
-            )
+        failure_type = classify_failure(
+            answer_correct=answer_correct,
+            all_gold_facts_present=fact_metrics["all_gold_facts_present"],
         )
 
         analysis_records.append(
             {
-                "case_id": (
-                    case_id
-                ),
-
-                "question_type": (
-                    retrieval_record[
-                        "question_type"
-                    ]
-                ),
-
-                "query": (
-                    retrieval_record[
-                        "query"
-                    ]
-                ),
-
-                "gold_answer": (
-                    gold_answer
-                ),
-
-                "prediction": (
-                    prediction
-                ),
-
-                "document_coverage": (
-                    single_record[
-                        "context_diagnostics"
-                    ]
-                ),
-
-                "fact_coverage": (
-                    fact_metrics
-                ),
-
-                "strict_answer_correct": (
-                    answer_correct
-                ),
-
-                "semantic_review_candidate": (
-                    review_candidate
-                ),
-
-                "failure_type": (
-                    failure_type
-                ),
+                "case_id": case_id,
+                "question_type": retrieval_record["question_type"],
+                "query": retrieval_record["query"],
+                "gold_answer": gold_answer,
+                "prediction": prediction,
+                "document_coverage": single_record["context_diagnostics"],
+                "fact_coverage": fact_metrics,
+                "strict_answer_correct": answer_correct,
+                "semantic_review_candidate": review_candidate,
+                "failure_type": failure_type,
             }
         )
 
-    total = len(
-        analysis_records
-    )
+    total = len(analysis_records)
 
     failure_counts = {}
 
-    for record in (
-        analysis_records
-    ):
-        name = record[
-            "failure_type"
-        ]
+    for record in analysis_records:
+        name = record["failure_type"]
 
-        failure_counts[
-            name
-        ] = (
-            failure_counts.get(
-                name,
-                0,
-            )
-            + 1
-        )
+        failure_counts[name] = failure_counts.get(name, 0) + 1
 
-    parent_doc_complete_count = sum(
-        1
-        for record
-        in analysis_records
+    parent_doc_complete_count = 0
+    all_fact_count = 0
+    doc_complete_fact_incomplete = 0
+    strict_correct_count = 0
+    review_count = 0
+    fact_recalls = []
+    for record in analysis_records:
+        documents_complete = record["document_coverage"]["all_gold_docs_present"]
+        facts_complete = record["fact_coverage"]["all_gold_facts_present"]
+        if documents_complete:
+            parent_doc_complete_count += 1
+        if facts_complete:
+            all_fact_count += 1
+        if documents_complete and not facts_complete:
+            doc_complete_fact_incomplete += 1
+        if record["strict_answer_correct"]:
+            strict_correct_count += 1
+        if record["semantic_review_candidate"]:
+            review_count += 1
+        fact_recalls.append(record["fact_coverage"]["fact_recall"])
 
-        if record[
-            "document_coverage"
-        ][
-            "all_gold_docs_present"
-        ]
-    )
-
-    all_fact_count = sum(
-        1
-        for record
-        in analysis_records
-
-        if record[
-            "fact_coverage"
-        ][
-            "all_gold_facts_present"
-        ]
-    )
-
-    doc_complete_fact_incomplete = sum(
-        1
-        for record
-        in analysis_records
-
-        if (
-            record[
-                "document_coverage"
-            ][
-                "all_gold_docs_present"
-            ]
-
-            and not record[
-                "fact_coverage"
-            ][
-                "all_gold_facts_present"
-            ]
-        )
-    )
-
-    strict_correct_count = sum(
-        1
-        for record
-        in analysis_records
-
-        if record[
-            "strict_answer_correct"
-        ]
-    )
-
-    review_count = sum(
-        1
-        for record
-        in analysis_records
-
-        if record[
-            "semantic_review_candidate"
-        ]
-    )
+    strict_accuracy = 0.0
+    average_fact_recall = 0.0
+    all_facts_rate = 0.0
+    all_documents_rate = 0.0
+    if total:
+        strict_accuracy = strict_correct_count / total
+        average_fact_recall = mean(fact_recalls)
+        all_facts_rate = all_fact_count / total
+        all_documents_rate = parent_doc_complete_count / total
 
     return {
-        "dataset": (
-            "MultiHop-RAG"
-        ),
-
-        "experiment": (
-            "context_failure_analysis"
-        ),
-
-        "total_cases": (
-            total
-        ),
-
+        "dataset": "MultiHop-RAG",
+        "experiment": "context_failure_analysis",
+        "total_cases": total,
         "summary": {
-            "strict_answer_accuracy": (
-                strict_correct_count
-                / total
-                if total
-                else 0.0
-            ),
-
-            "semantic_review_candidate_count": (
-                review_count
-            ),
-
-            "avg_gold_fact_recall": (
-                mean(
-                    record[
-                        "fact_coverage"
-                    ][
-                        "fact_recall"
-                    ]
-
-                    for record
-                    in analysis_records
-                )
-                if total
-                else 0.0
-            ),
-
-            "all_gold_facts_present_rate": (
-                all_fact_count
-                / total
-                if total
-                else 0.0
-            ),
-
-            "all_gold_docs_present_rate": (
-                parent_doc_complete_count
-                / total
-                if total
-                else 0.0
-            ),
-
-            "doc_complete_but_fact_incomplete": (
-                doc_complete_fact_incomplete
-            ),
-
-            "failure_counts": (
-                failure_counts
-            ),
+            "strict_answer_accuracy": strict_accuracy,
+            "semantic_review_candidate_count": review_count,
+            "avg_gold_fact_recall": average_fact_recall,
+            "all_gold_facts_present_rate": all_facts_rate,
+            "all_gold_docs_present_rate": all_documents_rate,
+            "doc_complete_but_fact_incomplete": doc_complete_fact_incomplete,
+            "failure_counts": failure_counts,
         },
-
-        "records": (
-            analysis_records
-        ),
+        "records": analysis_records,
     }
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
 
-    parser.add_argument(
-        "--retrieval-report",
-        default=(
-            DEFAULT_RETRIEVAL_REPORT
-        ),
-    )
+    parser.add_argument("--retrieval-report", default=DEFAULT_RETRIEVAL_REPORT)
 
-    parser.add_argument(
-        "--single-shot-report",
-        default=(
-            DEFAULT_SINGLE_SHOT_REPORT
-        ),
-    )
+    parser.add_argument("--single-shot-report", default=DEFAULT_SINGLE_SHOT_REPORT)
 
-    parser.add_argument(
-        "--output",
-        default=DEFAULT_OUTPUT,
-    )
+    parser.add_argument("--output", default=DEFAULT_OUTPUT)
 
     args = parser.parse_args()
 
     report = run_analysis(
-        retrieval_report_path=(
-            args.retrieval_report
-        ),
-
-        single_shot_report_path=(
-            args.single_shot_report
-        ),
+        retrieval_report_path=args.retrieval_report,
+        single_shot_report_path=args.single_shot_report,
     )
 
-    output_path = Path(
-        args.output
-    )
+    output_path = Path(args.output)
 
-    output_path.parent.mkdir(
-        parents=True,
-        exist_ok=True,
-    )
+    output_path.parent.mkdir(parents=True, exist_ok=True)
 
     output_path.write_text(
-        json.dumps(
-            report,
-            ensure_ascii=False,
-            indent=2,
-        ),
-        encoding="utf-8",
+        json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"
     )
 
-    summary = report[
-        "summary"
-    ]
+    summary = report["summary"]
 
     print()
-    print(
-        "[Context Analysis] "
-        f"Cases={report['total_cases']}"
-    )
+    print(f"[Context Analysis] Cases={report['total_cases']}")
 
     print(
         "[Context Analysis] "
@@ -657,16 +314,9 @@ def main() -> None:
         f"{summary['doc_complete_but_fact_incomplete']}"
     )
 
-    print(
-        "[Context Analysis] "
-        f"Failures="
-        f"{summary['failure_counts']}"
-    )
+    print(f"[Context Analysis] Failures={summary['failure_counts']}")
 
-    print(
-        "[Context Analysis] "
-        f"SavedTo={output_path}"
-    )
+    print(f"[Context Analysis] SavedTo={output_path}")
 
 
 if __name__ == "__main__":
